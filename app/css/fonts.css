@@ -1,0 +1,85 @@
+@font-face {
+    font-family: 'flexolight';
+    src: url('../fonts/flexo-light-webfont.eot');
+    src: url('../fonts/flexo-light-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/flexo-light-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'flexolight_italic';
+    src: url('../fonts/flexo-lightit-webfont.eot');
+    src: url('../fonts/flexo-lightit-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/flexo-lightit-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'flexoregular';
+    src: url('../fonts/flexo-regular-webfont.eot');
+    src: url('../fonts/flexo-regular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/flexo-regular-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'flexobold';
+    src: url('../fonts/flexo-demi-webfont.eot');
+    src: url('../fonts/flexo-demi-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/flexo-demi-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'helveticaneue_light';
+    src: url('../fonts/helveticaneue-light-webfont.eot');
+    src: url('../fonts/helveticaneue-light-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/helveticaneue-light-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'helveticaneue_bold';
+    src: url('../fonts/helveticaneue-bd-webfont.eot');
+    src: url('../fonts/helveticaneue-bd-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/helveticaneue-bd-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'helveticaneue_medio';
+    src: url('../fonts/helveticaneue-webfont.woff2') format('woff2'),
+         url('../fonts/helveticaneue-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'anonymous_regular';
+    src: url('../fonts/anonymous_pro-webfont.woff2') format('woff2'),
+         url('../fonts/anonymous_pro-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'configcondensed_bold';
+    src: url('../fonts/config-condensed-bold-webfont.woff2') format('woff2'),
+         url('../fonts/config-condensed-bold-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'configcondensed_light';
+    src: url('../fonts/config-condensed-light-webfont.woff2') format('woff2'),
+         url('../fonts/config-condensed-light-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}

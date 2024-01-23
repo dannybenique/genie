@@ -1,0 +1,57 @@
+<div class="modal-dialog modal-lg">
+  <div class="modal-content">
+    <div class="modal-header" style="background:#f9f9f9;padding:8px;">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <h4 id="modConyTitulo" class="modal-title" style="font-family:flexoregular;font-weight:bold;">Datos Conyugales</h4>
+    </div>
+    <div class="modal-body">
+      <form class="form-horizontal" autocomplete="off">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="box-body">
+              <table>
+                <tr>
+                  <td style="width:100px;">
+                    <a class="btn btn-app" href="javascript:Conyuge.lnkConyuge();">
+                      <span class="badge bg-red"></span>
+                      <i class="fa fa-heart-o"></i> Conyuge
+                    </a>
+                  </td>
+                  <td>
+                    <div class="form-Cony">
+                      <p class="text-muted">
+                        Nombres: <a id="lbl_modConyNombres"></a><br>
+                        Apellidos: <a id="lbl_modConyApellidos"></a><br>
+                        DNI: <a id="lbl_modConyNroDNI"></a><br>
+                        Fecha Nac: <a id="lbl_modConyFechaNac"></a><br>
+                        Estado Civil: <a id="lbl_modConyEcivil"></a>
+                      </p>
+                    </div></td>
+                </tr>
+              </table>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="box-body">
+              <div class="box-body">
+                <strong><i class="fa fa-tags"></i> Relacion</strong>
+                <div id="div_modConyTiempoRela" class="form-group">
+                  <div class="input-group">
+                    <span class="input-group-addon" style="background:#eeeeee;">Tiempo de Relacion (años)</span>
+                    <input id="txt_modConyTiempoRela" type="number" class="form-control" placeholder="Tiempo..." style="text-transform:uppercase;width:100px;"/>
+                  </div>
+                </div>
+              </div>
+              <div class="pull-right">
+                <input type="hidden" id="hid_modConyPermisoID" value="0">
+                <button type="button" class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-close"></i> Cerrar</button>
+                <button id="btn_modConyInsert" type="button" class="btn btn-primary btn-sm"><i class="fa fa-save"></i> Guardar</button>
+                <button id="btn_modConyUpdate" type="button" class="btn btn-info btn-sm"><i class="fa fa-save"></i> Actualizar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

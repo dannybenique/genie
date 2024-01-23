@@ -1,0 +1,25 @@
+html,body,form{border:0px;margin:0px;padding:0px;height:100%;width:100%;}
+body { padding:0px;margin:0px;font:12px helveticaneue_light;color:#273538;text-align:left;background-image:url("../images/login.back.jpg");background-position:center center;}
+
+.loginBack  { position:absolute;top:0;right:0;width:360px;height:100%; background:url("../images/transp.Negro.20.png");-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);}
+.loginLogo  {background:url("../images/login.logo.png");width:240px;height:58px;margin:30px auto;}
+.loginPanel { position:relative;top:20px;width:280px;height:180px;margin:0 auto;}
+
+.login_WarningBack{ position:absolute;right:0;top:460px;width:360px;height:100px;}
+.login_WarningText{color:red;font-size:16px;font-weight:bold;border:2px solid red;text-align:center;width:265px;height:40px;position:relative;top:30px;background:#4c0000;margin:0 auto;display:none;}
+.login_validator {font-weight:bold;color:red;height:20px;font-size:24px;}
+
+.loginGroup {position:relative;}
+.loginGroup span{font-size:20px;display:block;color:#3f5d64;}
+.loginGroupUser{top:16px;left:17px;}
+.loginGroupPass{top:38px;left:17px;}
+.loginText  { background:#273538; border:1px solid #273538; color:white; font:24px helveticaneue_medio; padding-left:3px;width:250px;}
+
+.loginButton {position:relative;top:60px;width:200px; margin:0 auto;cursor:pointer;}
+.btn-large {-webkit-border-radius:4px;-moz-border-radius:4px;border-radius:4px;width:200px;height:50px;position:relative;background:#3AB2E4;}
+.btn-primary {color:#ffffff;border:1px solid #0F4A7E; font:20px helveticaneue_bold;}
+
+::-webkit-input-placeholder { color:#3f5d64; font:24px helveticaneue_light; padding-left:2px;}
+:-moz-placeholder { color:#666; font:24px helveticaneue_light; padding-left:2px; opacity: 1;}
+::-moz-placeholder { color:#666; font:24px helveticaneue_light; padding-left:2px; opacity: 1;}
+:-ms-input-placeholder { color:#666; font:24px helveticaneue_light;padding-left:2px;}

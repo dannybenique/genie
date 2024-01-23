@@ -1,0 +1,119 @@
+<div class="modal-dialog modal-lg">
+  <div class="modal-content">
+    <div class="modal-header" style="background:#f9f9f9;padding:8px;">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <h4 id="modLaboTitulo" class="modal-title" style="font-family:flexoregular;font-weight:bold;">Datos Laborales</h4>
+    </div>
+    <div class="modal-body">
+      <div class="row" id="modLaboFormEdit">
+        <div class="col-md-12">
+          <form class="form-horizontal" autocomplete="off">
+            <div>
+              <div class="col-md-6">
+                <div class="box-body">
+                  <div class="form-labo">
+                    <strong><i class="fa fa-steam"></i> Laborales</strong>
+                    <div id="div_LaboCondicion" class="form-group" style="margin-bottom:5px;">
+                      <div class="input-group">
+                        <span class="input-group-addon" style="background:#D2D6DE;font-weight:bold;width:85px;">Condicion</span>
+                        <select id="cbo_LaboCondicion" class="form-control selectpicker">
+                          <option value="1">Dependiente</option>
+                          <option value="0" selected>Independiente</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div id="div_LaboEmpresa" class="form-group" style="margin-bottom:5px;">
+                      <div class="input-group">
+                        <span class="input-group-addon" style="background:#eeeeee;font-weight:bold;">Empresa</span>
+                        <input id="txt_LaboEmpresa" type="text" class="form-control" maxlength="50" style="text-transform:uppercase;" placeholder="Empresa..."/>
+                      </div>
+                    </div>
+                    <div id="div_LaboEmprRUC" class="form-group" style="margin-bottom:5px;">
+                      <div class="input-group">
+                        <span class="input-group-addon" style="background:#eeeeee;font-weight:bold;width:81px;">RUC</span>
+                        <input id="txt_LaboEmprRUC" type="number" maxlength="11" class="form-control" placeholder="RUC..."/>
+                      </div>
+                    </div>
+                    <div id="div_LaboEmprFono" class="form-group" style="margin-bottom:5px;">
+                      <div class="input-group">
+                        <span class="input-group-addon" style="background:#eeeeee;font-weight:bold;width:81px;">Telefono</span>
+                        <input id="txt_LaboEmprFono" type="text" maxlength="10" class="form-control"/>
+                      </div>
+                    </div>
+                    <div id="div_LaboEmprRubro" class="form-group" style="margin-bottom:25px;">
+                      <div class="input-group">
+                        <span class="input-group-addon" style="background:#eeeeee;font-weight:bold;width:81px;">Rubro</span>
+                        <input id="txt_LaboEmprRubro" type="text" maxlength="50" class="form-control" style="text-transform:uppercase;"/>
+                      </div>
+                    </div>
+                    <div id="div_LaboEmprInicio" class="form-group" style="margin-bottom:5px;">
+                      <div class="input-group">
+                        <span class="input-group-addon" style="background:#eeeeee;font-weight:bold;width:90px;">Fecha Ing.</span>
+                        <input id="date_LaboInicio" type="text" class="form-control" style="width:105px;" />
+                      </div>
+                    </div>
+                    <div id="div_LaboEmprCargo" class="form-group" style="margin-bottom:5px;">
+                      <div class="input-group">
+                        <span class="input-group-addon" style="background:#eeeeee;font-weight:bold;width:90px;">Cargo</span>
+                        <input id="txt_LaboEmprCargo" type="text" class="form-control" maxlength="30" placeholder="Cargo..." style="text-transform:uppercase;"/>
+                      </div>
+                    </div>
+                    <div id="div_LaboEmprIngreso" class="form-group" style="margin-bottom:5px;">
+                      <div class="input-group">
+                        <span class="input-group-addon" style="background:#eeeeee;font-weight:bold;width:90px;">Ingreso</span>
+                        <input id="txt_LaboEmprIngreso" type="text" class="form-control" placeholder="0.00" value="" style="width:125px;"/>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="box-body">
+                  <div class="form-labo">
+                    <strong><i class="fa fa-map-marker"></i> Ubicacion</strong>
+                    <div id="div_LaboEmprRegion" class="form-group" style="margin-bottom:5px;">
+                      <div class="input-group">
+                        <span class="input-group-addon" title="Region" style="background:#eeeeee;font-weight:bold;">Region</span>
+                        <select id="cbo_LaboEmprRegion" class="form-control selectpicker" onchange="javascript:Laboral.comboProvincia();"></select>
+                      </div>
+                    </div>
+                    <div id="div_LaboEmprProvincia" class="form-group" style="margin-bottom:5px;">
+                      <div class="input-group">
+                        <span class="input-group-addon" title="Provincia" style="background:#eeeeee;font-weight:bold;">Provincia</span>
+                        <select id="cbo_LaboEmprProvincia" class="form-control selectpicker" onchange="javascript:Laboral.comboDistrito();"></select>
+                      </div>
+                    </div>
+                    <div id="div_LaboEmprDistrito" class="form-group" style="margin-bottom:5px;">
+                      <div class="input-group">
+                        <span class="input-group-addon" title="Distrito" style="background:#eeeeee;font-weight:bold;">Distrito</span>
+                        <select id="cbo_LaboEmprDistrito" class="form-control selectpicker"></select>
+                      </div>
+                    </div>
+                    <div id="div_LaboEmprDireccion" class="form-group" style="margin-bottom:25px;">
+                      <div class="input-group">
+                        <span class="input-group-addon" title="Direccion" style="background:#eeeeee;font-weight:bold;"><i class="fa fa-map-marker"></i></span>
+                        <input id="txt_LaboEmprDireccion" name="txt_LaboEmprDireccion" type="text" maxlength="80" class="form-control" placeholder="Direccion..." style="text-transform:uppercase;"/>
+                      </div>
+                    </div>
+                    <strong><i class="fa fa-book"></i> Observaciones</strong>
+                    <div class="form-group">
+                      <div class="input-group">
+                        <textarea id="txt_LaboObservac" name="txt_LaboObservac" type="text" placeholder="Observaciones..." cols="80" rows="6" style="width:100%;"></textarea>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="box-body pull-right">
+                    <input type="hidden" id="hid_modLaboPermisoID" value="0">
+                    <button type="button" class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-close"></i> Cerrar</button>
+                    <button id="btn_modLaboInsert" type="button" class="btn btn-primary btn-sm"><i class="fa fa-save"></i> Guardar</button>
+                    <button id="btn_modLaboUpdate" type="button" class="btn btn-info btn-sm"><i class="fa fa-save"></i> Actualizar</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
