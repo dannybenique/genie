@@ -222,6 +222,62 @@ function handlerFamiPadreAddToForm_Click(e){
   $('#btn_modPersAddToForm').off('click');
 }
 
+function appFamiMadreAdd(){
+  Persona.openBuscar('VerifyMadre',rutaSQL,true,true,false);
+  $('#btn_modPersInsert').off('click');
+
+  $('#btn_modPersInsert').on('click',handlerFamiMadreInsert_Click);
+  $('#btn_modPersAddToForm').on('click',handlerFamiMadreAddToForm_Click);
+}
+
+function handlerFamiMadreInsert_Click(e){
+  if(Persona.sinErrores()){ //sin errores
+    Persona.ejecutaSQL().then(resp => {
+      appFamiMadreSetData(resp.tablaPers);
+      Persona.close();
+    });
+  } else {
+    alert("!!!Faltan llenar Datos!!!");
+  }
+  e.stopImmediatePropagation();
+  $('#btn_modPersInsert').off('click');
+}
+
+function handlerFamiMadreAddToForm_Click(e){
+  appFamiMadreSetData(Persona.tablaPers);
+  Persona.close();
+  e.stopImmediatePropagation();
+  $('#btn_modPersAddToForm').off('click');
+}
+
+function appFamiApoderaAdd(){
+  Persona.openBuscar('VerifyApodera',rutaSQL,true,true,false);
+  $('#btn_modPersInsert').off('click');
+
+  $('#btn_modPersInsert').on('click',handlerFamiApoderaInsert_Click);
+  $('#btn_modPersAddToForm').on('click',handlerFamiApoderaAddToForm_Click);
+}
+
+function handlerFamiApoderaInsert_Click(e){
+  if(Persona.sinErrores()){ //sin errores
+    Persona.ejecutaSQL().then(resp => {
+      appFamiApoderaSetData(resp.tablaPers);
+      Persona.close();
+    });
+  } else {
+    alert("!!!Faltan llenar Datos!!!");
+  }
+  e.stopImmediatePropagation();
+  $('#btn_modPersInsert').off('click');
+}
+
+function handlerFamiApoderaAddToForm_Click(e){
+  appFamiApoderaSetData(Persona.tablaPers);
+  Persona.close();
+  e.stopImmediatePropagation();
+  $('#btn_modPersAddToForm').off('click');
+}
+
 function appAlumnoGetDatosToDatabase(){
   let datos = "";
   let EsError = false;
@@ -242,6 +298,16 @@ function appAlumnoGetDatosToDatabase(){
 function appFamiPadreSetData(data){
   document.querySelector("#hid_alumnoFamiPadreID").value = data.ID
   document.querySelector("#lbl_alumnoFamiPadre").innerHTML = data.ap_paterno + " " + data.ap_materno + ", " + data.nombres + "<br/>" + data.direccion
+}
+
+function appFamiMadreSetData(data){
+  document.querySelector("#hid_alumnoFamiMadreID").value = data.ID
+  document.querySelector("#lbl_alumnoFamiMadre").innerHTML = data.ap_paterno + " " + data.ap_materno + ", " + data.nombres + "<br/>" + data.direccion
+}
+
+function appFamiApoderaSetData(data){
+  document.querySelector("#hid_alumnoFamiApoderaID").value = data.ID
+  document.querySelector("#lbl_alumnoFamiApodera").innerHTML = data.ap_paterno + " " + data.ap_materno + ", " + data.nombres + "<br/>" + data.direccion
 }
 
 function appPersonaSetData(data){
