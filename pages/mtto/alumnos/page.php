@@ -120,16 +120,14 @@
                       <tr>
                         <td style="width:90px;" class="no-padding">
                           <div class="pull-left" style="width:100%;">
-                            <a href="javascript:appAlumnoPadre();" class="btn btn-app" style="margin:0;">
+                            <a href="javascript:appFamiPadreAdd();" class="btn btn-app" style="margin:0;">
                               <i class="fa fa-edit"></i> Padre
                             </a>
                           </div>
                         </td>
                         <td>
-                          <div>
-                            <span></span><br/>
-                            <span></span>
-                          </div>
+                        <input type="hidden" id="hid_alumnoFamiPadreID" value=""/>
+                          <div id="lbl_alumnoFamiPadre"></div>
                         </td>
                       </tr>
                     </table>

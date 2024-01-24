@@ -8,7 +8,7 @@
         commandSQL : "",
         queryBuscar : "",
         queryURL : "",
-        tipoPersona : 0, //1: natual; 2: juridica
+        tipoPersona : 0, //1: natural; 2: juridica
         addNewPers : false, //permite añadir nuevos en personas
         addNewLista : false, //permite añadir nuevos en la lista
         addRepLista : false, //permite añadir repetidos en lista

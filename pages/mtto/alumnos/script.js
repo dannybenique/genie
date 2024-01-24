@@ -79,37 +79,38 @@ function appAlumnosBotonUpdate(){
 
 function appAlumnosBotonNuevo(){
   Persona.openBuscar('VerifyAlumno',rutaSQL,true,true,false);
-  $('#btn_modPersInsert').on('click',function(e) {
-    if(Persona.sinErrores()){ //sin errores
-      document.querySelector('#grid').style.display = 'none';
-      document.querySelector('#edit').style.display = 'block';
-      Persona.ejecutaSQL().then(resp => {
-        appPersonaSetData(resp.tablaPers);
-        appAlumnoClear();
-        Persona.close();
-      });
-    } else {
-      alert("!!!Faltan llenar Datos!!!");
-    }
-    e.stopImmediatePropagation();
-    $('#btn_modPersInsert').off('click');
-  });
-  $('#btn_modPersAddToForm').on('click',function(e) {
-    let datos = {
-      TipoQuery : 'viewPersona',
-      personaID : Persona.tablaPers.ID,
-      fullQuery : 2
-    }
-    appFetch(datos,'pages/master/personas/sql.php').then(resp => {
-      document.querySelector('#grid').style.display = 'none';
-      document.querySelector('#edit').style.display = 'block';
-      appPersonaSetData(Persona.tablaPers); //pestaña Personales
+  document.querySelector('#btn_modPersInsert').removeEventListener('click',handlerFamiPadreInsert_Click);
+  
+  document.querySelector('#btn_modPersInsert').addEventListener('click',handlerAlumnosInsert_Click);
+  document.querySelector('#btn_modPersAddToForm').addEventListener('click',handlerAlumnosAddToForm_Click);
+}
+
+function handlerAlumnosInsert_Click(e){
+  if(Persona.sinErrores()){ //sin errores
+    console.log("en alumnos ==> nuevos");
+    document.querySelector('#grid').style.display = 'none';
+    document.querySelector('#edit').style.display = 'block';
+    Persona.ejecutaSQL().then(resp => {
+      appPersonaSetData(resp.tablaPers);
       appAlumnoClear();
       Persona.close();
     });
-    e.stopImmediatePropagation();
-    $('#btn_modPersAddToForm').off('click');
-  });
+  } else {
+    alert("!!!Faltan llenar Datos!!!");
+  }
+  e.stopImmediatePropagation();
+  document.querySelector('#btn_modPersInsert').removeEventListener('click',handlerAlumnosInsert_Click);
+}
+
+function handlerAlumnosAddToForm_Click(e){
+  console.log("desde alumnos");
+  document.querySelector('#grid').style.display = 'none';
+  document.querySelector('#edit').style.display = 'block';
+  appPersonaSetData(Persona.tablaPers); //pestaña Personales
+  appAlumnoClear();
+  Persona.close();
+  e.stopImmediatePropagation();
+  document.querySelector('#btn_modPersAddToForm').removeEventListener('click',handlerAlumnosAddToForm_Click);
 }
 
 function appAlumnosBotonBorrar(){
@@ -191,22 +192,34 @@ function appAlumnoClear(){
   });
 }
 
-function appAlumnoFamiPadre(){
-  Persona.openBuscar('VerifyAlumno',rutaSQL,true,true,true);
-  $('#btn_modPersAddToForm').on('click',function(e) {
-    let datos = {
-      TipoQuery : 'viewPersona',
-      personaID : Persona.tablaPers.ID,
-      fullQuery : 1
-    }
-    appFetch(datos,'pages/master/personas/sql.php').then(resp => {
-      appPersonaSetData(Persona.tablaPers); //pestaña Personales
-      appAlumnoClear();
+function appFamiPadreAdd(){
+  Persona.openBuscar('VerifyPadre',rutaSQL,true,true,false);
+  document.querySelector('#btn_modPersInsert').removeEventListener('click',handlerAlumnosInsert_Click);
+
+  document.querySelector('#btn_modPersInsert').addEventListener('click',handlerFamiPadreInsert_Click);
+  document.querySelector('#btn_modPersAddToForm').addEventListener('click',handlerFamiPadreAddToForm_Click);
+}
+
+function handlerFamiPadreInsert_Click(e){
+  if(Persona.sinErrores()){ //sin errores
+    console.log("padres nuevos");
+    Persona.ejecutaSQL().then(resp => {
+      appFamiPadreSetData(resp.tablaPers);
       Persona.close();
     });
-    e.stopImmediatePropagation();
-    $('#btn_modPersAddToForm').off('click');
-  });
+  } else {
+    alert("!!!Faltan llenar Datos!!!");
+  }
+  e.stopImmediatePropagation();
+  document.querySelector('#btn_modPersInsert').removeEventListener('click',handlerFamiPadreInsert_Click);
+}
+
+function handlerFamiPadreAddToForm_Click(e){
+  console.log("desde famipadre");
+  appFamiPadreSetData(Persona.tablaPers);
+  Persona.close();
+  e.stopImmediatePropagation();
+  document.querySelector('#btn_modPersAddToForm').removeEventListener('click',handlerFamiPadreAddToForm_Click);
 }
 
 function appAlumnoGetDatosToDatabase(){
@@ -227,7 +240,8 @@ function appAlumnoGetDatosToDatabase(){
 }
 
 function appFamiPadreSetData(data){
-  
+  document.querySelector("#hid_alumnoFamiPadreID").value = data.ID
+  document.querySelector("#lbl_alumnoFamiPadre").innerHTML = data.ap_paterno + " " + data.ap_materno + ", " + data.nombres + "<br/>" + data.direccion
 }
 
 function appPersonaSetData(data){

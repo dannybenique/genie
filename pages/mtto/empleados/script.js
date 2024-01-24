@@ -126,21 +126,15 @@ function appWorkerBotonNuevo(){
     $('#btn_modPersInsert').off('click');
   });
   $('#btn_modPersAddToForm').on('click',function(e) {
-    let datos = {
-      TipoQuery : 'viewPersona',
-      personaID : Persona.tablaPers.ID,
-      fullQuery : 2
-    }
-    appFetch(datos,'pages/master/personas/sql.php').then(resp => {
-      appPersonaSetData(Persona.tablaPers); //pestaña Personales
-      appFetch({TipoQuery : 'startWorker'},rutaSQL).then(resp => {
-        appWorkerClear(resp);
-        appUserClear(resp);
-        document.querySelector('#grid').style.display = 'none';
-        document.querySelector('#edit').style.display = 'block';
-        Persona.close();
-      });
+    appPersonaSetData(Persona.tablaPers); //pestaña Personales
+    appFetch({TipoQuery : 'startWorker'},rutaSQL).then(resp => {
+      appWorkerClear(resp);
+      appUserClear(resp);
+      document.querySelector('#grid').style.display = 'none';
+      document.querySelector('#edit').style.display = 'block';
+      Persona.close();
     });
+    
     e.stopImmediatePropagation();
     $('#btn_modPersAddToForm').off('click');
   });
