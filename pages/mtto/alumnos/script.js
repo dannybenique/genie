@@ -202,7 +202,7 @@ function appFamiPadreAdd(){
 
 function handlerFamiPadreInsert_Click(e){
   if(Persona.sinErrores()){ //sin errores
-    console.log("padres nuevos");
+    console.log("padre nuevo");
     Persona.ejecutaSQL().then(resp => {
       appFamiPadreSetData(resp.tablaPers);
       Persona.close();
@@ -215,7 +215,7 @@ function handlerFamiPadreInsert_Click(e){
 }
 
 function handlerFamiPadreAddToForm_Click(e){
-  console.log("desde famipadre");
+  console.log("desde fami padre");
   appFamiPadreSetData(Persona.tablaPers);
   Persona.close();
   e.stopImmediatePropagation();
@@ -232,6 +232,7 @@ function appFamiMadreAdd(){
 
 function handlerFamiMadreInsert_Click(e){
   if(Persona.sinErrores()){ //sin errores
+    console.log("mama nueva");
     Persona.ejecutaSQL().then(resp => {
       appFamiMadreSetData(resp.tablaPers);
       Persona.close();
@@ -244,6 +245,7 @@ function handlerFamiMadreInsert_Click(e){
 }
 
 function handlerFamiMadreAddToForm_Click(e){
+  console.log("desde fami mama");
   appFamiMadreSetData(Persona.tablaPers);
   Persona.close();
   e.stopImmediatePropagation();
@@ -260,6 +262,7 @@ function appFamiApoderaAdd(){
 
 function handlerFamiApoderaInsert_Click(e){
   if(Persona.sinErrores()){ //sin errores
+    console.log("apoderado nuevo");
     Persona.ejecutaSQL().then(resp => {
       appFamiApoderaSetData(resp.tablaPers);
       Persona.close();
@@ -272,6 +275,7 @@ function handlerFamiApoderaInsert_Click(e){
 }
 
 function handlerFamiApoderaAddToForm_Click(e){
+  console.log("desde fami apoderado");
   appFamiApoderaSetData(Persona.tablaPers);
   Persona.close();
   e.stopImmediatePropagation();

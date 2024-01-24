@@ -143,7 +143,7 @@
                           </div>
                         </td>
                         <td>
-                          <input type="hidden" id="hid_alumnoFamiPadreID" value=""/>
+                          <input type="hidden" id="hid_alumnoFamiMadreID" value=""/>
                           <div id="lbl_alumnoFamiMadre"></div>
                         </td>
                       </tr>
