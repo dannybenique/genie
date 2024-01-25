@@ -17,7 +17,7 @@
         $web = $GLOBALS["web"]; //web-config
         
         //obtener datos personales
-        $sql = "select a.*,e.nombrecorto as usermod from app_alumnos a left join app_empleados e on e.id=a.sys_user where a.estado=1 and a.id=:alumnoID and a.id_colegio=:colegioID";
+        $sql = "select a.*,fn_get_persona(pd.tipo_persona::numeric, pd.ap_paterno::text, pd.ap_materno::text, pd.nombres::text) AS pd_nombre,pd.id as pd_id,pd.nro_dui as pd_nrodni,pd.direccion as pd_direccion,fn_get_persona(md.tipo_persona::numeric, md.ap_paterno::text, md.ap_materno::text, md.nombres::text) AS md_nombre,md.id as md_id,md.nro_dui as md_nrodni,md.direccion as md_direccion,fn_get_persona(ap.tipo_persona::numeric, ap.ap_paterno::text, ap.ap_materno::text, ap.nombres::text) AS ap_nombre,ap.id as ap_id,ap.nro_dui as ap_nrodni,ap.direccion as ap_direccion,e.nombrecorto as usermod from app_alumnos a left join app_empleados e on e.id=a.sys_user left join personas pd on a.id_padre=pd.id left join personas md on a.id_madre=md.id left join personas ap on a.id_apoderado=ap.id where a.estado=1 and a.id=:alumnoID and a.id_colegio=:colegioID";
         $params = [":alumnoID"=>$personaID,"colegioID"=>$web->colegioID];
         $qry = $db->query_all($sql,$params);
         
@@ -28,7 +28,18 @@
               "colegioID" => ($rs["id_colegio"]),
               "fecha" => $rs["fecha"],
               "codigo" => $rs["codigo"],
-              "observac" => ($rs["observac"]),
+              "pdID" => $rs["pd_id"],
+              "pd_nombre" => $rs["pd_nombre"],
+              "pd_nrodni" => $rs["pd_nrodni"],
+              "pd_direccion" => $rs["pd_direccion"],
+              "mdID" => $rs["md_id"],
+              "md_nombre" => $rs["md_nombre"],
+              "md_nrodni" => $rs["md_nrodni"],
+              "md_direccion" => $rs["md_direccion"],
+              "apID" => $rs["ap_id"],
+              "ap_nombre" => $rs["ap_nombre"],
+              "ap_nrodni" => $rs["ap_nrodni"],
+              "ap_direccion" => $rs["ap_direccion"],
               "usermod" => ($rs["usermod"]),
               "sysuser" => ($rs["sys_user"]),
               "sysfecha" => ($rs["sys_fecha"])
@@ -67,53 +78,24 @@
           echo json_encode($rpta);
           break;
         case "insAlumno":
-          //ingresar datos del socio
-          $qry = $db->query_all("select codigo from bn_bancos where id=".$data->socAgenciaID.";");
-          $codagenc = ($qry) ? (reset($qry)["codigo"]) : (null);
-          $qry = $db->query_all("select right('000000'||cast(coalesce(max(right(codigo,6)::integer)+1,1) as text),6) as code from bn_socios where id_agencia=".$data->socAgenciaID.";");
-          $codsocio = ($qry) ? (reset($qry)["code"]) : (null);
-          $sql = "insert into bn_socios values(:socioID,:colegioID,:agenciaID,null,null,:codsocio,:fecha,:estado,:sysIP,:userID,now(),:observac);";
+          //ingresar datos del alumno
+          $qry = $db->query_all("select right('000000'||cast(coalesce(max(right(codigo,6)::integer)+1,1) as text),6) as code from app_alumnos where id_colegio=".$web->colegioID.";");
+          $codigo = ($qry) ? (reset($qry)["code"]) : (null);
+          $sql = "insert into app_alumnos values(:alumnoID,:codigo,:padreID,:madreID,:apoderaID,:colegioID,:fecha,:estado,:sysIP,:userID,now());";
           $params = [
-            ":socioID"=>$data->socioID,
+            ":alumnoID"=>$data->alumnoID,
+            ":codigo"=>$codigo,
+            ":padreID"=>($data->alumnoPadreID!="") ? ($data->alumnoPadreID) : (null),
+            ":madreID"=>($data->alumnoMadreID!="") ? ($data->alumnoMadreID) : (null),
+            ":apoderaID"=>($data->alumnoApoderaID!="") ? ($data->alumnoApoderaID) : (null),
             ":colegioID"=>$web->colegioID,
-            ":agenciaID"=>$data->socAgenciaID,
-            ":codsocio"=>$codagenc."-".$codsocio,
-            ":fecha"=>$data->socFecha,
-            ":estado"=>1, 
+            ":fecha"=>$data->alumnoFecha,
+            ":estado"=>1,
             ":sysIP"=>$fn->getClientIP(),
-            ":userID"=>$_SESSION['usr_ID'], 
-            ":observac"=>$data->socObservac
+            ":userID"=>$_SESSION['usr_ID']
           ];
           $qry = $db->query_all($sql,$params);
           $rs = ($qry) ? (reset($qry)) : (null);
-
-          //verificar e ingresar en SALDOS los productos obligatorios
-          $qry = $db->query_all("select * from bn_productos where id_tipo_oper=121 and obliga=1 and id_coopac=".$web->colegioID);
-          if ($qry) {
-            foreach($qry as $rs){
-              $xry = $db->query_all("select coalesce(max(id)+1,1) as code from bn_saldos;");
-              $id = reset($xry)["code"];
-              $xry = $db->query_all("select concat(to_char(now(),'YYYYMMDD'),'-',right('000000'||cast(coalesce(max(right(cod_prod,4)::integer)+1,1) as text),4)) as code from bn_saldos where left(cod_prod,8)=to_char(now(),'YYYYMMDD') and id_coopac=".$web->colegioID);
-              $cod_prod = reset($xry)["code"];
-              
-              $sql = "insert into bn_saldos values(:id,:colegioID,:socioID,:operID,:productoID,:monedaID,:codprod,:saldo,:estado,:sysIP,:userID,now());";
-              $params = [
-                ":id"=>$id,
-                ":colegioID"=>$web->colegioID,
-                ":socioID"=>$data->socioID,
-                ":operID"=>$rs["id_tipo_oper"],
-                ":productoID"=>$rs["id"],
-                ":monedaID"=>111,
-                ":codprod"=>$cod_prod,
-                ":saldo"=>0,
-                ":estado"=>1,
-                ":sysIP"=>$fn->getClientIP(),
-                ":userID"=>$_SESSION['usr_ID']
-              ];
-              $xry = $db->query_all($sql,$params);
-              $rs = ($xry) ? (reset($xry)) : (null);
-            }
-          }
 
           //respuesta
           $rpta = array("error"=>false, "insert"=>1);
@@ -155,18 +137,18 @@
           switch($data->fullQuery){
             case 0: //datos personales
               $rpta = array(
-                'tablaSocio'=> getViewSocio($data->personaID),
+                'tablaAlumno'=> getViewAlumno($data->personaID),
                 'tablaPers'=>$fc->getViewPersona($data->personaID));
               break;
             case 1: //datos personales + laborales
               $rpta = array(
-                'tablaSocio'=> getViewSocio($data->personaID),
+                'tablaAlumno'=> getViewAlumno($data->personaID),
                 'tablaPers'=>$fn->getViewPersona($data->personaID),
                 'tablaLabo'=>$fn->getAllLaborales($data->personaID));
               break;
             case 2: //datos personales + laborales + conyuge
               $rpta = array(
-                'tablaSocio'=> getViewSocio($data->personaID),
+                'tablaAlumno'=> getViewAlumno($data->personaID),
                 'tablaPers'=>$fn->getViewPersona($data->personaID),
                 'tablaLabo'=>$fn->getAllLaborales($data->personaID),
                 'tablaCony'=>$fn->getViewConyuge($data->personaID));

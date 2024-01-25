@@ -12,13 +12,13 @@
       else $ipaddress = 'UNKNOWN';
       return $ipaddress; 
     }
-    public function getValorCampo($cadSQL,$campo){
+    public function getValorCampo($cadSQL,$campo){ //devuelve el valor de UN SOLO campo segun la consulta
       $db = $GLOBALS["db"];
       $qry = $db->query_all($cadSQL);
       $rs = reset($qry);
       return $rs[$campo];
     }
-    public function getComboBox($cadSQL) {
+    public function getComboBox($cadSQL) { //devuelve una lista clave valor para llenarla en un combobox segun la consulta
       $db = $GLOBALS["db"];
       $tabla = array();
       $qry = $db->query_all($cadSQL);

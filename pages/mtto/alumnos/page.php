@@ -12,7 +12,7 @@
   <h1><i class="fa fa-gear"></i> <b>Alumnos</b></h1>
   <ol class="breadcrumb">
     <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-    <li class="active">Socios</li>
+    <li class="active">Alumnos</li>
   </ol>
 </section>
 <!-- Main content -->
@@ -26,9 +26,9 @@
               <button type="button" id="btn_DEL" class="btn btn-default btn-sm" onclick="javascript:appAlumnosBotonBorrar();"><i class="fa fa-trash"></i></button>
               <button type="button" id="btn_NEW" class="btn btn-default btn-sm" onclick="javascript:appAlumnosBotonNuevo();"><i class="fa fa-plus"></i></button>
             </div>
-            <button type="button" class="btn btn-default btn-sm" onclick="javascript:appSociosReset();"><i class="fa fa-refresh"></i></button>
+            <button type="button" class="btn btn-default btn-sm" onclick="javascript:appAlumnosReset();"><i class="fa fa-refresh"></i></button>
             <div class="btn-group">
-              <input type="text" id="txtBuscar" name="txtBuscar" class="form-control input-sm pull-right" placeholder="DNI, persona..." onkeypress="javascript:appSociosBuscar(event);" style="text-transform:uppercase;" autocomplete="off">
+              <input type="text" id="txtBuscar" name="txtBuscar" class="form-control input-sm pull-right" placeholder="DNI, persona..." onkeypress="javascript:appAlumnosBuscar(event);" style="text-transform:uppercase;" autocomplete="off">
               <span class="fa fa-search form-control-feedback"></span>
             </div>
             <span id="grdCount" style="display:inline-block;margin-left:5px;font-size:20px;font-weight:600;"></span>
@@ -94,20 +94,13 @@
                     <div class="form-group" style="margin-bottom:5px;">
                       <div class="input-group">
                         <span class="input-group-addon" style="width:85px;background:#eeeeee;"><b>Ingreso</b></span>
-                        <input id="txt_SocFechaIng" type="text" class="form-control" style="width:105px;" disabled="disabled" />
+                        <input id="txt_AlumnoFechaIng" type="text" class="form-control" style="width:105px;" disabled="disabled" />
                       </div>
                     </div>
                     <div class="form-group" style="margin-bottom:5px;">
                       <div class="input-group">
                         <span class="input-group-addon" style="width:85px;background:#eeeeee;"><b>Codigo</b></span>
-                        <input id="txt_SocCodigo" type="text" class="form-control" placeholder="Codigo..." maxlength="7" disabled="disabled" style="width:150px;"/>
-                      </div>
-                    </div>
-                    <div id="div_SocAuditoria">
-                      <strong><i class="fa fa-eye margin-r-5"></i> Auditoria</strong>
-                      <div style="font:10px flexolight;color:gray;">
-                        Fecha: <span id="lbl_SocSysFecha"></span><br>
-                        Modif. por: <span id="lbl_SocSysUser"></span>
+                        <input id="txt_AlumnoCodigo" type="text" class="form-control" placeholder="Codigo..." maxlength="7" disabled="disabled" style="width:150px;"/>
                       </div>
                     </div>
                   </div>
@@ -127,7 +120,11 @@
                         </td>
                         <td>
                           <input type="hidden" id="hid_alumnoFamiPadreID" value=""/>
-                          <div id="lbl_alumnoFamiPadre"></div>
+                          <div style="line-height:1;">
+                            <span id="lbl_alumnoFamiPadreNombre" style="font-weight:bold;font-size:15px;"></span><br/>
+                            <span id="lbl_alumnoFamiPadreDNI" style="font-size:11px;"></span><br/>
+                            <span id="lbl_alumnoFamiPadreDireccion" style="font-size:11px;"></span>
+                          </div>
                         </td>
                       </tr>
                     </table>
@@ -137,14 +134,18 @@
                       <tr>
                         <td style="width:90px;" class="no-padding">
                           <div class="pull-left" style="width:100%;">
-                            <a href="javascript:appFamiPadreAdd();" class="btn btn-app" style="margin:0;">
+                            <a href="javascript:appFamiMadreAdd();" class="btn btn-app" style="margin:0;">
                               <i class="fa fa-edit"></i> Madre
                             </a>
                           </div>
                         </td>
                         <td>
                           <input type="hidden" id="hid_alumnoFamiMadreID" value=""/>
-                          <div id="lbl_alumnoFamiMadre"></div>
+                          <div style="line-height:1;">
+                            <span id="lbl_alumnoFamiMadreNombre" style="font-weight:bold;font-size:15px;"></span><br>
+                            <span id="lbl_alumnoFamiMadreDNI" style="font-size:11px;"></span><br/>
+                            <span id="lbl_alumnoFamiMadreDireccion" style="font-size:11px;"></span>
+                          </div>
                         </td>
                       </tr>
                     </table>
@@ -154,19 +155,32 @@
                       <tr>
                         <td style="width:90px;" class="no-padding">
                           <div class="pull-left" style="width:100%;">
-                            <a class="btn btn-app" style="margin:0;">
+                            <a href="javascript:appFamiApoderaAdd();" class="btn btn-app" style="margin:0;">
                               <i class="fa fa-edit"></i> Apoderado
                             </a>
                           </div>
                         </td>
                         <td>
                           <input type="hidden" id="hid_alumnoFamiApoderaID" value=""/>
-                          <div id="lbl_alumnoFamiApodera"></div>
+                          <div style="line-height:1;">
+                            <span id="lbl_alumnoFamiApoderaNombre" style="font-weight:bold;font-size:15px;"></span><br>
+                            <span id="lbl_alumnoFamiApoderaDNI" style="font-size:11px;"></span><br/>
+                            <span id="lbl_alumnoFamiApoderaDireccion" style="font-size:11px;"></span>
+                          </div>
                         </td>
                       </tr>
                     </table>
                   </li>
                 </ul>
+                <div class="box-body">
+                  <div id="div_AlumnoAuditoria">
+                    <strong><i class="fa fa-eye margin-r-5"></i> Auditoria</strong>
+                    <div style="font:10px flexolight;color:gray;">
+                      Fecha: <span id="lbl_AlumnoSysFecha"></span><br>
+                      Modif. por: <span id="lbl_AlumnoSysUser"></span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
             <div id="datosPersonal" class="tab-pane">

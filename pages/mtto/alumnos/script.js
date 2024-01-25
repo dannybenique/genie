@@ -87,7 +87,7 @@ function appAlumnosBotonNuevo(){
 
 function handlerAlumnosInsert_Click(e){
   if(Persona.sinErrores()){ //sin errores
-    console.log("en alumnos ==> nuevos");
+    // console.log("en alumnos ==> nuevos");
     document.querySelector('#grid').style.display = 'none';
     document.querySelector('#edit').style.display = 'block';
     Persona.ejecutaSQL().then(resp => {
@@ -103,7 +103,7 @@ function handlerAlumnosInsert_Click(e){
 }
 
 function handlerAlumnosAddToForm_Click(e){
-  console.log("desde alumnos");
+  // console.log("desde alumnos");
   document.querySelector('#grid').style.display = 'none';
   document.querySelector('#edit').style.display = 'block';
   appPersonaSetData(Persona.tablaPers); //pestaña Personales
@@ -141,7 +141,7 @@ function appAlumnoView(personaID){
   $('.tab-content .tab-pane').removeClass('active');
   $('a[href="#datosAlumno"]').closest('li').addClass('active');
   $('#datosAlumno').addClass('active');
-  document.querySelector("#div_SocAuditoria").style.display = 'block';
+  document.querySelector("#div_AlumnoAuditoria").style.display = 'block';
   document.querySelector("#btnUpdate").style.display = (menu.mtto.submenu.alumnos.cmdUpdate==1)?('inline'):('none');
   document.querySelector("#btnInsert").style.display = 'none';
 
@@ -155,16 +155,30 @@ function appAlumnoView(personaID){
 }
 
 function appAlumnoSetData(data){
+  console.log(data);
   //info corta
   document.querySelector("#lbl_Codigo").innerHTML = (data.codigo);
-  document.querySelector("#lbl_Agencia").innerHTML = (data.agencia);
   //pestaña de Alumno
-  appLlenarDataEnComboBox(data.comboAgencias,"#cbo_SocAgencia",data.agenciaID);
-  document.querySelector('#txt_SocFechaIng').value = (moment(data.fecha).format("DD/MM/YYYY"));
-  document.querySelector("#txt_SocCodigo").value = (data.codigo);
-  document.querySelector("#txt_SocObserv").value = (data.observac);
-  document.querySelector("#lbl_SocSysFecha").innerHTML = (moment(data.sys_fecha).format("DD/MM/YYYY"));
-  document.querySelector("#lbl_SocSysUser").innerHTML = (data.usermod);
+  document.querySelector('#txt_AlumnoFechaIng').value = (moment(data.fecha).format("DD/MM/YYYY"));
+  document.querySelector("#txt_AlumnoCodigo").value = (data.codigo);
+
+  document.querySelector("#hid_alumnoFamiPadreID").value = data.pdID
+  document.querySelector("#lbl_alumnoFamiPadreNombre").innerHTML = data.pd_nombre
+  document.querySelector("#lbl_alumnoFamiPadreDNI").innerHTML = data.pd_nrodni
+  document.querySelector("#lbl_alumnoFamiPadreDireccion").innerHTML = data.pd_direccion
+
+  document.querySelector("#hid_alumnoFamiMadreID").value = data.mdID
+  document.querySelector("#lbl_alumnoFamiMadreNombre").innerHTML = data.md_nombre
+  document.querySelector("#lbl_alumnoFamiMadreDNI").innerHTML = data.md_nrodni
+  document.querySelector("#lbl_alumnoFamiMadreDireccion").innerHTML = data.md_direccion
+
+  document.querySelector("#hid_alumnoFamiApoderaID").value = data.apID
+  document.querySelector("#lbl_alumnoFamiApoderaNombre").innerHTML = data.ap_nombre
+  document.querySelector("#lbl_alumnoFamiApoderaDNI").innerHTML = data.ap_nrodni
+  document.querySelector("#lbl_alumnoFamiApoderaDireccion").innerHTML = data.ap_direccion
+
+  document.querySelector("#lbl_AlumnoSysFecha").innerHTML = (moment(data.sys_fecha).format("DD/MM/YYYY"));
+  document.querySelector("#lbl_AlumnoSysUser").innerHTML = (data.usermod);
 }
 
 function appAlumnoClear(){
@@ -180,15 +194,30 @@ function appAlumnoClear(){
 
   //todos los inputs sin error y panel error deshabilitado
   $('.form-group').removeClass('has-error');
-  document.querySelector("#div_SocAuditoria").style.display = 'none';
+  document.querySelector("#div_AlumnoAuditoria").style.display = 'none';
   document.querySelector("#btnInsert").style.display = (menu.mtto.submenu.alumnos.cmdInsert==1)?('inline'):('none');
   document.querySelector("#btnUpdate").style.display = 'none';
 
   appFetch(datos,rutaSQL).then(resp => {
     //pestaña de Alumno
-    document.querySelector('#txt_SocFechaIng').value = (moment(resp.fecha).format("DD/MM/YYYY"));
-    document.querySelector("#txt_SocCodigo").placeholder = ("00-000000");
-    document.querySelector("#txt_SocCodigo").value = ("");
+    document.querySelector('#txt_AlumnoFechaIng').value = (moment(resp.fecha).format("DD/MM/YYYY"));
+    document.querySelector("#txt_AlumnoCodigo").placeholder = ("00-000000");
+    document.querySelector("#txt_AlumnoCodigo").value = ("");
+    
+    document.querySelector("#hid_alumnoFamiPadreID").value = ""
+    document.querySelector("#lbl_alumnoFamiPadreNombre").innerHTML = ""
+    document.querySelector("#lbl_alumnoFamiPadreDNI").innerHTML = ""
+    document.querySelector("#lbl_alumnoFamiPadreDireccion").innerHTML = ""
+
+    document.querySelector("#hid_alumnoFamiMadreID").value = ""
+    document.querySelector("#lbl_alumnoFamiMadreNombre").innerHTML = ""
+    document.querySelector("#lbl_alumnoFamiMadreDNI").innerHTML = ""
+    document.querySelector("#lbl_alumnoFamiMadreDireccion").innerHTML = ""
+
+    document.querySelector("#hid_alumnoFamiApoderaID").value = ""
+    document.querySelector("#lbl_alumnoFamiApoderaNombre").innerHTML = ""
+    document.querySelector("#lbl_alumnoFamiApoderaDNI").innerHTML = ""
+    document.querySelector("#lbl_alumnoFamiApoderaDireccion").innerHTML = ""
   });
 }
 
@@ -202,7 +231,7 @@ function appFamiPadreAdd(){
 
 function handlerFamiPadreInsert_Click(e){
   if(Persona.sinErrores()){ //sin errores
-    console.log("padre nuevo");
+    // console.log("padre nuevo");
     Persona.ejecutaSQL().then(resp => {
       appFamiPadreSetData(resp.tablaPers);
       Persona.close();
@@ -215,7 +244,7 @@ function handlerFamiPadreInsert_Click(e){
 }
 
 function handlerFamiPadreAddToForm_Click(e){
-  console.log("desde fami padre");
+  // console.log("desde fami padre");
   appFamiPadreSetData(Persona.tablaPers);
   Persona.close();
   e.stopImmediatePropagation();
@@ -232,7 +261,7 @@ function appFamiMadreAdd(){
 
 function handlerFamiMadreInsert_Click(e){
   if(Persona.sinErrores()){ //sin errores
-    console.log("mama nueva");
+    // console.log("mama nueva");
     Persona.ejecutaSQL().then(resp => {
       appFamiMadreSetData(resp.tablaPers);
       Persona.close();
@@ -245,7 +274,7 @@ function handlerFamiMadreInsert_Click(e){
 }
 
 function handlerFamiMadreAddToForm_Click(e){
-  console.log("desde fami mama");
+  // console.log("desde fami mama");
   appFamiMadreSetData(Persona.tablaPers);
   Persona.close();
   e.stopImmediatePropagation();
@@ -262,7 +291,7 @@ function appFamiApoderaAdd(){
 
 function handlerFamiApoderaInsert_Click(e){
   if(Persona.sinErrores()){ //sin errores
-    console.log("apoderado nuevo");
+    // console.log("apoderado nuevo");
     Persona.ejecutaSQL().then(resp => {
       appFamiApoderaSetData(resp.tablaPers);
       Persona.close();
@@ -275,7 +304,7 @@ function handlerFamiApoderaInsert_Click(e){
 }
 
 function handlerFamiApoderaAddToForm_Click(e){
-  console.log("desde fami apoderado");
+  // console.log("desde fami apoderado");
   appFamiApoderaSetData(Persona.tablaPers);
   Persona.close();
   e.stopImmediatePropagation();
@@ -290,10 +319,12 @@ function appAlumnoGetDatosToDatabase(){
   if(!EsError){
     datos = {
       alumnoID : document.querySelector("#lbl_ID").innerHTML,
-      socCodigo : "",
-      socFecha : appConvertToFecha(document.querySelector("#txt_SocFechaIng").value,""),
-      socAgenciaID : document.querySelector("#cbo_SocAgencia").value,
-      socObservac : document.querySelector("#txt_SocObserv").value
+      alumnoCodigo  : "",
+      alumnoFecha   : appConvertToFecha(document.querySelector("#txt_AlumnoFechaIng").value,""),
+      alumnoPadreID : document.querySelector("#hid_alumnoFamiPadreID").value,
+      alumnoMadreID : document.querySelector("#hid_alumnoFamiMadreID").value,
+      alumnoApoderaID : document.querySelector("#hid_alumnoFamiApoderaID").value,
+      alumnoObservac : ""
     }
   }
   return datos;
@@ -301,17 +332,23 @@ function appAlumnoGetDatosToDatabase(){
 
 function appFamiPadreSetData(data){
   document.querySelector("#hid_alumnoFamiPadreID").value = data.ID
-  document.querySelector("#lbl_alumnoFamiPadre").innerHTML = data.ap_paterno + " " + data.ap_materno + ", " + data.nombres + "<br/>" + data.direccion
+  document.querySelector("#lbl_alumnoFamiPadreNombre").innerHTML = data.ap_paterno + " " + data.ap_materno + ", " + data.nombres;
+  document.querySelector("#lbl_alumnoFamiPadreDNI").innerHTML = "DNI: " + data.nroDUI
+  document.querySelector("#lbl_alumnoFamiPadreDireccion").innerHTML = "Direccion: " + data.direccion
 }
 
 function appFamiMadreSetData(data){
   document.querySelector("#hid_alumnoFamiMadreID").value = data.ID
-  document.querySelector("#lbl_alumnoFamiMadre").innerHTML = data.ap_paterno + " " + data.ap_materno + ", " + data.nombres + "<br/>" + data.direccion
+  document.querySelector("#lbl_alumnoFamiMadreNombre").innerHTML = data.ap_paterno + " " + data.ap_materno + ", " + data.nombres;
+  document.querySelector("#lbl_alumnoFamiMadreDNI").innerHTML = "DNI: " + data.nroDUI
+  document.querySelector("#lbl_alumnoFamiMadreDireccion").innerHTML = "Direccion: " + data.direccion
 }
 
 function appFamiApoderaSetData(data){
   document.querySelector("#hid_alumnoFamiApoderaID").value = data.ID
-  document.querySelector("#lbl_alumnoFamiApodera").innerHTML = data.ap_paterno + " " + data.ap_materno + ", " + data.nombres + "<br/>" + data.direccion
+  document.querySelector("#lbl_alumnoFamiApoderaNombre").innerHTML = data.ap_paterno + " " + data.ap_materno + ", " + data.nombres;
+  document.querySelector("#lbl_alumnoFamiApoderaDNI").innerHTML = "DNI: " + data.nroDUI
+  document.querySelector("#lbl_alumnoFamiApoderaDireccion").innerHTML = "Direccion: " + data.direccion
 }
 
 function appPersonaSetData(data){
