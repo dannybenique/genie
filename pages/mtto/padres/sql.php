@@ -48,25 +48,23 @@
         return $tabla; 
       }
       switch ($data->TipoQuery) {
-        case "selAlumnos":
+        case "selPadres":
           $tabla = array();
           $buscar = strtoupper($data->buscar);
-          $whr = " and id_colegio=".$web->colegioID." and (alumno LIKE :buscar or nro_dui LIKE :buscar) ";
+          $whr = "id_colegio=".$web->colegioID." and (persona LIKE :buscar or nro_dui LIKE :buscar) ";
           $params = [":buscar"=>'%'.$buscar.'%'];
-          $sql = "select count(*) as cuenta from vw_alumnos where estado in(0,1) ".$whr;
+          $sql = "select count(*) as cuenta from vw_padres where ".$whr;
           $qryCount = $db->query_all($sql,$params);
           $rsCount = ($qryCount) ? reset($qryCount)["cuenta"] : (0);
 
-          $sql = "select * from vw_alumnos where estado in(0,1) ".$whr." order by alumno limit 25 offset 0;";
+          $sql = "select * from vw_padres where ".$whr." order by persona limit 25 offset 0;";
           $qry = $db->query_all($sql,$params);
           if($qry) {
             foreach($qry as $rs){
               $tabla[] = array(
                 "ID" => $rs["id"],
-                "codigo" => $rs["codigo"],
-                "fecha" => $rs["fecha"],
                 "nro_dui"=> str_replace($buscar, '<span style="background:yellow;">'.$buscar.'</span>', $rs["nro_dui"]),
-                "alumno" => str_ireplace($buscar, '<span style="background:yellow;">'.$buscar.'</span>', $rs["alumno"]),
+                "padre" => str_ireplace($buscar, '<span style="background:yellow;">'.$buscar.'</span>', $rs["persona"]),
                 "url" => $rs["urlfoto"],
                 "direccion" => ($rs["direccion"])
               );
@@ -157,34 +155,6 @@
           }
           echo json_encode($rpta);
           break;
-        case "VerifyAlumno":
-          $tablaPers = ""; //almacena los datos de la persona
-          $persona = false; //indica que existe en personas
-          $activo = false; //indica que encontro en tabla de alumnos
-          
-          //verificar en Personas
-          $params = [":nrodni"=>$data->nroDNI];
-          $qry = $db->query_all("select id from personas where (nro_dui=:nrodni);",$params);
-          if($qry){
-            $rs = reset($qry);
-            $tablaPers = $fn->getViewPersona($rs["id"]);
-            $persona = true;
-            
-            //verificar en Alumnos
-            $sql = "select id from app_alumnos where id_colegio=:colegioID and id=:alumnoID;";
-            $paramAlumno = [":colegioID"=>$web->colegioID,":alumnoID"=>$rs["id"]];
-            $qryAlumno = $db->query_all($sql,$paramAlumno);
-            $activo = ($qryAlumno) ? true : false;
-          }
-
-          //respuesta
-          $rpta = array(
-            "tablaPers" => $tablaPers,
-            "persona" => $persona,
-            "activo" => $activo,
-            "mensajeNOadd" => "ya es ALUMNO ACTIVO...");
-          echo json_encode($rpta);
-          break;
         case "VerifyPadre":
           $tablaPers = ""; //almacena los datos de la persona
           $persona = false; //indica que existe en personas
@@ -196,10 +166,12 @@
           if($qry){
             $rs = reset($qry);
             $tablaPers = $fn->getViewPersona($rs["id"]);
+            $tablaPers["tablaLabo"] = $fn->getAllLaborales($rs["id"]);
+            $tablaPers["tablaCony"] = $fn->getViewConyuge($rs["id"]);
             $persona = true;
             
-            //verificar en Alumnos
-            $sql = "select id_padre from app_alumnos where id_colegio=:colegioID and id_padre=:padreID;";
+            //verificar en padres
+            $sql = "select id from app_padres where id_colegio=:colegioID and id=:padreID;";
             $paramAlumno = [":colegioID"=>$web->colegioID,":padreID"=>$rs["id"]];
             $qryAlumno = $db->query_all($sql,$paramAlumno);
             $activo = ($qryAlumno) ? true : false;
@@ -211,74 +183,6 @@
             "persona" => $persona,
             "activo" => $activo,
             "mensajeNOadd" => "ya es PADRE ACTIVO...");
-          echo json_encode($rpta);
-          break;
-        case "VerifyMadre":
-          $tablaPers = ""; //almacena los datos de la persona
-          $persona = false; //indica que existe en personas
-          $activo = false; //indica que encontro en tabla de alumnos
-          
-          //verificar en Personas
-          $params = [":nrodni"=>$data->nroDNI];
-          $qry = $db->query_all("select id from personas where (nro_dui=:nrodni);",$params);
-          if($qry){
-            $rs = reset($qry);
-            $tablaPers = $fn->getViewPersona($rs["id"]);
-            $persona = true;
-            
-            //verificar en Alumnos
-            $sql = "select id_madre from app_alumnos where id_colegio=:colegioID and id_madre=:madreID;";
-            $paramAlumno = [":colegioID"=>$web->colegioID,":madreID"=>$rs["id"]];
-            $qryAlumno = $db->query_all($sql,$paramAlumno);
-            $activo = ($qryAlumno) ? true : false;
-          }
-
-          //respuesta
-          $rpta = array(
-            "tablaPers" => $tablaPers,
-            "persona" => $persona,
-            "activo" => $activo,
-            "mensajeNOadd" => "ya es MADRE ACTIVO...");
-          echo json_encode($rpta);
-          break;
-        case "VerifyApodera":
-          $tablaPers = ""; //almacena los datos de la persona
-          $persona = false; //indica que existe en personas
-          $activo = false; //indica que encontro en tabla de alumnos
-          
-          //verificar en Personas
-          $params = [":nrodni"=>$data->nroDNI];
-          $qry = $db->query_all("select id from personas where (nro_dui=:nrodni);",$params);
-          if($qry){
-            $rs = reset($qry);
-            $tablaPers = $fn->getViewPersona($rs["id"]);
-            $persona = true;
-            
-            //verificar en Alumnos
-            $sql = "select id_apoderado from app_alumnos where id_colegio=:colegioID and id_apoderado=:apoderaID;";
-            $paramAlumno = [":colegioID"=>$web->colegioID,":apoderaID"=>$rs["id"]];
-            $qryAlumno = $db->query_all($sql,$paramAlumno);
-            $activo = ($qryAlumno) ? true : false;
-          }
-
-          //respuesta
-          $rpta = array(
-            "tablaPers" => $tablaPers,
-            "persona" => $persona,
-            "activo" => $activo,
-            "mensajeNOadd" => "ya es APODERADO ACTIVO...");
-          echo json_encode($rpta);
-          break;
-        case "startAlumno":
-          //obtener fecha actual de operacion
-          $qry = $db->query_all("select cast(now() as date) as fecha");
-          if($qry){ $rs = reset($qry); }
-          $fechaHoy = $rs["fecha"];
-          
-          //respuesta
-          $rpta = array(
-            "fecha" => $fn->getFechaActualDB(),
-            "colegio" => $web->colegioID);
           echo json_encode($rpta);
           break;
       }

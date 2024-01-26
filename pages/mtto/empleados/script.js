@@ -107,39 +107,46 @@ function appWorkersBotonUpdate(){
 
 function appWorkerBotonNuevo(){
   Persona.openBuscar('VerifyWorker',rutaSQL,true,true,false);
-  $('#btn_modPersInsert').on('click',function(e) {
-    if(Persona.sinErrores()){ //sin errores
-      Persona.ejecutaSQL().then(resp => {
-        appPersonaSetData(resp.tablaPers);
-        appFetch({TipoQuery : 'startWorker'},rutaSQL).then(resp => {
-          appWorkerClear(resp);
-          appUserClear(resp);
-          document.querySelector('#grid').style.display = 'none';
-          document.querySelector('#edit').style.display = 'block';
-          Persona.close();
-        });
-      });
-    } else {
-      alert("!!!Faltan llenar Datos!!!");
-    }
-    e.stopImmediatePropagation();
-    $('#btn_modPersInsert').off('click');
-  });
-  $('#btn_modPersAddToForm').on('click',function(e) {
-    appPersonaSetData(Persona.tablaPers); //pestaña Personales
-    appFetch({TipoQuery : 'startWorker'},rutaSQL).then(resp => {
-      appWorkerClear(resp);
-      appUserClear(resp);
-      document.querySelector('#grid').style.display = 'none';
-      document.querySelector('#edit').style.display = 'block';
-      Persona.close();
-    });
-    
-    e.stopImmediatePropagation();
-    $('#btn_modPersAddToForm').off('click');
-  });
+  $('#btn_modPersInsert').off('click');
+
+  $('#btn_modPersInsert').on('click',handlerWorkersInsert_Click);
+  $('#btn_modPersAddToForm').on('click',handlerWorkersAddToForm_Click);
 }
 
+function handlerWorkersInsert_Click(e){
+  if(Persona.sinErrores()){ //sin errores
+    Persona.ejecutaSQL().then(resp => {
+      appPersonaSetData(resp.tablaPers);
+      appFetch({TipoQuery : 'startWorker'},rutaSQL).then(resp => {
+        appWorkerClear(resp);
+        appUserClear(resp.comboRoles);
+        document.querySelector('#grid').style.display = 'none';
+        document.querySelector('#edit').style.display = 'block';
+        Persona.close();
+      });
+    });
+  } else {
+    alert("!!!Faltan llenar Datos!!!");
+  }
+  e.stopImmediatePropagation();
+  $('#btn_modPersInsert').off('click');
+}
+
+function handlerWorkersAddToForm_Click(e){
+  console.log(Persona.tablaPers);
+  appPersonaSetData(Persona.tablaPers); //pestaña Personales
+  appUserClear(Persona.tablaPers.comboRoles);
+  appFetch({TipoQuery : 'startWorker'},rutaSQL).then(resp => {
+    appWorkerClear(resp);
+    
+    document.querySelector('#grid').style.display = 'none';
+    document.querySelector('#edit').style.display = 'block';
+    Persona.close();
+  });
+  
+  e.stopImmediatePropagation();
+  $('#btn_modPersAddToForm').off('click');
+}
 function appWorkersBotonBorrar(){
   let arr = Array.from(document.querySelectorAll('[name="chk_Borrar"]:checked')).map(function(obj){return obj.attributes[2].nodeValue});
   if(arr.length>0){
@@ -328,12 +335,12 @@ function appUserSetData(data){
     appUserEsUsuario();
   } else { //no tiene usuario
     zMnuEmpleado = null;
-    appUserClear(data);
+    appUserClear(data.comboRoles);
   }
 }
 
 function appUserClear(data){
-  appLlenarDataEnComboBox(data.comboRoles,"#cbo_UserRol",0);
+  appLlenarDataEnComboBox(data,"#cbo_UserRol",0);
   document.querySelector("#chk_UserEsUsuario").checked = false;
   document.querySelector('#txt_UserLogin').value = ("");
   document.querySelector('#txt_UserPassword').value = ("");

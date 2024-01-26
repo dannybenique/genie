@@ -60,8 +60,8 @@
                   case true: // YA existe en la lista
                     document.querySelector('#btn_modPersAddToForm').style.display = ((Persona.addRepLista)?('inline'):('none'));
                     document.querySelector('#lbl_modPersPersona').innerHTML = ((Persona.addRepLista)
-                    ?(resp.tablaPers.persona+" &raquo; "+resp.tablaPers.direccion)
-                    :("La "+((resp.tablaPers.tipoPersona==1)?('persona '):('entidad '))+"<b>"+(resp.tablaPers.persona)+"</b> identificada con <b>"+(resp.tablaPers.tipoDUI)+'-'+(resp.tablaPers.nroDUI)+"</b> "+(resp.mensajeNOadd)));
+                      ?(resp.tablaPers.persona+" &raquo; "+resp.tablaPers.direccion)
+                      :("La "+((resp.tablaPers.tipoPersona==1)?('persona '):('entidad '))+"<b>"+(resp.tablaPers.persona)+"</b> identificada con <b>"+(resp.tablaPers.tipoDUI)+'-'+(resp.tablaPers.nroDUI)+"</b> "+(resp.mensajeNOadd)));
                     break;
                   case false: // NO existe en la lista
                     document.querySelector('#btn_modPersAddToForm').style.display = ((Persona.addNewLista)?('inline'):('none'));

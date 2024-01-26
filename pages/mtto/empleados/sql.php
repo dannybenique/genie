@@ -241,6 +241,10 @@
           if($qry){
             $rs = reset($qry);
             $tablaPers = $fn->getViewPersona($rs["id"]);
+            $tablaPers["comboCargos"] = $fn->getComboBox("select id,nombre from sis_tipos where id_padre=7 order by id;");
+            $tablaPers["comboRoles"] = $fn->getComboBox("select id,nombre from sis_tipos where id_padre=2 order by id;");
+            $tablaPers["fechaActual"] = $fn->getFechaActualDB();
+            $tablaPers["colegioID"] = $web->colegioID;
             $persona = true;
             //verificar en Empleados
             $sql = "select id from app_empleados where id_colegio=:colegioID and id=:id;";
@@ -255,10 +259,11 @@
             "persona" => $persona,
             "activo" => $activo,
             "mensajeNOadd" => "ya es EMPLEADO ACTIVO...",
-            "comboCargos" => $fn->getComboBox("select id,nombre from sis_tipos where id_padre=7 order by id;"),
-            "comboRoles" => $fn->getComboBox("select id,nombre from sis_tipos where id_padre=2 order by id;"),
-            "fecha" => $fn->getFechaActualDB(),
-            "colegioID" => $web->colegioID);
+            // "comboCargos" => $fn->getComboBox("select id,nombre from sis_tipos where id_padre=7 order by id;"),
+            // "comboRoles" => $fn->getComboBox("select id,nombre from sis_tipos where id_padre=2 order by id;"),
+            // "fecha" => $fn->getFechaActualDB(),
+            // "colegioID" => $web->colegioID
+          );
           echo json_encode($rpta);
           break;
         case "startWorker":

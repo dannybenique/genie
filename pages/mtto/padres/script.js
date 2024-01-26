@@ -1,22 +1,21 @@
-const rutaSQL = "pages/mtto/alumnos/sql.php";
+const rutaSQL = "pages/mtto/padres/sql.php";
 var menu = "";
 
 //=========================funciones para Personas============================
-function appAlumnosGrid(){
+function appPadresGrid(){
   document.querySelector('#grdDatos').innerHTML = ('<tr><td colspan="8"><div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></td></tr>');
   let txtBuscar = document.querySelector("#txtBuscar").value.toUpperCase();
-  let datos = { TipoQuery: 'selAlumnos', buscar: txtBuscar };
+  let datos = { TipoQuery: 'selPadres', buscar: txtBuscar };
 
   appFetch(datos,rutaSQL).then(resp => {
-    let disabledDelete = (menu.mtto.submenu.alumnos.cmdDelete===1) ? "" : "disabled";
-    document.querySelector("#chk_All").disabled = (menu.mtto.submenu.alumnos.cmdDelete===1) ? false : true;
+    let disabledDelete = (menu.mtto.submenu.padres.cmdDelete===1) ? "" : "disabled";
+    document.querySelector("#chk_All").disabled = (menu.mtto.submenu.padres.cmdDelete===1) ? false : true;
     if(resp.tabla.length>0){
       let fila = "";
       resp.tabla.forEach((valor,key)=>{
         fila += '<tr>'+
                 '<td><input type="checkbox" name="chk_Borrar" value="'+(valor.ID)+'" '+disabledDelete+'/></td>'+
-                '<td>'+(valor.codigo)+'</td>'+
-                '<td>'+(moment(valor.fecha).format("DD/MM/YYYY"))+'</td>'+
+                '<td><i class="fa fa-paperclip" title="Auditoria"></i></td>'+
                 '<td>'+(valor.nro_dui)+'</td>'+
                 '<td><a href="javascript:appAlumnoView('+(valor.ID)+');" title="'+(valor.ID)+'">'+(valor.alumno)+'</a></td>'+
                 '<td>'+(valor.direccion)+'</td>'+
@@ -31,68 +30,68 @@ function appAlumnosGrid(){
   });
 }
 
-function appAlumnosReset(){
+function appPadresReset(){
   appFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php").then(resp => {
     menu = JSON.parse(resp.menu);
-    document.querySelector("#btn_DEL").style.display = (menu.mtto.submenu.alumnos.cmdDelete==1)?('inline'):('none');
-    document.querySelector("#btn_NEW").style.display = (menu.mtto.submenu.alumnos.cmdInsert==1)?('inline'):('none');
+    document.querySelector("#btn_DEL").style.display = (menu.mtto.submenu.padres.cmdDelete==1)?('inline'):('none');
+    document.querySelector("#btn_NEW").style.display = (menu.mtto.submenu.padres.cmdInsert==1)?('inline'):('none');
 
     document.querySelector("#txtBuscar").value = ("");
     document.querySelector("#grdDatos").innerHTML = ("");
     document.querySelector("#div_PersAuditoria").style.display = ((resp.rolID==101)?('block'):('none'));
-    appAlumnosGrid();
+    appPadresGrid();
   });
 }
 
-function appAlumnosBuscar(e){
+function appPadresBuscar(e){
   let code = (e.keyCode ? e.keyCode : e.which);
-  if(code == 13) { appAlumnosGrid(); }
+  if(code == 13) { appPadresGrid(); }
 }
 
-function appAlumnosBotonCancel(){
-  appAlumnosGrid();
+function appPadresBotonCancel(){
+  appPadresGrid();
   document.querySelector("#grid").style.display = 'block';
   document.querySelector("#edit").style.display = 'none';
 }
 
-function appAlumnosBotonInsert(){
+function appPadresBotonInsert(){
   let datos = appAlumnoGetDatosToDatabase();
   
   if(datos!=""){
-    datos.TipoQuery = "insAlumno";
+    datos.TipoQuery = "insPadre";
     appFetch(datos,rutaSQL).then(resp => {
-      appAlumnosBotonCancel();
+      appPadresBotonCancel();
     });
   }
 }
 
-function appAlumnosBotonUpdate(){
+function appPadresBotonUpdate(){
   let datos = appAlumnoGetDatosToDatabase();
 
   if(datos!=""){
-    datos.TipoQuery = "updAlumno";
+    datos.TipoQuery = "updPadre";
     appFetch(datos,rutaSQL).then(resp => {
-      appAlumnosBotonCancel();
+      appPadresBotonCancel();
     });
   }
 }
 
-function appAlumnosBotonNuevo(){
-  Persona.openBuscar('VerifyAlumno',rutaSQL,true,true,false);
+function appPadresBotonNuevo(){
+  Persona.openBuscar('VerifyPadre',rutaSQL,true,true,false);
   $('#btn_modPersInsert').off('click');
   
-  $('#btn_modPersInsert').on('click',handlerAlumnosInsert_Click);
-  $('#btn_modPersAddToForm').on('click',handlerAlumnosAddToForm_Click);
+  $('#btn_modPersInsert').on('click',handlerPadresInsert_Click);
+  $('#btn_modPersAddToForm').on('click',handlerPadresAddToForm_Click);
 }
 
-function handlerAlumnosInsert_Click(e){
+function handlerPadresInsert_Click(e){
   if(Persona.sinErrores()){ //sin errores
-    // console.log("en alumnos ==> nuevos");
     document.querySelector('#grid').style.display = 'none';
     document.querySelector('#edit').style.display = 'block';
     Persona.ejecutaSQL().then(resp => {
       appPersonaSetData(resp.tablaPers);
-      appAlumnoClear();
+      appLaboralClear();
+      appConyugeClear();
       Persona.close();
     });
   } else {
@@ -102,25 +101,25 @@ function handlerAlumnosInsert_Click(e){
   $('#btn_modPersInsert').off('click');
 }
 
-function handlerAlumnosAddToForm_Click(e){
-  // console.log("desde alumnos");
+function handlerPadresAddToForm_Click(e){
   document.querySelector('#grid').style.display = 'none';
   document.querySelector('#edit').style.display = 'block';
   appPersonaSetData(Persona.tablaPers); //pestaña Personales
-  appAlumnoClear();
+  appLaboralSetData(Persona.tablaPers.tablaLabo); //pestaña laborales
+  appConyugeSetData(Persona.tablaPers.tablaCony); //pestaña de Conyuge
   Persona.close();
   e.stopImmediatePropagation();
   $('#btn_modPersAddToForm').off('click');
 }
 
-function appAlumnosBotonBorrar(){
+function appPadresBotonBorrar(){
   let arr = Array.from(document.querySelectorAll('[name="chk_Borrar"]:checked')).map(function(obj){return obj.attributes[2].nodeValue});
   if(arr.length>0){
     if(confirm("¿Esta seguro de continuar?")) {
-      appFetch({ TipoQuery:'delAlumnos', arr:arr },rutaSQL).then(resp => {
+      appFetch({ TipoQuery:'delPadres', arr:arr },rutaSQL).then(resp => {
         if (resp.error == false) { //sin errores
           console.log(resp);
-          appAlumnosBotonCancel();
+          appPadresBotonCancel();
         }
       });
     }
@@ -129,9 +128,9 @@ function appAlumnosBotonBorrar(){
   }
 }
 
-function appAlumnoView(personaID){
+function appPadreView(personaID){
   let datos = {
-    TipoQuery : 'viewAlumno',
+    TipoQuery : 'viewPadre',
     personaID : personaID,
     fullQuery : 2
   };
@@ -146,7 +145,7 @@ function appAlumnoView(personaID){
   document.querySelector("#btnInsert").style.display = 'none';
 
   appFetch(datos,rutaSQL).then(resp => {
-    appAlumnoSetData(resp.tablaAlumno);  //pestaña Alumno
+    appPadreSetData(resp.tablaAlumno);  //pestaña Alumno
     appPersonaSetData(resp.tablaPers); //pestaña Personales
     
     document.querySelector('#grid').style.display = 'none';
@@ -154,163 +153,26 @@ function appAlumnoView(personaID){
   });
 }
 
-function appAlumnoSetData(data){
+function appPadreSetData(data){
   //info corta
   document.querySelector("#lbl_Codigo").innerHTML = (data.codigo);
-  //pestaña de Alumno
-  document.querySelector('#txt_AlumnoFechaIng').value = (moment(data.fecha).format("DD/MM/YYYY"));
-  document.querySelector("#txt_AlumnoCodigo").value = (data.codigo);
-
-  document.querySelector("#hid_alumnoFamiPadreID").value = data.pdID
-  document.querySelector("#lbl_alumnoFamiPadreNombre").innerHTML = data.pd_nombre
-  document.querySelector("#lbl_alumnoFamiPadreDNI").innerHTML = data.pd_nrodni
-  document.querySelector("#lbl_alumnoFamiPadreDireccion").innerHTML = data.pd_direccion
-
-  document.querySelector("#hid_alumnoFamiMadreID").value = data.mdID
-  document.querySelector("#lbl_alumnoFamiMadreNombre").innerHTML = data.md_nombre
-  document.querySelector("#lbl_alumnoFamiMadreDNI").innerHTML = data.md_nrodni
-  document.querySelector("#lbl_alumnoFamiMadreDireccion").innerHTML = data.md_direccion
-
-  document.querySelector("#hid_alumnoFamiApoderaID").value = data.apID
-  document.querySelector("#lbl_alumnoFamiApoderaNombre").innerHTML = data.ap_nombre
-  document.querySelector("#lbl_alumnoFamiApoderaDNI").innerHTML = data.ap_nrodni
-  document.querySelector("#lbl_alumnoFamiApoderaDireccion").innerHTML = data.ap_direccion
-
-  document.querySelector("#lbl_AlumnoSysFecha").innerHTML = (moment(data.sys_fecha).format("DD/MM/YYYY"));
-  document.querySelector("#lbl_AlumnoSysUser").innerHTML = (data.usermod);
 }
 
-function appAlumnoClear(){
-  let datos = {
-    TipoQuery : 'startAlumno'
-  }
-
+function appPadreClear(){
   //tabs default en primer tab
   $('.nav-tabs li').removeClass('active');
   $('.tab-content .tab-pane').removeClass('active');
-  $('a[href="#datosAlumno"]').closest('li').addClass('active');
-  $('#datosAlumno').addClass('active');
+  $('a[href="#datosPersonal"]').closest('li').addClass('active');
+  $('#datosPersonal').addClass('active');
 
   //todos los inputs sin error y panel error deshabilitado
   $('.form-group').removeClass('has-error');
-  document.querySelector("#div_AlumnoAuditoria").style.display = 'none';
-  document.querySelector("#btnInsert").style.display = (menu.mtto.submenu.alumnos.cmdInsert==1)?('inline'):('none');
+  //document.querySelector("#div_AlumnoAuditoria").style.display = 'none';
+  document.querySelector("#btnInsert").style.display = (menu.mtto.submenu.padres.cmdInsert==1)?('inline'):('none');
   document.querySelector("#btnUpdate").style.display = 'none';
-
-  appFetch(datos,rutaSQL).then(resp => {
-    //pestaña de Alumno
-    document.querySelector('#txt_AlumnoFechaIng').value = (moment(resp.fecha).format("DD/MM/YYYY"));
-    document.querySelector("#txt_AlumnoCodigo").placeholder = ("00-000000");
-    document.querySelector("#txt_AlumnoCodigo").value = ("");
-    
-    document.querySelector("#hid_alumnoFamiPadreID").value = ""
-    document.querySelector("#lbl_alumnoFamiPadreNombre").innerHTML = ""
-    document.querySelector("#lbl_alumnoFamiPadreDNI").innerHTML = ""
-    document.querySelector("#lbl_alumnoFamiPadreDireccion").innerHTML = ""
-
-    document.querySelector("#hid_alumnoFamiMadreID").value = ""
-    document.querySelector("#lbl_alumnoFamiMadreNombre").innerHTML = ""
-    document.querySelector("#lbl_alumnoFamiMadreDNI").innerHTML = ""
-    document.querySelector("#lbl_alumnoFamiMadreDireccion").innerHTML = ""
-
-    document.querySelector("#hid_alumnoFamiApoderaID").value = ""
-    document.querySelector("#lbl_alumnoFamiApoderaNombre").innerHTML = ""
-    document.querySelector("#lbl_alumnoFamiApoderaDNI").innerHTML = ""
-    document.querySelector("#lbl_alumnoFamiApoderaDireccion").innerHTML = ""
-  });
 }
 
-function appFamiPadreAdd(){
-  Persona.openBuscar('VerifyPadre',rutaSQL,true,true,false);
-  $('#btn_modPersInsert').off('click');
-
-  $('#btn_modPersInsert').on('click',handlerFamiPadreInsert_Click);
-  $('#btn_modPersAddToForm').on('click',handlerFamiPadreAddToForm_Click);
-}
-
-function handlerFamiPadreInsert_Click(e){
-  if(Persona.sinErrores()){ //sin errores
-    // console.log("padre nuevo");
-    Persona.ejecutaSQL().then(resp => {
-      appFamiPadreSetData(resp.tablaPers);
-      Persona.close();
-    });
-  } else {
-    alert("!!!Faltan llenar Datos!!!");
-  }
-  e.stopImmediatePropagation();
-  $('#btn_modPersInsert').off('click');
-}
-
-function handlerFamiPadreAddToForm_Click(e){
-  // console.log("desde fami padre");
-  appFamiPadreSetData(Persona.tablaPers);
-  Persona.close();
-  e.stopImmediatePropagation();
-  $('#btn_modPersAddToForm').off('click');
-}
-
-function appFamiMadreAdd(){
-  Persona.openBuscar('VerifyMadre',rutaSQL,true,true,false);
-  $('#btn_modPersInsert').off('click');
-
-  $('#btn_modPersInsert').on('click',handlerFamiMadreInsert_Click);
-  $('#btn_modPersAddToForm').on('click',handlerFamiMadreAddToForm_Click);
-}
-
-function handlerFamiMadreInsert_Click(e){
-  if(Persona.sinErrores()){ //sin errores
-    // console.log("mama nueva");
-    Persona.ejecutaSQL().then(resp => {
-      appFamiMadreSetData(resp.tablaPers);
-      Persona.close();
-    });
-  } else {
-    alert("!!!Faltan llenar Datos!!!");
-  }
-  e.stopImmediatePropagation();
-  $('#btn_modPersInsert').off('click');
-}
-
-function handlerFamiMadreAddToForm_Click(e){
-  // console.log("desde fami mama");
-  appFamiMadreSetData(Persona.tablaPers);
-  Persona.close();
-  e.stopImmediatePropagation();
-  $('#btn_modPersAddToForm').off('click');
-}
-
-function appFamiApoderaAdd(){
-  Persona.openBuscar('VerifyApodera',rutaSQL,true,true,false);
-  $('#btn_modPersInsert').off('click');
-
-  $('#btn_modPersInsert').on('click',handlerFamiApoderaInsert_Click);
-  $('#btn_modPersAddToForm').on('click',handlerFamiApoderaAddToForm_Click);
-}
-
-function handlerFamiApoderaInsert_Click(e){
-  if(Persona.sinErrores()){ //sin errores
-    // console.log("apoderado nuevo");
-    Persona.ejecutaSQL().then(resp => {
-      appFamiApoderaSetData(resp.tablaPers);
-      Persona.close();
-    });
-  } else {
-    alert("!!!Faltan llenar Datos!!!");
-  }
-  e.stopImmediatePropagation();
-  $('#btn_modPersInsert').off('click');
-}
-
-function handlerFamiApoderaAddToForm_Click(e){
-  // console.log("desde fami apoderado");
-  appFamiApoderaSetData(Persona.tablaPers);
-  Persona.close();
-  e.stopImmediatePropagation();
-  $('#btn_modPersAddToForm').off('click');
-}
-
-function appAlumnoGetDatosToDatabase(){
+function appPadreGetDatosToDatabase(){
   let datos = "";
   let EsError = false;
   $('.form-group').removeClass('has-error');
@@ -327,27 +189,6 @@ function appAlumnoGetDatosToDatabase(){
     }
   }
   return datos;
-}
-
-function appFamiPadreSetData(data){
-  document.querySelector("#hid_alumnoFamiPadreID").value = data.ID
-  document.querySelector("#lbl_alumnoFamiPadreNombre").innerHTML = data.ap_paterno + " " + data.ap_materno + ", " + data.nombres;
-  document.querySelector("#lbl_alumnoFamiPadreDNI").innerHTML = "DNI: " + data.nroDUI
-  document.querySelector("#lbl_alumnoFamiPadreDireccion").innerHTML = "Direccion: " + data.direccion
-}
-
-function appFamiMadreSetData(data){
-  document.querySelector("#hid_alumnoFamiMadreID").value = data.ID
-  document.querySelector("#lbl_alumnoFamiMadreNombre").innerHTML = data.ap_paterno + " " + data.ap_materno + ", " + data.nombres;
-  document.querySelector("#lbl_alumnoFamiMadreDNI").innerHTML = "DNI: " + data.nroDUI
-  document.querySelector("#lbl_alumnoFamiMadreDireccion").innerHTML = "Direccion: " + data.direccion
-}
-
-function appFamiApoderaSetData(data){
-  document.querySelector("#hid_alumnoFamiApoderaID").value = data.ID
-  document.querySelector("#lbl_alumnoFamiApoderaNombre").innerHTML = data.ap_paterno + " " + data.ap_materno + ", " + data.nombres;
-  document.querySelector("#lbl_alumnoFamiApoderaDNI").innerHTML = "DNI: " + data.nroDUI
-  document.querySelector("#lbl_alumnoFamiApoderaDireccion").innerHTML = "Direccion: " + data.direccion
 }
 
 function appPersonaSetData(data){
@@ -420,6 +261,172 @@ function appPersonaEditar(){
     e.stopImmediatePropagation();
     $('#btn_modPersUpdate').off('click');
   });
+}
+
+//datos laboral
+function appLaboralSetData(data){
+  if(data.length>0){
+    let fila = "";
+    data.forEach((valor,key)=>{
+      fila += '<tr>';
+      fila += '<td><a href="javascript:appLaboralDelete('+(valor.ID)+');"><i class="fa fa-trash" style="color:#D73925;"></i></a></td>';
+      fila += '<td>'+((valor.condicion==1)?("Dependiente"):("Independiente"))+'</td>';
+      fila += '<td>'+(valor.ruc)+'</td>';
+      fila += '<td><a href="javascript:appLaboralEditar('+(valor.ID)+');" title="'+(valor.ID)+'">'+(valor.empresa)+'</a></td>';
+      fila += '<td>'+(valor.cargo)+'</td>';
+      fila += '<td style="text-align:right;">'+(appFormatMoney(valor.ingreso,2))+'</td>';
+      fila += '</tr>';
+    });
+    $('#grdLaboDatosBody').html(fila);
+  } else {
+    $('#grdLaboDatosBody').html('');
+  }
+}
+
+function appLaboralClear(){
+  document.querySelector("#grdLaboDatosBody").innerHTML = '';
+  document.querySelector("#div_LaboEdit").style.display = 'none';
+  document.querySelector("#btn_LaboDelete").style.display = 'none';
+  document.querySelector("#btn_LaboUpdate").style.display = 'none';
+  document.querySelector("#btn_LaboPermiso").style.display = 'none';
+  document.querySelector("#btn_LaboInsert").style.display = 'inline';
+}
+
+function appLaboralNuevo(){
+  Laboral.nuevo(document.querySelector('#lbl_ID').innerHTML);
+  $('#btn_modLaboInsert').on('click',function(e) {
+    if(Laboral.sinErrores()){
+      Laboral.ejecutaSQL().then(resp => {
+        appLaboralSetData(resp.tablaLabo);
+        Laboral.close();
+      });
+    } else {
+      alert("!!!Faltan llenar Datos!!!");
+    }
+    e.stopImmediatePropagation();
+    $('#btn_modLaboInsert').off('click');
+  });
+}
+
+function appLaboralEditar(laboralID){
+  Laboral.editar(laboralID);
+  $('#btn_modLaboUpdate').on('click',function(e) {
+    if(Laboral.sinErrores()){ 
+      Laboral.ejecutaSQL().then(resp => {
+        appLaboralSetData(resp.tablaLabo);
+        Laboral.close();
+      });
+    } else {
+      alert("!!!Faltan llenar Datos!!!");
+    }
+    e.stopImmediatePropagation();
+    $('#btn_modLaboUpdate').off('click');
+  });
+}
+
+function appLaboralDelete(laboralID){
+  if(confirm("¿Realmente desea eliminar los datos laborales?")) {
+    let personaID = document.querySelector("#lbl_ID").innerHTML;
+    Laboral.borrar(personaID,laboralID).then(resp => {
+      if(!resp.error){
+        appLaboralSetData(resp.tablaLabo);
+        Laboral.close();
+      } else {
+        alert("!!!Hubo un error al momento de eliminar estos datos!!!");
+      }
+    });
+  }
+}
+
+//datos conyuge
+function appConyugeSetData(data){
+  if(data.id_conyuge>0){
+    let conyuge = data.persona;
+    $('.form-group').removeClass("has-error");
+    document.querySelector("#lbl_ConyNombres").innerHTML = (conyuge.nombres);
+    document.querySelector("#lbl_ConyApellidos").innerHTML = (conyuge.ap_paterno+' '+conyuge.ap_materno);
+    document.querySelector("#lbl_ConyTipoDNI").innerHTML = (conyuge.tipoDUI);
+    document.querySelector("#lbl_ConyNroDNI").innerHTML = (conyuge.nroDUI);
+    document.querySelector("#lbl_ConyFechaNac").innerHTML = (moment(conyuge.fechanac).format("DD/MM/YYYY"));
+    document.querySelector("#lbl_ConyEcivil").innerHTML = (conyuge.ecivil);
+    document.querySelector("#lbl_ConyCelular").innerHTML = (conyuge.celular);
+    document.querySelector("#lbl_ConyTelefijo").innerHTML = (conyuge.telefijo);
+    document.querySelector("#lbl_ConyEmail").innerHTML = (conyuge.correo);
+    document.querySelector("#lbl_ConyGInstruccion").innerHTML = (conyuge.ginstruc);
+    document.querySelector("#lbl_ConyProfesion").innerHTML = (conyuge.profesion);
+    document.querySelector("#lbl_ConyOcupacion").innerHTML = (conyuge.ocupacion);
+    document.querySelector("#lbl_ConyUbicacion").innerHTML = (conyuge.region+" - "+conyuge.provincia+" - "+conyuge.distrito);
+    document.querySelector("#lbl_ConyDireccion").innerHTML = (conyuge.direccion);
+    document.querySelector("#lbl_ConyReferencia").innerHTML = (conyuge.referencia);
+    document.querySelector("#lbl_ConyMedidorluz").innerHTML = (conyuge.medidorluz);
+    document.querySelector("#lbl_ConyMedidoragua").innerHTML = (conyuge.medidoragua);
+    document.querySelector("#lbl_ConyTipovivienda").innerHTML = (conyuge.tipovivienda);
+    document.querySelector("#div_Conyuge").style.display = 'block';
+    document.querySelector("#lbl_ConyTiempoRel").innerHTML = (data.tiempoRelacion+(" (años)"));
+    //permisos
+    document.querySelector("#btn_ConyInsert").style.display = 'none';
+    document.querySelector("#btn_ConyDelete").style.display = 'inline';
+    document.querySelector("#btn_ConyUpdate").style.display = 'inline';
+    document.querySelector("#btn_ConyPermiso").style.display = 'none';
+  } else {
+    appConyugeClear();
+  }
+}
+
+function appConyugeClear(){
+  $('.form-group').removeClass('has-error');
+  document.querySelector("#lbl_ConyTiempoRel").value = ("0");
+
+  document.querySelector("#div_Conyuge").style.display = 'none';
+  document.querySelector("#btn_ConyDelete").style.display = 'none';
+  document.querySelector("#btn_ConyUpdate").style.display = 'none';
+  document.querySelector("#btn_ConyPermiso").style.display = 'none';
+  document.querySelector("#btn_ConyInsert").style.display = 'inline';
+}
+
+function appConyugeNuevo(){
+  Conyuge.nuevo(document.querySelector('#lbl_ID').innerHTML,rutaSQL);
+  $('#btn_modConyInsert').on('click',function(e) {
+    if(Conyuge.sinErrores()){ //guardamos datos del conyuge
+      Conyuge.ejecutaSQL().then(resp => {
+        appConyugeSetData(resp.tablaCony);
+        Conyuge.close();
+      });
+    } else {
+      alert("!!!Faltan llenar Datos!!!");
+    }
+    e.stopImmediatePropagation();
+    $('#btn_modConyInsert').off('click');
+  });
+}
+
+function appConyugeEditar(){
+  Conyuge.editar(document.querySelector('#lbl_ID').innerHTML);
+  $('#btn_modConyUpdate').on('click',function(e) {
+    if(Conyuge.sinErrores()){ 
+      Conyuge.ejecutaSQL().then(resp => {
+        appConyugeSetData(resp.tablaCony);
+        Conyuge.close();
+      });
+    } else {
+      alert("!!!Faltan llenar Datos!!!");
+    }
+    e.stopImmediatePropagation();
+    $('#btn_modConyUpdate').off('click');
+  });
+}
+
+function appConyugeDelete(){
+  if(confirm("¿Realmente desea eliminar los datos de Conyuge?")) {
+    Conyuge.borrar(document.querySelector('#lbl_ID').innerHTML).then(resp => {
+      if(!resp.error){
+        appConyugeClear();
+        Conyuge.close();
+      } else {
+        alert("!!!Hubo un error al momento de eliminar estos datos!!!");
+      }
+    });
+  }
 }
 
 //otras funciones
