@@ -270,11 +270,6 @@
           echo json_encode($rpta);
           break;
         case "startAlumno":
-          //obtener fecha actual de operacion
-          $qry = $db->query_all("select cast(now() as date) as fecha");
-          if($qry){ $rs = reset($qry); }
-          $fechaHoy = $rs["fecha"];
-          
           //respuesta
           $rpta = array(
             "fecha" => $fn->getFechaActualDB(),

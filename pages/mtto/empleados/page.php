@@ -336,11 +336,6 @@
   $(document).ready(function(){
     Persona.addModalToParentForm('modalPers');
     appWorkersReset();
-    /*
-    appRootGetAll();
-    $("#treeviewBtnADD").bind("click", {type:"add", silent:false}, refreshNode);
-    $("#treeviewBtnEDT").bind("click", {type:"edt", silent:false}, refreshNode);
-    */
   });
 </script>
 <?php } ?>

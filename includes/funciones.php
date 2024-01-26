@@ -39,6 +39,7 @@
       $rs = reset($qry);
       return $rs["fecha"];
     }
+    
     //funciones para persona
     public function getAllPersonas($buscar,$pos){
       $db = $GLOBALS["db"];

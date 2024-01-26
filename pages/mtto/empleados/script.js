@@ -119,7 +119,7 @@ function handlerWorkersInsert_Click(e){
       appPersonaSetData(resp.tablaPers);
       appFetch({TipoQuery : 'startWorker'},rutaSQL).then(resp => {
         appWorkerClear(resp);
-        appUserClear(resp.comboRoles);
+        appUserClear(resp);
         document.querySelector('#grid').style.display = 'none';
         document.querySelector('#edit').style.display = 'block';
         Persona.close();
@@ -133,20 +133,17 @@ function handlerWorkersInsert_Click(e){
 }
 
 function handlerWorkersAddToForm_Click(e){
-  console.log(Persona.tablaPers);
   appPersonaSetData(Persona.tablaPers); //pestaña Personales
-  appUserClear(Persona.tablaPers.comboRoles);
-  appFetch({TipoQuery : 'startWorker'},rutaSQL).then(resp => {
-    appWorkerClear(resp);
-    
-    document.querySelector('#grid').style.display = 'none';
-    document.querySelector('#edit').style.display = 'block';
-    Persona.close();
-  });
+  appUserClear({"comboRoles":Persona.tablaPers.comboRoles});
+  appWorkerClear({"comboCargos":Persona.tablaPers.comboCargos,"fecha":Persona.tablaPers.fechaActual});
+  document.querySelector('#grid').style.display = 'none';
+  document.querySelector('#edit').style.display = 'block';
+  Persona.close();
   
   e.stopImmediatePropagation();
   $('#btn_modPersAddToForm').off('click');
 }
+
 function appWorkersBotonBorrar(){
   let arr = Array.from(document.querySelectorAll('[name="chk_Borrar"]:checked')).map(function(obj){return obj.attributes[2].nodeValue});
   if(arr.length>0){
@@ -335,12 +332,12 @@ function appUserSetData(data){
     appUserEsUsuario();
   } else { //no tiene usuario
     zMnuEmpleado = null;
-    appUserClear(data.comboRoles);
+    appUserClear(data);
   }
 }
 
 function appUserClear(data){
-  appLlenarDataEnComboBox(data,"#cbo_UserRol",0);
+  appLlenarDataEnComboBox(data.comboRoles,"#cbo_UserRol",0);
   document.querySelector("#chk_UserEsUsuario").checked = false;
   document.querySelector('#txt_UserLogin').value = ("");
   document.querySelector('#txt_UserPassword').value = ("");
@@ -497,28 +494,11 @@ function getTreeNodes(nodes) {
   return arr;
 }
 
-function beforeDrag(treeId, treeNodes) { return false; }
-
-
-
-
-
-function appFiltro(treeId, parentNode, childNodes) {
-  return childNodes;
+function beforeDrag(treeId, treeNodes) { 
+  return false; 
 }
 
-function refreshNode(e) {
-  var zTree = $.fn.zTree.getZTreeObj("appTreeView");
-  var nodes = zTree.getSelectedNodes();
-  if (nodes.length == 0) {
-    alert("!!!Debe seleccionar una UBICACION!!!");
-  } else {
-    switch(e.data.type){
-      case "add": appNew(nodes[0]); break;
-      case "edt": appEdit(nodes[0]); break;
-    }
-  }
-}
+
 
 
 //permisos para personas

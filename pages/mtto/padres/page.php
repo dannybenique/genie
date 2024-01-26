@@ -86,7 +86,7 @@
           <ul class="nav nav-tabs">
             <li class="active"><a href="#datosPersonal" data-toggle="tab"><i class="fa fa-address-card"></i> Personal</a></li>
             <li><a href="#datosLaboral" data-toggle="tab"><i class="fa fa-steam"></i> Laboral</a></li>
-            <li><a href="#datosFamilia" data-toggle="tab"><i class="fa fa-heart"></i> Conyuge</a></li>
+            <li><a href="#datosConyuge" data-toggle="tab"><i class="fa fa-heart"></i> Conyuge</a></li>
           </ul>
           <div class="tab-content">
             <div id="datosPersonal" class="tab-pane">
@@ -221,7 +221,7 @@
                 </div>
               </div>
             </div>
-            <div id="datosFamilia" class="tab-pane">
+            <div id="datosConyuge" class="tab-pane">
               <div class="box-body row">
                 <div class="box-body">
                   <button id="btn_ConyInsert"  type="button" class="btn btn-primary btn-xs" style="display:none;" onclick="javascript:appConyugeNuevo();"><i class="fa fa-plus"></i> Agregar Conyuge</button>

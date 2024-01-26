@@ -17,7 +17,7 @@ function appPadresGrid(){
                 '<td><input type="checkbox" name="chk_Borrar" value="'+(valor.ID)+'" '+disabledDelete+'/></td>'+
                 '<td><i class="fa fa-paperclip" title="Auditoria"></i></td>'+
                 '<td>'+(valor.nro_dui)+'</td>'+
-                '<td><a href="javascript:appAlumnoView('+(valor.ID)+');" title="'+(valor.ID)+'">'+(valor.alumno)+'</a></td>'+
+                '<td><a href="javascript:appPadreView('+(valor.ID)+');" title="'+(valor.ID)+'">'+(valor.alumno)+'</a></td>'+
                 '<td>'+(valor.direccion)+'</td>'+
                 '</tr>';
       });
@@ -66,7 +66,7 @@ function appPadresBotonInsert(){
 }
 
 function appPadresBotonUpdate(){
-  let datos = appAlumnoGetDatosToDatabase();
+  let datos = appPadreGetDatosToDatabase();
 
   if(datos!=""){
     datos.TipoQuery = "updPadre";
@@ -138,8 +138,8 @@ function appPadreView(personaID){
   //tabs default en primer tab
   $('.nav-tabs li').removeClass('active');
   $('.tab-content .tab-pane').removeClass('active');
-  $('a[href="#datosAlumno"]').closest('li').addClass('active');
-  $('#datosAlumno').addClass('active');
+  $('a[href="#datosPersonal"]').closest('li').addClass('active');
+  $('#datosPersonal').addClass('active');
   document.querySelector("#div_AlumnoAuditoria").style.display = 'block';
   document.querySelector("#btnUpdate").style.display = (menu.mtto.submenu.alumnos.cmdUpdate==1)?('inline'):('none');
   document.querySelector("#btnInsert").style.display = 'none';
@@ -205,21 +205,12 @@ function appPersonaSetData(data){
   document.querySelector("#lbl_DNI").innerHTML = (data.nroDUI);
 
   //pestaña datos personales
-  if(data.tipoPersona==2){ //persona juridica
-    document.querySelector("#lbl_PersTipoNombres").innerHTML = ("Razon Social");
-    document.querySelector("#lbl_PersTipoProfesion").innerHTML = ("Rubro");
-    document.querySelector("#lbl_PersTipoApellidos").style.display = 'none';
-    document.querySelector("#lbl_PersTipoSexo").style.display = 'none';
-    document.querySelector("#lbl_PersTipoECivil").style.display = 'none';
-    document.querySelector("#lbl_PersTipoGIntruc").style.display = 'none';
-  }else{
-    document.querySelector("#lbl_PersTipoNombres").innerHTML = ("Nombres");
-    document.querySelector("#lbl_PersTipoProfesion").innerHTML = ("Profesion");
-    document.querySelector("#lbl_PersTipoApellidos").style.display = 'block';
-    document.querySelector("#lbl_PersTipoSexo").style.display = 'block';
-    document.querySelector("#lbl_PersTipoECivil").style.display = 'block';
-    document.querySelector("#lbl_PersTipoGIntruc").style.display = 'block';
-  }
+  document.querySelector("#lbl_PersTipoNombres").innerHTML = ("Nombres");
+  document.querySelector("#lbl_PersTipoProfesion").innerHTML = ("Profesion");
+  document.querySelector("#lbl_PersTipoApellidos").style.display = 'block';
+  document.querySelector("#lbl_PersTipoSexo").style.display = 'block';
+  document.querySelector("#lbl_PersTipoECivil").style.display = 'block';
+  document.querySelector("#lbl_PersTipoGIntruc").style.display = 'block';
   document.querySelector("#lbl_PersNombres").innerHTML = (data.nombres);
   document.querySelector("#lbl_PersApellidos").innerHTML = (data.ap_paterno+" "+data.ap_materno);
   document.querySelector("#lbl_PersTipoDNI").innerHTML = (data.tipoDUI);
