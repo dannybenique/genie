@@ -12,10 +12,10 @@
 
       //****************personas****************
       switch ($data->TipoQuery) {
-        case "selProductos":
+        case "selPagos":
           $tabla = array();
           $buscar = strtoupper($data->buscar);
-          $sql = "select * from app_productos where estado=1 and nombre LIKE :buscar order by nombre;";
+          $sql = "select * from vw_pagos where estado=1 and nombre LIKE :buscar order by nombre;";
           $params = [":buscar"=>'%'.$buscar.'%'];
           $qry = $db->query_all($sql,$params);
           if ($qry) {
@@ -23,16 +23,19 @@
               $tabla[] = array(
                 "ID" => $rs["id"],
                 "codigo" => $rs["codigo"],
-                "producto" => str_ireplace($buscar, '<span style="background:yellow;">'.$buscar.'</span>', $rs["nombre"]),
+                "pago" => str_ireplace($buscar, '<span style="background:yellow;">'.$buscar.'</span>', $rs["nombre"]),
                 "abrevia" => $rs["abrevia"],
-                "estado" => $rs["estado"]
+                "estado" => $rs["estado"],
+                "obliga" => $rs["obliga"],
+                "importe" => $rs["importe"],
+                "fecha" => $rs["fecha"]
               );
             }
           }
-          $rpta = array("productos"=>$tabla);
+          $rpta = array("pagos"=>$tabla);
           echo json_encode($rpta);
           break;
-        case "editProducto":
+        case "editPago":
           //cargar datos de la persona
           $qry = $db->query_all("select * from bn_productos where id=".$data->productoID);
           if ($qry) {
@@ -51,7 +54,7 @@
           //respuesta
           echo json_encode($rpta);
           break;
-        case "insProducto":
+        case "insPago":
           //obteniendo nuevo ID y otros
           $qry = $db->query_all("select COALESCE(max(id)+1,1) as maxi from bn_productos;");
           $id = reset($qry)["maxi"];
@@ -82,7 +85,7 @@
           $rpta = array("error" => false,"ingresados" => 1);
           echo json_encode($rpta);
           break;
-        case "updProducto":
+        case "updPago":
           $qry = $db->query_all("select id_tipo_oper from bn_productos where id=".$data->tipoID);
           $id_tipo_oper = reset($qry)["id_tipo_oper"];
           $sql = "update bn_productos set nombre=:nombre,abrevia=:abrevia,id_tipo_oper=:operID,id_padre=:tipoID,obliga=:obliga,sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id=:id";
@@ -103,7 +106,7 @@
           $rpta = array("error" => false,"actualizados" => 1, "sql" => $sql);
           echo json_encode($rpta);
           break;
-        case "delProductos":
+        case "delPagos":
           for($i=0; $i<count($data->arr); $i++){
             $sql = "update bn_productos set estado=0,sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id=:id";
             $params = [
@@ -119,7 +122,7 @@
           $rpta = array("error" => false,"borrados" => count($data->arr));
           echo json_encode($rpta);
           break;
-        case "startProducto":
+        case "startPago":
           //respuesta
           $rpta = array(
             "comboTipoProd" => $fn->getComboBox("select id,nombre from bn_productos where id_padre is null;"),

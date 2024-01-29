@@ -1,63 +1,66 @@
-const rutaSQL = "pages/master/productos/sql.php";
+const rutaSQL = "pages/mtto/pagos/sql.php";
 var menu = "";
 
 //=========================funciones para Personas============================
-function appProductosGrid(){
-  document.querySelector('#grdDatos').innerHTML = ('<tr><td colspan="7"><div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></td></tr>');
+function appPagosGrid(){
+  document.querySelector('#grdDatos').innerHTML = ('<tr><td colspan="8"><div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></td></tr>');
   let txtBuscar = document.querySelector("#txtBuscar").value;
-  let datos = { TipoQuery: 'selProductos', buscar:txtBuscar };
+  let datos = { TipoQuery: 'selPagos', buscar:txtBuscar };
 
   appFetch(datos,rutaSQL).then(resp => {
-    let disabledDelete = (menu.master.submenu.productos.cmdDelete===1) ? "" : "disabled";
-    document.querySelector("#chk_All").disabled = (menu.master.submenu.productos.cmdDelete===1) ? false : true;
+    let disabledDelete = (menu.mtto.submenu.pagos.cmdDelete===1) ? "" : "disabled";
+    document.querySelector("#chk_All").disabled = (menu.mtto.submenu.pagos.cmdDelete===1) ? false : true;
     console.log(resp);
-    if(resp.productos.length>0){
+    if(resp.pagos.length>0){
       let fila = "";
-      resp.productos.forEach((valor,key)=>{
-        fila += '<tr>';
-        fila += '<td><input type="checkbox" name="chk_Borrar" value="'+(valor.ID)+'" '+(disabledDelete)+'/></td>';
-        fila += '<td style="text-align:center;">'+(valor.codigo)+'</td>';
-        fila += '<td style="text-align:center;">'+((valor.obliga==1)?('<i class="fa fa-info-circle" style="color:#AF2031;" title="Obligatorio"></i>'):(''))+'</td>';
-        fila += '<td><a href="javascript:appProductoView('+(valor.ID)+');" title="'+(valor.ID)+'">'+(valor.producto)+'</a></td>';
-        fila += '<td>'+(valor.abrevia)+'</td>';
-        fila += '<td></td>';
-        fila += '</tr>';
+      resp.pagos.forEach((valor,key)=>{
+        fila += '<tr>'+
+                '<td><input type="checkbox" name="chk_Borrar" value="'+(valor.ID)+'" '+(disabledDelete)+'/></td>'+
+                '<td style="text-align:center;">'+(valor.codigo)+'</td>'+
+                '<td style="text-align:center;">'+((valor.obliga==1)?('<i class="fa fa-info-circle" style="color:#AF2031;" title="Obligatorio"></i>'):(''))+'</td>'+
+                '<td><a href="javascript:appPagoView('+(valor.ID)+');" title="'+(valor.ID)+'">'+(valor.pago)+'</a></td>'+
+                '<td>'+(valor.abrevia)+'</td>'+
+                '<td>'+(valor.importe)+'</td>'+
+                '<td>'+(valor.fecha)+'</td>'+
+                '<td></td>'+
+                '</tr>';
       });
       document.querySelector('#grdDatos').innerHTML = (fila);
-    }else{
-      document.querySelector('#grdDatos').innerHTML = ('<tr><td colspan="7" style="text-align:center;color:red;">Sin Resultados para '+txtBuscar+'</td></tr>');
+    } else {
+      let rpta = (txtBuscar==="") ? ("") : ("para "+txtBuscar);
+      document.querySelector('#grdDatos').innerHTML = ('<tr><td colspan="8" style="text-align:center;color:red;">Sin Resultados '+rpta+'</td></tr>');
     }
-    document.querySelector('#grdCount').innerHTML = (resp.productos.length);
+    document.querySelector('#grdCount').innerHTML = (resp.pagos.length);
   });
 }
 
-function appProductosReset(){
+function appPagosReset(){
   appFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php").then(resp => {
     menu = JSON.parse(resp.menu);
-    document.querySelector("#btn_DEL").style.display = (menu.master.submenu.productos.cmdDelete==1)?('inline'):('none');
-    document.querySelector("#btn_NEW").style.display = (menu.master.submenu.productos.cmdInsert==1)?('inline'):('none');
+    document.querySelector("#btn_DEL").style.display = (menu.mtto.submenu.pagos.cmdDelete==1)?('inline'):('none');
+    document.querySelector("#btn_NEW").style.display = (menu.mtto.submenu.pagos.cmdInsert==1)?('inline'):('none');
     
     document.querySelector("#txtBuscar").value = ("");
-    appProductosGrid();
+    appPagosGrid();
   });
 }
 
-function appProductosBuscar(e){
+function appPagosBuscar(e){
   let code = (e.keyCode ? e.keyCode : e.which);
-  if(code == 13) { appProductosGrid(); }
+  if(code == 13) { appPagosGrid(); }
 }
 
-function appProductoNuevo(){
-  document.querySelector("#btnInsert").style.display = (menu.mtto.submenu.productos.cmdInsert==1)?('inline'):('none');
+function appPagoNuevo(){
+  document.querySelector("#btnInsert").style.display = (menu.mtto.submenu.pagos.cmdInsert==1)?('inline'):('none');
   document.querySelector("#btnUpdate").style.display = 'none';
-  appFetch({ TipoQuery:'startProducto' },rutaSQL).then(resp => {
+  appFetch({ TipoQuery:'startPago' },rutaSQL).then(resp => {
     try{
       $(".form-group").removeClass("has-error");
       document.querySelector("#hid_productoID").value = ("0");
       document.querySelector("#txt_Codigo").value = ("");
       document.querySelector("#txt_Abrev").value = ("");
       document.querySelector("#txt_Nombre").value = ("");
-      appLlenarDataEnComboBox(resp.comboTipoProd,"#cbo_Tipo",0); //tipos de producto
+      appLlenarDataEnComboBox(resp.comboTipoProd,"#cbo_Tipo",0); //tipos de pago
       document.querySelector("#grid").style.display = 'none';
       document.querySelector("#edit").style.display = 'block';
     } catch (err){
@@ -66,14 +69,14 @@ function appProductoNuevo(){
   });
 }
 
-function appProductoView(productoID){
-  document.querySelector("#btnUpdate").style.display = (menu.mtto.submenu.productos.cmdUpdate==1)?('inline'):('none');
+function appPagoView(pagoID){
+  document.querySelector("#btnUpdate").style.display = (menu.mtto.submenu.pagos.cmdUpdate==1)?('inline'):('none');
   document.querySelector("#btnInsert").style.display = 'none';
   $(".form-group").removeClass("has-error");
 
   let datos = {
-    TipoQuery : 'editProducto',
-    productoID : productoID
+    TipoQuery : 'editPago',
+    pagoID : pagoID
   }
 
   appFetch(datos,rutaSQL).then(resp => {
@@ -84,7 +87,7 @@ function appProductoView(productoID){
       document.querySelector("#txt_Abrev").value = (resp.abrev);
       document.querySelector("#txt_Nombre").value = (resp.nombre);
       document.querySelector("#cbo_Obliga").value = ((resp.obliga)?1:0);
-      appLlenarDataEnComboBox(resp.comboTipoProd,"#cbo_Tipo",resp.id_padre); //tipo producto
+      appLlenarDataEnComboBox(resp.comboTipoProd,"#cbo_Tipo",resp.id_padre); //tipo pago
       document.querySelector('#grid').style.display = 'none';
       document.querySelector('#edit').style.display = 'block';
     } catch(err){
@@ -93,38 +96,38 @@ function appProductoView(productoID){
   });
 }
 
-function appProductoInsert(){
+function appPagoInsert(){
   let datos = modGetDataToDataBase();
   if(datos!=""){
-    datos.TipoQuery = 'insProducto';
+    datos.TipoQuery = 'insPago';
     appFetch(datos,rutaSQL).then(resp => {
-      appProductoCancel();
+      appPagoCancel();
     });
   } else {
     alert("!!!Faltan Datos!!!");
   }
 }
 
-function appProductoUpdate(){
+function appPagoUpdate(){
   let datos = modGetDataToDataBase();
   if(datos!=""){
-    datos.TipoQuery = 'updProducto';
+    datos.TipoQuery = 'updPago';
     appFetch(datos,rutaSQL).then(resp => {
-      appProductoCancel();
+      appPagoCancel();
     });
   } else {
     alert("!!!Faltan Datos!!!");
   }
 }
 
-function appProductosBorrar(){
+function appPagosBorrar(){
   //let arr = $('[name="chk_Borrar"]:checked').map(function(){return this.value}).get();
   let arr = Array.from(document.querySelectorAll('[name="chk_Borrar"]:checked')).map(function(obj){return obj.attributes[2].nodeValue});
   if(arr.length>0){
     if(confirm("¿Esta seguro de continuar?")) {
-      appFetch({ TipoQuery:'delProductos', arr:arr },rutaSQL).then(resp => {
+      appFetch({ TipoQuery:'delPagos', arr:arr },rutaSQL).then(resp => {
         if (resp.error == false) { //sin errores
-          appProductoCancel();
+          appPagoCancel();
         }
       });
     }
@@ -153,8 +156,8 @@ function modGetDataToDataBase(){
   return rpta;
 }
 
-function appProductoCancel(){
-  appProductosGrid();
+function appPagoCancel(){
+  appPagosGrid();
   document.querySelector('#grid').style.display = 'block';
   document.querySelector('#edit').style.display = 'none';
 }

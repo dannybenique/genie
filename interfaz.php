@@ -153,6 +153,7 @@
       case "operCreditos"        : $menuOper = 'active menu-open'; $appPage = "pages/oper/creditos/page.php"; break;
       case "operSimulaCreditos"  : $menuOper = 'active menu-open'; $appPage = "pages/oper/simula/creditos.php"; break;
       case "operSolicitaCredito" : $menuOper = 'active menu-open'; $appPage = "pages/oper/solicred/page.php"; break;
+      case "mttoPagos"     : $menuMtto = 'active menu-open'; $appPage = "pages/mtto/pagos/page.php"; break;
       case "mttoAlumnos"   : $menuMtto = 'active menu-open'; $appPage = "pages/mtto/alumnos/page.php"; break;
       case "mttoPadres"    : $menuMtto = 'active menu-open'; $appPage = "pages/mtto/padres/page.php"; break;
       case "mttoEmpleados" : $menuMtto = 'active menu-open'; $appPage = "pages/mtto/empleados/page.php"; break;

@@ -71,7 +71,7 @@
             <ul class="list-group">
               <li class="list-group-item" ><b>ID</b> <a class="pull-right" id="lbl_ID" style="font:14px flexoregular;"></a></li>
               <li class="list-group-item"><b id="lbl_TipoDNI">DNI</b> <a class="pull-right" id="lbl_DNI" style="font:14px flexoregular;"></a></li>
-              <li class="list-group-item" ><b>Codigo</b> <a class="pull-right" id="lbl_Codigo" style="font:14px flexoregular;"></a></li>
+              <li class="list-group-item" ><b>Celular</b> <a class="pull-right" id="lbl_Celular" style="font:14px flexoregular;"></a></li>
             </ul>
           </div>
           <div class="box-body">

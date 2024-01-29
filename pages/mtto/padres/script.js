@@ -17,14 +17,14 @@ function appPadresGrid(){
                 '<td><input type="checkbox" name="chk_Borrar" value="'+(valor.ID)+'" '+disabledDelete+'/></td>'+
                 '<td><i class="fa fa-paperclip" title="Auditoria"></i></td>'+
                 '<td>'+(valor.nro_dui)+'</td>'+
-                '<td><a href="javascript:appPadreView('+(valor.ID)+');" title="'+(valor.ID)+'">'+(valor.alumno)+'</a></td>'+
+                '<td><a href="javascript:appPadreView('+(valor.ID)+');" title="'+(valor.ID)+'">'+(valor.padre)+'</a></td>'+
                 '<td>'+(valor.direccion)+'</td>'+
                 '</tr>';
       });
       document.querySelector('#grdDatos').innerHTML = (fila);
     } else {
-      let res = (txtBuscar==="") ? ("") : ("para "+txtBuscar);
-      document.querySelector('#grdDatos').innerHTML = ('<tr><td colspan="8" style="text-align:center;color:red;">Sin Resultados '+(res)+'</td></tr>');
+      let rpta = (txtBuscar==="") ? ("") : ("para "+txtBuscar);
+      document.querySelector('#grdDatos').innerHTML = ('<tr><td colspan="8" style="text-align:center;color:red;">Sin Resultados '+(rpta)+'</td></tr>');
     }
     document.querySelector('#grdCount').innerHTML = (resp.tabla.length+"/"+resp.cuenta);
   });
@@ -55,7 +55,7 @@ function appPadresBotonCancel(){
 }
 
 function appPadresBotonInsert(){
-  let datos = appAlumnoGetDatosToDatabase();
+  let datos = appPadreGetDatosToDatabase();
   
   if(datos!=""){
     datos.TipoQuery = "insPadre";
@@ -92,13 +92,14 @@ function handlerPadresInsert_Click(e){
       appPersonaSetData(resp.tablaPers);
       appLaboralClear();
       appConyugeClear();
+      appPadreClear();
       Persona.close();
+      e.stopImmediatePropagation();
+      $('#btn_modPersInsert').off('click');
     });
   } else {
     alert("!!!Faltan llenar Datos!!!");
   }
-  e.stopImmediatePropagation();
-  $('#btn_modPersInsert').off('click');
 }
 
 function handlerPadresAddToForm_Click(e){
@@ -106,7 +107,8 @@ function handlerPadresAddToForm_Click(e){
   document.querySelector('#edit').style.display = 'block';
   appPersonaSetData(Persona.tablaPers); //pestaña Personales
   appLaboralSetData(Persona.tablaPers.tablaLabo); //pestaña laborales
-  appConyugeSetData(Persona.tablaPers.tablaCony); //pestaña de Conyuge
+  appConyugeSetData(Persona.tablaPers.tablaCony); //pestaña Conyuge
+  appPadreClear();
   Persona.close();
   e.stopImmediatePropagation();
   $('#btn_modPersAddToForm').off('click');
@@ -140,22 +142,19 @@ function appPadreView(personaID){
   $('.tab-content .tab-pane').removeClass('active');
   $('a[href="#datosPersonal"]').closest('li').addClass('active');
   $('#datosPersonal').addClass('active');
-  document.querySelector("#div_AlumnoAuditoria").style.display = 'block';
-  document.querySelector("#btnUpdate").style.display = (menu.mtto.submenu.alumnos.cmdUpdate==1)?('inline'):('none');
+  document.querySelector("#div_PersAuditoria").style.display = 'block';
+  document.querySelector("#btnUpdate").style.display = (menu.mtto.submenu.padres.cmdUpdate==1)?('inline'):('none');
   document.querySelector("#btnInsert").style.display = 'none';
 
   appFetch(datos,rutaSQL).then(resp => {
-    appPadreSetData(resp.tablaAlumno);  //pestaña Alumno
+    document.querySelector("#lbl_Celular").innerHTML = (resp.tablaPers.celular);  //info Corta
     appPersonaSetData(resp.tablaPers); //pestaña Personales
-    
+    appLaboralSetData(resp.tablaLabo); //pestaña laborales
+    appConyugeSetData(resp.tablaCony); //pestaña Conyuge
+
     document.querySelector('#grid').style.display = 'none';
     document.querySelector('#edit').style.display = 'block';
   });
-}
-
-function appPadreSetData(data){
-  //info corta
-  document.querySelector("#lbl_Codigo").innerHTML = (data.codigo);
 }
 
 function appPadreClear(){
@@ -167,7 +166,7 @@ function appPadreClear(){
 
   //todos los inputs sin error y panel error deshabilitado
   $('.form-group').removeClass('has-error');
-  //document.querySelector("#div_AlumnoAuditoria").style.display = 'none';
+  document.querySelector("#div_PersAuditoria").style.display = 'none';
   document.querySelector("#btnInsert").style.display = (menu.mtto.submenu.padres.cmdInsert==1)?('inline'):('none');
   document.querySelector("#btnUpdate").style.display = 'none';
 }
@@ -179,13 +178,7 @@ function appPadreGetDatosToDatabase(){
   
   if(!EsError){
     datos = {
-      alumnoID : document.querySelector("#lbl_ID").innerHTML,
-      alumnoCodigo  : "",
-      alumnoFecha   : appConvertToFecha(document.querySelector("#txt_AlumnoFechaIng").value,""),
-      alumnoPadreID : document.querySelector("#hid_alumnoFamiPadreID").value,
-      alumnoMadreID : document.querySelector("#hid_alumnoFamiMadreID").value,
-      alumnoApoderaID : document.querySelector("#hid_alumnoFamiApoderaID").value,
-      alumnoObservac : ""
+      padreID : document.querySelector("#lbl_ID").innerHTML
     }
   }
   return datos;
@@ -203,6 +196,7 @@ function appPersonaSetData(data){
   document.querySelector("#lbl_ID").innerHTML = (data.ID);
   document.querySelector("#lbl_TipoDNI").innerHTML = (data.tipoDUI);
   document.querySelector("#lbl_DNI").innerHTML = (data.nroDUI);
+  document.querySelector("#lbl_Celular").innerHTML = (data.celular);
 
   //pestaña datos personales
   document.querySelector("#lbl_PersTipoNombres").innerHTML = ("Nombres");

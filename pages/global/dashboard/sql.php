@@ -9,7 +9,7 @@
       $data = json_decode($_REQUEST['appSQL']);
       switch ($data->TipoQuery) {
         case "dashboard":
-          $qry = $db->query_all("select count(*) as cuenta from app_colegios;");
+          $qry = $db->query_all("select count(*) as cuenta from app_colegios where id_padre is null;");
           $colegios = reset($qry)['cuenta'];
           $qry = $db->query_all("select count(*) as cuenta from app_alumnos where id_colegio=:colegioID", [':colegioID'=>$web->colegioID]);
           $alumnos = reset($qry)['cuenta'];

@@ -1,4 +1,4 @@
-<?php if(isset($menu->master->submenu->productos)){?>
+<?php if(isset($menu->mtto->submenu->pagos)){?>
 <!-- bootstrap datepicker -->
 <link rel="stylesheet" href="libs/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
 <script src="libs/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
@@ -6,10 +6,10 @@
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-  <h1><i class="fa fa-gear"></i> <b>Productos</b></h1>
+  <h1><i class="fa fa-gear"></i> <b>Pagos</b></h1>
   <ol class="breadcrumb">
     <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-    <li class="active">productos</li>
+    <li class="active">pagos</li>
   </ol>
 </section>
 <!-- Main content -->
@@ -20,12 +20,12 @@
         <div class="box-header no-padding">
           <div class="mailbox-controls">
             <div class="btn-group">
-              <button type="button" id="btn_DEL" class="btn btn-default btn-sm" onclick="javascript:appProductosBorrar();"><i class="fa fa-trash"></i></button>
-              <button type="button" id="btn_NEW" class="btn btn-default btn-sm" onclick="javascript:appProductoNuevo();"><i class="fa fa-plus"></i></button>
+              <button type="button" id="btn_DEL" class="btn btn-default btn-sm" onclick="javascript:appPagosBorrar();"><i class="fa fa-trash"></i></button>
+              <button type="button" id="btn_NEW" class="btn btn-default btn-sm" onclick="javascript:appPagoNuevo();"><i class="fa fa-plus"></i></button>
             </div>
-            <button type="button" id="btn_RST" class="btn btn-default btn-sm" onclick="javascript:appProductosReset();"><i class="fa fa-refresh"></i></button>
+            <button type="button" id="btn_RST" class="btn btn-default btn-sm" onclick="javascript:appPagosReset();"><i class="fa fa-refresh"></i></button>
             <div class="btn-group">
-              <input type="text" id="txtBuscar" class="form-control input-sm pull-right" placeholder="producto..." onkeypress="javascript:appProductosBuscar(event);" style="text-transform:uppercase;" autocomplete="off">
+              <input type="text" id="txtBuscar" class="form-control input-sm pull-right" placeholder="pago..." onkeypress="javascript:appPagosBuscar(event);" style="text-transform:uppercase;" autocomplete="off">
               <span class="fa fa-search form-control-feedback"></span>
             </div>
             <span id="grdCount" style="display:inline-block;margin-left:5px;font-size:20px;font-weight:600;"></span>
@@ -37,8 +37,10 @@
                   <th style="width:25px;"><input type="checkbox" id="chk_All" onclick="javascript:toggleAll(this,'chk_Borrar');" /></th>
                   <th style="width:70px;text-align:center;">Codigo</th>
                   <th style="width:30px;text-align:center;"><i class="fa fa-info-circle" title="Obligatorio"></i></th>
-                  <th style="width:250px;">Producto</th>
+                  <th style="width:250px;">Pago</th>
                   <th style="width:70px;" title="Abreviatura">Abrev</th>
+                  <th style="width:100px;" title="Importe">Importe</th>
+                  <th style="width:80px;" title="Fecha de cumplimiento">Fecha</th>
                   <th></th>
                 </tr>
               </thead>
@@ -57,7 +59,7 @@
           <div class="box-body">
             <div class="col-md-12">
               <div class="box-body">
-                <input type="hidden" id="hid_productoID" value="">
+                <input type="hidden" id="hid_pagoID" value="">
                 <div class="row">
                   <div class="col-xs-6">
                     <div id="div_Codigo" class="form-group" style="margin-bottom:5px;">
@@ -101,9 +103,9 @@
             </div>
           </div>
           <div class="box-body">
-            <button type="button" class="btn btn-default" onclick="javascript:appProductoCancel();"><i class="fa fa-angle-double-left"></i> Regresar</button>
-            <button type="button" id="btnInsert" class="btn btn-primary pull-right" onclick="javascript:appProductoInsert();"><i class="fa fa-save"></i> Guardar</button>
-            <button type="button" id="btnUpdate" class="btn btn-info pull-right" onclick="javascript:appProductoUpdate();"><i class="fa fa-save"></i> Actualizar</button>
+            <button type="button" class="btn btn-default" onclick="javascript:appPagoCancel();"><i class="fa fa-angle-double-left"></i> Regresar</button>
+            <button type="button" id="btnInsert" class="btn btn-primary pull-right" onclick="javascript:appPagoInsert();"><i class="fa fa-save"></i> Guardar</button>
+            <button type="button" id="btnUpdate" class="btn btn-info pull-right" onclick="javascript:appPagoUpdate();"><i class="fa fa-save"></i> Actualizar</button>
           </div>
         </div>
       </form>
@@ -111,10 +113,10 @@
   </div>
 </section>
 
-<script src="pages/master/productos/script.js"></script>
+<script src="pages/mtto/pagos/script.js"></script>
 <script>
   $(document).ready(function(){
-    appProductosReset();
+    appPagosReset();
   });
 </script>
 <?php } ?>

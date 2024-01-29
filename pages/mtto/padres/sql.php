@@ -51,13 +51,13 @@
         case "selPadres":
           $tabla = array();
           $buscar = strtoupper($data->buscar);
-          $whr = "id_colegio=".$web->colegioID." and (persona LIKE :buscar or nro_dui LIKE :buscar) ";
+          $whr = "and id_colegio=".$web->colegioID." and (persona LIKE :buscar or nro_dui LIKE :buscar) ";
           $params = [":buscar"=>'%'.$buscar.'%'];
-          $sql = "select count(*) as cuenta from vw_padres where ".$whr;
+          $sql = "select count(*) as cuenta from vw_padres where estado=1 ".$whr;
           $qryCount = $db->query_all($sql,$params);
           $rsCount = ($qryCount) ? reset($qryCount)["cuenta"] : (0);
 
-          $sql = "select * from vw_padres where ".$whr." order by persona limit 25 offset 0;";
+          $sql = "select * from vw_padres where estado=1 ".$whr." order by persona limit 25 offset 0;";
           $qry = $db->query_all($sql,$params);
           if($qry) {
             foreach($qry as $rs){
@@ -75,19 +75,12 @@
           $rpta = array("tabla"=>$tabla,"cuenta"=>$rsCount,"rolID" => (int)$_SESSION["usr_data"]["rolID"]);
           echo json_encode($rpta);
           break;
-        case "insAlumno":
-          //ingresar datos del alumno
-          $qry = $db->query_all("select right('000000'||cast(coalesce(max(right(codigo,6)::integer)+1,1) as text),6) as code from app_alumnos where id_colegio=".$web->colegioID.";");
-          $codigo = ($qry) ? (reset($qry)["code"]) : (null);
-          $sql = "insert into app_alumnos values(:alumnoID,:codigo,:padreID,:madreID,:apoderaID,:colegioID,:fecha,:estado,:sysIP,:userID,now());";
+        case "insPadre":
+          //ingresar datos del padre
+          $sql = "insert into app_padres values(:padreID,:colegioID,now(),:estado,:sysIP,:userID,now());";
           $params = [
-            ":alumnoID"=>$data->alumnoID,
-            ":codigo"=>$codigo,
-            ":padreID"=>($data->alumnoPadreID!="") ? ($data->alumnoPadreID) : (null),
-            ":madreID"=>($data->alumnoMadreID!="") ? ($data->alumnoMadreID) : (null),
-            ":apoderaID"=>($data->alumnoApoderaID!="") ? ($data->alumnoApoderaID) : (null),
+            ":padreID"=>$data->padreID,
             ":colegioID"=>$web->colegioID,
-            ":fecha"=>$data->alumnoFecha,
             ":estado"=>1,
             ":sysIP"=>$fn->getClientIP(),
             ":userID"=>$_SESSION['usr_ID']
@@ -99,14 +92,11 @@
           $rpta = array("error"=>false, "insert"=>1);
           echo json_encode($rpta);
           break;
-        case "updAlumno":
-          $sql = "update app_alumnos set id_padre=:padreID,id_madre=:madreID,id_apoderado=:apoderaID,sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id=:alumnoID and id_colegio=:colegioID;";
+        case "updPadre":
+          $sql = "update app_padres set sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id=:padreID and id_colegio=:colegioID;";
           $params = [
-            ":alumnoID"=>$data->alumnoID,
+            ":padreID"=>$data->padreID,
             ":colegioID"=>$web->colegioID,
-            ":padreID"=>($data->alumnoPadreID!="") ? ($data->alumnoPadreID) : (null),
-            ":madreID"=>($data->alumnoMadreID!="") ? ($data->alumnoMadreID) : (null),
-            ":apoderaID"=>($data->alumnoApoderaID!="") ? ($data->alumnoApoderaID) : (null),
             ":sysIP"=>$fn->getClientIP(),
             ":userID"=>$_SESSION['usr_ID']];
           $qry = $db->query_all($sql,$params);
@@ -116,12 +106,12 @@
           $rpta = array("error"=>false, "update"=>1);
           echo json_encode($rpta);
           break;
-        case "delAlumnos":
+        case "delPadres":
           $params = array();
           for($i=0; $i<count($data->arr); $i++){
-            $sql = "update bn_socios set estado=0,sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id_socio=:socioID";
+            $sql = "update app_padres set estado=0,sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id=:padreID";
             $params = [
-              ":socioID"=>$data->arr[$i],
+              ":padreID"=>$data->arr[$i],
               ":sysIP"=>$fn->getClientIP(),
               "userID"=>$_SESSION['usr_ID']
             ];
@@ -132,22 +122,19 @@
           $rpta = array("error"=>false, "delete"=>$data->arr);
           echo json_encode($rpta);
           break;
-        case "viewAlumno":
+        case "viewPadre":
           switch($data->fullQuery){
             case 0: //datos personales
               $rpta = array(
-                'tablaAlumno'=> getViewAlumno($data->personaID),
                 'tablaPers'=>$fc->getViewPersona($data->personaID));
               break;
             case 1: //datos personales + laborales
               $rpta = array(
-                'tablaAlumno'=> getViewAlumno($data->personaID),
                 'tablaPers'=>$fn->getViewPersona($data->personaID),
                 'tablaLabo'=>$fn->getAllLaborales($data->personaID));
               break;
             case 2: //datos personales + laborales + conyuge
               $rpta = array(
-                'tablaAlumno'=> getViewAlumno($data->personaID),
                 'tablaPers'=>$fn->getViewPersona($data->personaID),
                 'tablaLabo'=>$fn->getAllLaborales($data->personaID),
                 'tablaCony'=>$fn->getViewConyuge($data->personaID));
