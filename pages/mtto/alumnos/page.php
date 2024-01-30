@@ -32,6 +32,7 @@
               <span class="fa fa-search form-control-feedback"></span>
             </div>
             <span id="grdCount" style="display:inline-block;margin-left:5px;font-size:20px;font-weight:600;"></span>
+            <a class="pull-right" href="javascript:appAlumnosBotonViewAll();" title="ver todos los registros"><i id="icoViewAll" class="fa fa-toggle-off"></i><input type="hidden" id="hidViewAll" value="0"></a>
           </div>
           <div class="box-body table-responsive no-padding">
             <table class="table table-hover" id="grd">

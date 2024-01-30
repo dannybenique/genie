@@ -51,13 +51,13 @@
         case "selAlumnos":
           $tabla = array();
           $buscar = strtoupper($data->buscar);
-          $whr = " and id_colegio=".$web->colegioID." and (alumno LIKE :buscar or nro_dui LIKE :buscar) ";
+          $whr = (($data->verTodos==1) ? "" : "and estado=1")." and id_colegio=".$web->colegioID." and (alumno LIKE :buscar or nro_dui LIKE :buscar) ";
           $params = [":buscar"=>'%'.$buscar.'%'];
-          $sql = "select count(*) as cuenta from vw_alumnos where estado in(0,1) ".$whr;
+          $sql = "select count(*) as cuenta from vw_alumnos where 1=1 ".$whr;
           $qryCount = $db->query_all($sql,$params);
           $rsCount = ($qryCount) ? reset($qryCount)["cuenta"] : (0);
 
-          $sql = "select * from vw_alumnos where estado in(0,1) ".$whr." order by alumno limit 25 offset 0;";
+          $sql = "select * from vw_alumnos where 1=1 ".$whr." order by alumno limit 25 offset 0;";
           $qry = $db->query_all($sql,$params);
           if($qry) {
             foreach($qry as $rs){
@@ -68,6 +68,7 @@
                 "nro_dui"=> str_replace($buscar, '<span style="background:yellow;">'.$buscar.'</span>', $rs["nro_dui"]),
                 "alumno" => str_ireplace($buscar, '<span style="background:yellow;">'.$buscar.'</span>', $rs["alumno"]),
                 "url" => $rs["urlfoto"],
+                "estado" => $rs["estado"],
                 "direccion" => ($rs["direccion"])
               );
             }
@@ -121,9 +122,9 @@
         case "delAlumnos":
           $params = array();
           for($i=0; $i<count($data->arr); $i++){
-            $sql = "update bn_socios set estado=0,sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id_socio=:socioID";
+            $sql = "update app_alumnos set estado=0,sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id=:alumnoID";
             $params = [
-              ":socioID"=>$data->arr[$i],
+              ":alumnoID"=>$data->arr[$i],
               ":sysIP"=>$fn->getClientIP(),
               "userID"=>$_SESSION['usr_ID']
             ];

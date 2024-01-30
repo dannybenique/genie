@@ -17,7 +17,7 @@
         $web = $GLOBALS["web"]; //web-config
         
         //obtener datos personales
-        $sql = "select s.*,c.nombre as colegio,e.nombrecorto as usermod from app_empleados s join app_colegios c on s.id_colegio=c.id left join app_empleados e on e.id=s.sys_user where s.estado=1 and s.id=:personaID and s.id_colegio=:colegioID;";
+        $sql = "select s.*,c.nombre as colegio,e.nombrecorto as usermod from app_empleados s join app_colegios c on s.id_colegio=c.id left join app_empleados e on e.id=s.sys_user where s.id=:personaID and s.id_colegio=:colegioID;";
         $colegioID = ($fn->getValorCampo("select id_rol from app_usuarios where id=".$personaID,"id_rol")==101) ? 1 : $web->colegioID;
         $params = [":personaID"=>$personaID,":colegioID"=>$colegioID];
         $qry = $db->query_all($sql,$params);
@@ -80,12 +80,12 @@
           //obteniendo la consulta
           $tabla = array();
           $buscar = strtoupper($data->buscar);
-          $whr = " and id_colegio in(:colegioID".(($_SESSION["usr_data"]["rolID"]==101)?",1":"").") and (empleado LIKE :buscar or nro_dui LIKE :buscar) ";
+          $whr = (($data->verTodos==1) ? "" : "and estado=1")." and id_colegio in(:colegioID".(($_SESSION["usr_data"]["rolID"]==101)?",1":"").") and (empleado LIKE :buscar or nro_dui LIKE :buscar) ";
           $params = [":colegioID"=>$web->colegioID,":buscar"=>'%'.$buscar.'%'];
-          $qryCount = $db->query_all("select count(*) as cuenta from vw_empleados where estado=1 ".$whr.";",$params);
+          $qryCount = $db->query_all("select count(*) as cuenta from vw_empleados where 1=1 ".$whr.";",$params);
           $rsCount = ($qryCount) ? reset($qryCount)["cuenta"] : (0);
 
-          $qry = $db->query_all("select * from vw_empleados where estado=1 ".$whr." order by empleado limit 25 offset 0;",$params);
+          $qry = $db->query_all("select * from vw_empleados where 1=1 ".$whr." order by empleado limit 25 offset 0;",$params);
           if ($qry) {
             foreach($qry as $rs){
               $tabla[] = array(
@@ -95,7 +95,8 @@
                 "empleado" => str_ireplace($buscar, '<span style="background:yellow;">'.$buscar.'</span>', $rs["empleado"]),
                 "nombrecorto" => $rs["nombrecorto"],
                 "cargo" => ($rs["cargo"]),
-                "login" => ($rs["login"])
+                "login" => ($rs["login"]),
+                "estado" => ($rs["estado"])
               );
             }
           }

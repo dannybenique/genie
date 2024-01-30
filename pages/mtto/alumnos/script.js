@@ -5,7 +5,11 @@ var menu = "";
 function appAlumnosGrid(){
   document.querySelector('#grdDatos').innerHTML = ('<tr><td colspan="8"><div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></td></tr>');
   let txtBuscar = document.querySelector("#txtBuscar").value.toUpperCase();
-  let datos = { TipoQuery: 'selAlumnos', buscar: txtBuscar };
+  let datos = { 
+    TipoQuery: 'selAlumnos', 
+    buscar: txtBuscar,
+    verTodos: document.querySelector("#hidViewAll").value 
+  };
 
   appFetch(datos,rutaSQL).then(resp => {
     let disabledDelete = (menu.mtto.submenu.alumnos.cmdDelete===1) ? "" : "disabled";
@@ -13,12 +17,12 @@ function appAlumnosGrid(){
     if(resp.tabla.length>0){
       let fila = "";
       resp.tabla.forEach((valor,key)=>{
-        fila += '<tr>'+
+        fila += '<tr style="'+((valor.estado==0)?('color:#bfbfbf;'):(''))+'">' +
                 '<td><input type="checkbox" name="chk_Borrar" value="'+(valor.ID)+'" '+disabledDelete+'/></td>'+
                 '<td>'+(valor.codigo)+'</td>'+
                 '<td>'+(moment(valor.fecha).format("DD/MM/YYYY"))+'</td>'+
                 '<td>'+(valor.nro_dui)+'</td>'+
-                '<td><a href="javascript:appAlumnoView('+(valor.ID)+');" title="'+(valor.ID)+'">'+(valor.alumno)+'</a></td>'+
+                '<td><a href="javascript:appAlumnoView('+(valor.ID)+');" title="'+(valor.ID)+'" style="'+((valor.estado==0)?('color:#bfbfbf;'):(''))+'">'+(valor.alumno)+'</a></td>'+
                 '<td>'+(valor.direccion)+'</td>'+
                 '</tr>';
       });
@@ -83,6 +87,13 @@ function appAlumnosBotonNuevo(){
   
   $('#btn_modPersInsert').on('click',handlerAlumnosInsert_Click);
   $('#btn_modPersAddToForm').on('click',handlerAlumnosAddToForm_Click);
+}
+
+function appAlumnosBotonViewAll(){
+  document.querySelector("#icoViewAll").classList.toggle("fa-toggle-on");
+  document.querySelector("#icoViewAll").classList.toggle("fa-toggle-off");
+  document.querySelector("#hidViewAll").value = (document.querySelector("#hidViewAll").value==1) ? (0) : (1);
+  appAlumnosGrid();
 }
 
 function handlerAlumnosInsert_Click(e){

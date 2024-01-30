@@ -33,7 +33,7 @@
           <div class="mailbox-controls">
             <div class="btn-group">
               <button type="button" id="btn_DEL" class="btn btn-default btn-sm" onclick="javascript:appWorkersBotonBorrar();"><i class="fa fa-trash"></i></button>
-              <button type="button" id="btn_NEW" class="btn btn-default btn-sm" onclick="javascript:appWorkerBotonNuevo();"><i class="fa fa-plus"></i></button>
+              <button type="button" id="btn_NEW" class="btn btn-default btn-sm" onclick="javascript:appWorkersBotonNuevo();"><i class="fa fa-plus"></i></button>
             </div>
             <button type="button" class="btn btn-default btn-sm" onclick="javascript:appWorkersReset();"><i class="fa fa-refresh"></i></button>
             <div class="btn-group">
@@ -41,6 +41,7 @@
               <span class="fa fa-search form-control-feedback"></span>
             </div>
             <span id="grdCount" style="display:inline-block;margin-left:5px;font-size:20px;font-weight:600;"></span>
+            <a class="pull-right" href="javascript:appWorkersBotonViewAll();" title="ver todos los registros"><i id="icoViewAll" class="fa fa-toggle-off"></i><input type="hidden" id="hidViewAll" value="0"></a>
           </div>
           <div class="box-body table-responsive no-padding">
             <table class="table table-hover" id="grd">

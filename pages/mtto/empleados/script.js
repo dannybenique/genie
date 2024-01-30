@@ -24,7 +24,11 @@ var zSetting = {
 function appWorkersGrid(){
   document.querySelector('#grdDatos').innerHTML = ('<tr><td colspan="9"><div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></td></tr>');
   let txtBuscar = document.querySelector("#txtBuscar").value.toUpperCase();
-  let datos = { TipoQuery: 'selWorkers', buscar: txtBuscar };
+  let datos = { 
+    TipoQuery: 'selWorkers', 
+    buscar: txtBuscar, 
+    verTodos: document.querySelector("#hidViewAll").value 
+  };
 
   appFetch(datos,rutaSQL).then(resp => {
     let disabledDelete = (menu.mtto.submenu.empleados.cmdDelete===1) ? "" : "disabled";
@@ -32,13 +36,13 @@ function appWorkersGrid(){
     if(resp.tabla.length>0){
       let fila = "";
       resp.tabla.forEach((valor,key)=>{
-        fila += '<tr>' +
+        fila += '<tr style="'+((valor.estado==0)?('color:#bfbfbf;'):(''))+'">' +
                 '<td><input type="checkbox" name="chk_Borrar" value="'+(valor.ID)+'" '+disabledDelete+'/></td>'+
                 '<td><i class="fa fa-paperclip"></i></td>'+
-                '<td>'+((valor.login!=null)?('<a href="javascript:appUserCambioPassw('+(valor.ID)+')"><i class="fa fa-lock"></i></a>'):(''))+'</td>'+
+                '<td>'+((valor.login!=null)?('<a href="javascript:appUserCambioPassw('+(valor.ID)+')" style="'+((valor.estado==0)?('color:#bfbfbf;'):(''))+'"><i class="fa fa-lock"></i></a>'):(''))+'</td>'+
                 '<td>'+(valor.codigo)+'</td>'+
                 '<td>'+(valor.nro_dui)+'</td>'+
-                '<td><a href="javascript:appWorkerView('+(valor.ID)+');" title="'+(valor.ID)+'">'+(valor.empleado)+'</a></td>'+
+                '<td><a href="javascript:appWorkerView('+(valor.ID)+');" title="'+(valor.ID)+'" style="'+((valor.estado==0)?('color:#bfbfbf;'):(''))+'">'+(valor.empleado)+'</a></td>'+
                 '<td>'+(valor.nombrecorto)+'</td>'+
                 '<td>'+(valor.cargo)+'</td>'+
                 '<td></td>'+
@@ -105,12 +109,19 @@ function appWorkersBotonUpdate(){
   }
 }
 
-function appWorkerBotonNuevo(){
+function appWorkersBotonNuevo(){
   Persona.openBuscar('VerifyWorker',rutaSQL,true,true,false);
   $('#btn_modPersInsert').off('click');
 
   $('#btn_modPersInsert').on('click',handlerWorkersInsert_Click);
   $('#btn_modPersAddToForm').on('click',handlerWorkersAddToForm_Click);
+}
+
+function appWorkersBotonViewAll(){
+  document.querySelector("#icoViewAll").classList.toggle("fa-toggle-on");
+  document.querySelector("#icoViewAll").classList.toggle("fa-toggle-off");
+  document.querySelector("#hidViewAll").value = (document.querySelector("#hidViewAll").value==1) ? (0) : (1);
+  appWorkersGrid();
 }
 
 function handlerWorkersInsert_Click(e){
