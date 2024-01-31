@@ -59,35 +59,10 @@
           <div class="box-body">
             <div class="col-md-12">
               <div class="box-body">
-                <input type="hidden" id="hid_pagoID" value="">
-                <div class="row">
-                  <div class="col-xs-6">
-                    <div id="div_Codigo" class="form-group" style="margin-bottom:5px;">
-                      <div class="input-group">
-                        <span class="input-group-addon" style="background:#eeeeee;"><b>Codigo</b></span>
-                        <input id="txt_Codigo" type="text" maxlength="4" class="form-control" placeholder="0000" disabled="disabled"/>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-xs-6">
-                    <div id="div_Abrev" class="form-group" style="margin-bottom:5px;">
-                      <div class="input-group">
-                        <span class="input-group-addon" style="background:#eeeeee;"><b>Abrev.</b></span>
-                        <input id="txt_Abrev" type="text" maxlength="5" class="form-control" placeholder="abrev..."/>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div id="div_Nombre" class="form-group" style="margin-bottom:5px;">
-                  <div class="input-group">
-                    <span class="input-group-addon" style="background:#eeeeee;"><b>Nombre</b></span>
-                    <input id="txt_Nombre" type="text" maxlength="50" class="form-control" placeholder="nombre..."/>
-                  </div>
-                </div>
                 <div class="form-group" style="margin-bottom:5px;">
                   <div class="input-group">
-                    <span class="input-group-addon" title="Tipo de Producto" style="background:#eeeeee;"><b>Tipo Prod</b></span>
-                    <select id="cbo_Tipo" class="form-control selectpicker"></select>
+                    <span class="input-group-addon" title="Tipo de Producto" style="background:#eeeeee;"><b>Tipo Producto</b></span>
+                    <select id="cbo_Producto" class="form-control selectpicker"></select>
                   </div>
                 </div>
                 <div class="form-group" style="margin-bottom:5px;">
@@ -97,6 +72,18 @@
                       <option value=1>SI</option>
                       <option value=0>NO</option>
                     </select>
+                  </div>
+                </div>
+                <div id="div_Importe" class="form-group" style="margin-bottom:5px;">
+                  <div class="input-group">
+                    <span class="input-group-addon" style="background:#eeeeee;"><b>Importe</b></span>
+                    <input id="txt_Importe" type="number" class="form-control" placeholder="0.00" style="width:150px;text-align:right;"/>
+                  </div>
+                </div>
+                <div id="div_Fecha" class="form-group" style="margin-bottom:5px;">
+                  <div class="input-group">
+                    <span class="input-group-addon" style="background:#eeeeee;"><b>Fecha</b></span>
+                    <input id="txt_Fecha" type="text" class="form-control" style="width:105px;"/>
                   </div>
                 </div>
               </div>

@@ -55,25 +55,14 @@
           echo json_encode($rpta);
           break;
         case "insPago":
-          //obteniendo nuevo ID y otros
-          $qry = $db->query_all("select COALESCE(max(id)+1,1) as maxi from bn_productos;");
-          $id = reset($qry)["maxi"];
-          $qry = $db->query_all("select right('0000'||cast(max(codigo::integer+1) as text),4) as code from bn_productos where id_coopac=".$web->coopacID);
-          $codigo = reset($qry)["code"];
-          $qry = $db->query_all("select id_tipo_oper from bn_productos where id=".$data->tipoID);
-          $id_tipo_oper = reset($qry)["id_tipo_oper"];
-
           //agregando a la tabla
-          $sql = "insert into bn_productos values (:id,:codigo,:nombre,:abrevia,:operID,:coopacID,:tipoID,:obliga,:estado,:sysIP,:userID,now())";
+          $sql = "insert into app_colprod values (:colegioID,:productoID,:obliga,:importe,:fecha,:estado,:sysIP,:userID,now())";
           $params = [
-            ":id"=>$id,
-            ":codigo"=>$codigo,
-            ":nombre"=>$data->nombre,
-            ":abrevia"=>$data->abrevia,
-            ":operID"=>$id_tipo_oper,
-            ":coopacID"=>$web->coopacID,
-            ":tipoID"=>$data->tipoID,
+            ":productoID"=>$data->productoID,
+            ":colegioID"=>$web->colegioID,
             ":obliga"=>$data->obliga,
+            ":importe"=>$data->importe,
+            ":fecha"=>$data->fecha,
             ":estado"=>1,
             ":sysIP"=>$fn->getClientIP(),
             ":userID"=>$_SESSION['usr_ID']
@@ -125,9 +114,8 @@
         case "startPago":
           //respuesta
           $rpta = array(
-            "comboTipoProd" => $fn->getComboBox("select id,nombre from bn_productos where id_padre is null;"),
-            "fecha" => $fn->getFechaActualDB(),
-            "coopac" => $web->coopacID);
+            "comboTipoProd" => $fn->getComboBox("select id,nombre from app_productos where estado=1 and id not in(select id_producto from app_colprod);")
+          );
           echo json_encode($rpta);
           break;
       }

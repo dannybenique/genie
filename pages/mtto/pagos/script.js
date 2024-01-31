@@ -10,7 +10,6 @@ function appPagosGrid(){
   appFetch(datos,rutaSQL).then(resp => {
     let disabledDelete = (menu.mtto.submenu.pagos.cmdDelete===1) ? "" : "disabled";
     document.querySelector("#chk_All").disabled = (menu.mtto.submenu.pagos.cmdDelete===1) ? false : true;
-    console.log(resp);
     if(resp.pagos.length>0){
       let fila = "";
       resp.pagos.forEach((valor,key)=>{
@@ -56,11 +55,10 @@ function appPagoNuevo(){
   appFetch({ TipoQuery:'startPago' },rutaSQL).then(resp => {
     try{
       $(".form-group").removeClass("has-error");
-      document.querySelector("#hid_productoID").value = ("0");
-      document.querySelector("#txt_Codigo").value = ("");
-      document.querySelector("#txt_Abrev").value = ("");
-      document.querySelector("#txt_Nombre").value = ("");
-      appLlenarDataEnComboBox(resp.comboTipoProd,"#cbo_Tipo",0); //tipos de pago
+      $("#txt_Fecha").datepicker("setDate",moment().format("DD/MM/YYYY"));
+      document.querySelector("#txt_Importe").value = ("");
+      document.querySelector("#cbo_Obliga").value = 1;
+      appLlenarDataEnComboBox(resp.comboTipoProd,"#cbo_Producto",0); //tipos de pago
       document.querySelector("#grid").style.display = 'none';
       document.querySelector("#edit").style.display = 'block';
     } catch (err){
@@ -82,12 +80,11 @@ function appPagoView(pagoID){
   appFetch(datos,rutaSQL).then(resp => {
     console.log(resp);
     try{
-      document.querySelector("#hid_productoID").value = resp.ID;
       document.querySelector("#txt_Codigo").value = (resp.codigo);
       document.querySelector("#txt_Abrev").value = (resp.abrev);
       document.querySelector("#txt_Nombre").value = (resp.nombre);
       document.querySelector("#cbo_Obliga").value = ((resp.obliga)?1:0);
-      appLlenarDataEnComboBox(resp.comboTipoProd,"#cbo_Tipo",resp.id_padre); //tipo pago
+      appLlenarDataEnComboBox(resp.comboTipoProd,"#cbo_Producto",resp.id_padre); //tipo pago
       document.querySelector('#grid').style.display = 'none';
       document.querySelector('#edit').style.display = 'block';
     } catch(err){
@@ -141,16 +138,14 @@ function modGetDataToDataBase(){
   let esError = false;
 
   $(".form-group").removeClass("has-error");
-  if(document.querySelector("#txt_Abrev").value=="")  { document.querySelector("#div_Abrev").className = "form-group has-error"; esError = true; }
-  if(document.querySelector("#txt_Nombre").value=="") { document.querySelector("#div_Nombre").className = "form-group has-error"; esError = true; }
+  if(document.querySelector("#txt_Importe").value=="")  { document.querySelector("#div_Importe").className = "form-group has-error"; esError = true; }
 
   if(!esError){
     rpta = {
-      ID : document.querySelector("#hid_productoID").value,
-      abrevia : document.querySelector("#txt_Abrev").value,
-      nombre : document.querySelector("#txt_Nombre").value,
+      productoID  : document.querySelector("#cbo_Producto").value,
+      fecha : appConvertToFecha(document.querySelector("#txt_Fecha").value),
+      importe : document.querySelector("#txt_Importe").value,
       obliga : document.querySelector("#cbo_Obliga").value,
-      tipoID : document.querySelector("#cbo_Tipo").value
     }
   }
   return rpta;
