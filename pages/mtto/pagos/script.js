@@ -18,9 +18,9 @@ function appPagosGrid(){
                 '<td style="text-align:center;">'+(valor.codigo)+'</td>'+
                 '<td style="text-align:center;">'+((valor.obliga==1)?('<i class="fa fa-info-circle" style="color:#AF2031;" title="Obligatorio"></i>'):(''))+'</td>'+
                 '<td><a href="javascript:appPagoView('+(valor.ID)+');" title="'+(valor.ID)+'">'+(valor.pago)+'</a></td>'+
-                '<td>'+(valor.abrevia)+'</td>'+
-                '<td>'+(valor.importe)+'</td>'+
-                '<td>'+(valor.fecha)+'</td>'+
+                '<td style="text-align:center;">'+(valor.abrevia)+'</td>'+
+                '<td style="text-align:right;">'+appFormatMoney(valor.importe,2)+'</td>'+
+                '<td style="text-align:center;">'+(valor.fecha)+'</td>'+
                 '<td></td>'+
                 '</tr>';
       });
@@ -74,17 +74,16 @@ function appPagoView(pagoID){
 
   let datos = {
     TipoQuery : 'editPago',
-    pagoID : pagoID
+    productoID : pagoID
   }
 
   appFetch(datos,rutaSQL).then(resp => {
-    console.log(resp);
     try{
-      document.querySelector("#txt_Codigo").value = (resp.codigo);
-      document.querySelector("#txt_Abrev").value = (resp.abrev);
-      document.querySelector("#txt_Nombre").value = (resp.nombre);
-      document.querySelector("#cbo_Obliga").value = ((resp.obliga)?1:0);
-      appLlenarDataEnComboBox(resp.comboTipoProd,"#cbo_Producto",resp.id_padre); //tipo pago
+      $(".form-group").removeClass("has-error");
+      $("#txt_Fecha").datepicker("setDate",moment(resp.fecha).format("DD/MM/YYYY"));
+      document.querySelector("#txt_Importe").value = appFormatMoney(resp.importe,2);
+      document.querySelector("#cbo_Obliga").value = (resp.obliga);
+      appLlenarDataEnComboBox(resp.comboTipoProd,"#cbo_Producto",resp.productoID); //tipo pago
       document.querySelector('#grid').style.display = 'none';
       document.querySelector('#edit').style.display = 'block';
     } catch(err){

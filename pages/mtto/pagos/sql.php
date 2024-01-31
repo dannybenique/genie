@@ -36,18 +36,26 @@
           echo json_encode($rpta);
           break;
         case "editPago":
-          //cargar datos de la persona
-          $qry = $db->query_all("select * from bn_productos where id=".$data->productoID);
+          //cargar datos de producto por colegio
+          $sql = "select p.nombre,p.abrevia,p.codigo,cp.* from app_productos p join app_colprod cp on p.id=cp.id_producto where id_producto=:productoID and id_colegio=:colegioID;";
+          $params = [
+            ":productoID"=>$data->productoID,
+            ":colegioID"=>$web->colegioID
+          ];
+          $qry = $db->query_all($sql,$params);
+          
           if ($qry) {
             $rs = reset($qry);
             $rpta = array(
-              "ID" => $rs["id"],
+              "productoID" => $rs["id_producto"],
               "codigo" => $rs["codigo"],
               "abrev" => ($rs["abrevia"]),
               "nombre" => ($rs["nombre"]),
-              "id_padre" => ($rs["id_padre"]),
-              "obliga" => ($rs["obliga"]*1),
-              "comboTipoProd" => $fn->getComboBox("select id,nombre from bn_productos where id_padre is null;"),
+              "obliga" => ($rs["obliga"]),
+              "importe" => ($rs["importe"]*1),
+              "fecha" => ($rs["fecha"]),
+              "estado" => ($rs["estado"]),
+              "comboTipoProd" => $fn->getComboBox("select id,nombre from app_productos where estado=1;"),
             );
           }
 
@@ -75,16 +83,13 @@
           echo json_encode($rpta);
           break;
         case "updPago":
-          $qry = $db->query_all("select id_tipo_oper from bn_productos where id=".$data->tipoID);
-          $id_tipo_oper = reset($qry)["id_tipo_oper"];
-          $sql = "update bn_productos set nombre=:nombre,abrevia=:abrevia,id_tipo_oper=:operID,id_padre=:tipoID,obliga=:obliga,sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id=:id";
+          $sql = "update app_colprod set obliga=:obliga,importe=:importe,fecha=:fecha,sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id_producto=:productoID and id_colegio=:colegioID";
           $params = [
-            ":id"=>$data->ID,
-            ":nombre"=>$data->nombre,
-            ":abrevia"=>$data->abrevia,
-            ":operID"=>$id_tipo_oper,
-            ":tipoID"=>$data->tipoID,
+            ":productoID"=>$data->productoID,
+            ":colegioID"=>$web->colegioID,
             ":obliga"=>$data->obliga,
+            ":importe"=>$data->importe,
+            ":fecha"=>$data->fecha,
             ":sysIP"=>$fn->getClientIP(),
             ":userID"=>$_SESSION['usr_ID']
           ];

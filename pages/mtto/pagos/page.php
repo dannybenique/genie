@@ -38,9 +38,9 @@
                   <th style="width:70px;text-align:center;">Codigo</th>
                   <th style="width:30px;text-align:center;"><i class="fa fa-info-circle" title="Obligatorio"></i></th>
                   <th style="width:250px;">Pago</th>
-                  <th style="width:70px;" title="Abreviatura">Abrev</th>
-                  <th style="width:100px;" title="Importe">Importe</th>
-                  <th style="width:80px;" title="Fecha de cumplimiento">Fecha</th>
+                  <th style="width:70px;text-align:center;" title="Abreviatura">Abrev</th>
+                  <th style="width:100px;text-align:right;" title="Importe">Importe</th>
+                  <th style="width:105px;text-align:center;" title="Fecha de cumplimiento">Fecha</th>
                   <th></th>
                 </tr>
               </thead>
@@ -77,7 +77,7 @@
                 <div id="div_Importe" class="form-group" style="margin-bottom:5px;">
                   <div class="input-group">
                     <span class="input-group-addon" style="background:#eeeeee;"><b>Importe</b></span>
-                    <input id="txt_Importe" type="number" class="form-control" placeholder="0.00" style="width:150px;text-align:right;"/>
+                    <input id="txt_Importe" type="number" class="form-control" placeholder="0.00" style="width:120px;text-align:right;"/>
                   </div>
                 </div>
                 <div id="div_Fecha" class="form-group" style="margin-bottom:5px;">
