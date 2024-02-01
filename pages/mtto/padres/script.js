@@ -15,7 +15,6 @@ function appPadresGrid(){
       resp.tabla.forEach((valor,key)=>{
         fila += '<tr>'+
                 '<td><input type="checkbox" name="chk_Borrar" value="'+(valor.ID)+'" '+disabledDelete+'/></td>'+
-                '<td><i class="fa fa-paperclip" title="Auditoria"></i></td>'+
                 '<td>'+(valor.nro_dui)+'</td>'+
                 '<td><a href="javascript:appPadreView('+(valor.ID)+');" title="'+(valor.ID)+'">'+(valor.padre)+'</a></td>'+
                 '<td>'+(valor.direccion)+'</td>'+

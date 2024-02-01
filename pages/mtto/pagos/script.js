@@ -16,7 +16,7 @@ function appPagosGrid(){
         fila += '<tr>'+
                 '<td><input type="checkbox" name="chk_Borrar" value="'+(valor.ID)+'" '+(disabledDelete)+'/></td>'+
                 '<td style="text-align:center;">'+(valor.codigo)+'</td>'+
-                '<td style="text-align:center;">'+((valor.obliga==1)?('<i class="fa fa-info-circle" style="color:#AF2031;" title="Obligatorio"></i>'):(''))+'</td>'+
+                '<td style="text-align:center;">'+((valor.obliga==1)?('<i class="fa fa-exclamation" style="color:#AF2031;" title="Obligatorio"></i>'):(''))+'</td>'+
                 '<td><a href="javascript:appPagoView('+(valor.ID)+');" title="'+(valor.ID)+'">'+(valor.pago)+'</a></td>'+
                 '<td style="text-align:center;">'+(valor.abrevia)+'</td>'+
                 '<td style="text-align:right;">'+appFormatMoney(valor.importe,2)+'</td>'+

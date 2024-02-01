@@ -36,7 +36,7 @@
                 <tr>
                   <th style="width:25px;"><input type="checkbox" id="chk_All" onclick="javascript:toggleAll(this,'chk_Borrar');" /></th>
                   <th style="width:70px;text-align:center;">Codigo</th>
-                  <th style="width:30px;text-align:center;"><i class="fa fa-info-circle" title="Obligatorio"></i></th>
+                  <th style="width:30px;text-align:center;"><i class="fa fa-exclamation" title="Obligatorio"></i></th>
                   <th style="width:250px;">Pago</th>
                   <th style="width:70px;text-align:center;" title="Abreviatura">Abrev</th>
                   <th style="width:100px;text-align:right;" title="Importe">Importe</th>

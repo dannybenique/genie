@@ -40,9 +40,8 @@
               <thead>
                 <tr>
                   <th style="width:25px;"><input type="checkbox" id="chk_All" onclick="toggleAll(this,'chk_Borrar');" /></th>
-                  <th style="width:25px;"><i class="fa fa-paperclip" title="Auditoria"></i></th>
                   <th style="width:110px;">DNI</th>
-                  <th style="">Persona <i class="fa fa-sort"></i></th>
+                  <th style="">Persona <i class="fa fa-sort-asc"></i></th>
                   <th style="">Direccion</th>
                 </tr>
               </thead>

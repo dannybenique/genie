@@ -1,4 +1,4 @@
-<?php if(isset($menu->oper->submenu->solicred)){?>
+<?php if(isset($menu->oper->submenu->matriculas)){?>
 <!-- bootstrap datepicker -->
 <link rel="stylesheet" href="libs/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
 <script src="libs/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
@@ -6,10 +6,10 @@
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-  <h1><i class="fa fa-gg-circle"></i> <b>Creditos</b></h1>
+  <h1><i class="fa fa-gg-circle"></i> <b>Matriculas</b></h1>
   <ol class="breadcrumb">
     <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-    <li class="active">Creditos</li>
+    <li class="active">Matriculas</li>
   </ol>
 </section>
 <!-- Main content -->

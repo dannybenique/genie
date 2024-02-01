@@ -150,9 +150,8 @@
       case "cajaAhorros"     : $menuCaja = 'active menu-open'; $appPage = "pages/caja/ahorros/page.php"; break;
       case "cajaExtornos"    : $menuCaja = 'active menu-open'; $appPage = "pages/caja/extornos/page.php"; break;
       case "cajaBilletaje"   : $menuCaja = 'active menu-open'; $appPage = "pages/caja/billetaje/page.php"; break;
-      case "operCreditos"        : $menuOper = 'active menu-open'; $appPage = "pages/oper/creditos/page.php"; break;
-      case "operSimulaCreditos"  : $menuOper = 'active menu-open'; $appPage = "pages/oper/simula/creditos.php"; break;
-      case "operSolicitaCredito" : $menuOper = 'active menu-open'; $appPage = "pages/oper/solicred/page.php"; break;
+      case "operMatriculas" : $menuOper = 'active menu-open'; $appPage = "pages/oper/matriculas/page.php"; break;
+      case "operSolMatri"   : $menuOper = 'active menu-open'; $appPage = "pages/oper/solmatri/page.php"; break;
       case "mttoPagos"     : $menuMtto = 'active menu-open'; $appPage = "pages/mtto/pagos/page.php"; break;
       case "mttoAlumnos"   : $menuMtto = 'active menu-open'; $appPage = "pages/mtto/alumnos/page.php"; break;
       case "mttoPadres"    : $menuMtto = 'active menu-open'; $appPage = "pages/mtto/padres/page.php"; break;

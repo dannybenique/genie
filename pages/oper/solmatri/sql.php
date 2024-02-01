@@ -39,33 +39,26 @@
         return $tabla; 
       }
       switch ($data->TipoQuery) {
-        case "selSoliCred":
+        case "selSolMatri":
           $tabla = array();
           $buscar = strtoupper($data->buscar);
-          $whr = " and id_coopac=:coopacID and (socio LIKE :buscar or nro_dui LIKE :buscar) ";
-          $params = [":coopacID"=>$web->coopacID,":buscar"=>'%'.$buscar.'%'];
-          $qry = $db->query_all("select count(*) as cuenta from vw_prestamos_min where estado=3 ".$whr.";",$params);
+          $whr = " and id_colegio=:colegioID and (alumno LIKE :buscar or nro_dui LIKE :buscar) ";
+          $params = [":colegioID"=>$web->colegioID,":buscar"=>'%'.$buscar.'%'];
+          $qry = $db->query_all("select count(*) as cuenta from vw_matriculas where estado=3 ".$whr.";",$params);
           $rsCount = reset($qry);
 
-          $sql = "select * from vw_prestamos_min where estado=3 ".$whr." order by socio limit 25 offset 0;";
+          $sql = "select * from vw_matriculas where estado=3 ".$whr." order by alumno limit 25 offset 0;";
           $qry = $db->query_all($sql,$params);
           if ($qry) {
             foreach($qry as $rs){
               $tabla[] = array(
                 "ID" => $rs["id"],
-                "codigo" => $rs["codigo"],
-                "fecha" => $rs["fecha_solicred"],
-                "otorga" => $rs["fecha_otorga"],
+                "fecha_solmatri" => $rs["fecha_solicita"],
                 "nro_dui"=> str_replace($buscar, '<span style="background:yellow;">'.$buscar.'</span>', $rs["nro_dui"]),
-                "socio" => str_ireplace($buscar, '<span style="background:yellow;">'.$buscar.'</span>', $rs["socio"]),
-                "tipo_oper" => $rs["tipo_oper"],
-                "producto" => $rs["producto"],
-                "mon_abrevia" => $rs["mon_abrevia"],
-                "tiposbs" => $rs["tipo_sbs"],
-                "destsbs" => $rs["dest_sbs"],
-                "tasa" => $rs["tasa"]*1,
-                "importe" => $rs["importe"]*1,
-                "nro_cuotas" => $rs["nro_cuotas"]*1
+                "alumno" => str_ireplace($buscar, '<span style="background:yellow;">'.$buscar.'</span>', $rs["alumno"]),
+                "nivel" => $rs["nivel"],
+                "grado" => $rs["grado"],
+                "seccion" => $rs["seccion"]
               );
             }
           }
@@ -136,19 +129,13 @@
           $rpta = array("error"=>false, "delete"=>$data->arr);
           echo json_encode($rpta);
           break;
-        case "newSoliCred":
+        case "newSolMatri":
           //respuesta
           $rpta = array(
-            "comboAgencias" => $fn->getComboBox("select id,nombre from bn_bancos where estado=1 and id_padre=".$web->coopacID),
-            "comboEmpleados" => $fn->getComboBox("select id_empleado as id,upper(nombrecorto) as nombre from vw_empleados where estado=1 and id_coopac=".$web->coopacID),
-            "comboProductos" => $fn->getComboBox("select id,nombre from bn_productos where estado=1 and id_padre=4 and id_coopac=".$web->coopacID),
-            "comboTipoSBS" => $fn->getComboBox("select s.id,s.nombre from sis_tipos s join bn_tipos b on(b.id_tipo=s.id) where s.id_padre=5 and b.id_coopac=".$web->coopacID), //tipos credito SBS
-            "comboDestSBS" => $fn->getComboBox("select id,nombre from sis_tipos where id_padre=6 order by id;"), //destino credito SBS
-            "comboClasifica" => $fn->getComboBox("select id,nombre from sis_tipos where id_padre=3 order by id;"), //clasificacion crediticia
-            "comboCondicion" => $fn->getComboBox("select id,nombre from sis_tipos where id_padre=4 order by id;"), //condicion credito
-            "comboMoneda" => $fn->getComboBox("select id,nombre from sis_tipos where id_padre=1 order by id;"), //tipos moneda
+            "comboNiveles" => ($fn->getComboBox("select id,nombre from app_niveles where id_padre is null order by nombre;")),
+            "comboGrados" => ($fn->getComboBox("select id,nombre from app_niveles where id_padre=2 order by abrevia;")),
+            "comboSecciones" => ($fn->getComboBox("select id,nombre from app_niveles where id_padre=6 order by abrevia;")),
             "fecha" => $fn->getFechaActualDB(),
-            "coopac" => $web->coopacID,
             "rolUser" => $_SESSION['usr_data']['rolID'],
             "rolROOT" => 101
           );
@@ -256,32 +243,6 @@
           $rpta = $tabla;
           echo json_encode($rpta);
           break;
-        case "cambiarTipoSBS":
-          //respuesta
-          $rpta = $fn->getComboBox("select id,nombre from sis_tipos where id_padre=".$data->padreID." order by id;");
-          echo json_encode($rpta);
-          break;
-        case "simulaCredito":
-          //obtenemos la simulacion
-          $pivot = ($data->TipoCredito=="1")?($data->pricuota):($data->frecuencia);
-          $tabla = $fn->getSimulacionCredito(
-            $data->TipoCredito,
-            $data->importe,
-            $data->TEA,
-            $data->segDesgr,
-            $data->nroCuotas,
-            $data->fecha,
-            $pivot
-          );
-
-          //tasas
-          $qry = $db->query_all("select fn_get_tem(".$data->TEA.") as tem,fn_get_ted(".$data->TEA.") as  ted;");
-          $rs = reset($qry);
-          
-          //respuesta
-          $rpta = array("error"=>false,"tabla"=>$tabla[1], "tea"=>$data->TEA, "tem"=>$rs["tem"], "ted"=>$rs["ted"]);
-          echo json_encode($rpta);
-          break;
         case "aprobarSoliCred":
           //inicialmente el estado debe ser 3 en bn_saldos
           $sql = "select sp_prestamos (:TipoExec,:id,:socioID,:coopacID,:agenciaID,:promotorID,:analistaID,:apruebaID,:productoID,:tiposbsID,:destsbsID,:clasificaID,:condicionID,:monedaID,:importe,:saldo,:tasa,:mora,:desgr,:nrocuotas,:fechaSoli,:fechaApru,:fechaOtor,:fechaPriC,:tipocredID,:frecuencia,:estado,:sysIP,:userID,:observac) as nro;";
@@ -329,14 +290,14 @@
           //respuesta
           echo json_encode($rpta);
           break;
-        case "VerifySoliCred":
+        case "VerifySolMatri":
           $tablaPers = ""; //almacena los datos de la persona
           $persona = false; //indica que existe en personas
           $activo = false; //indica que encontro en tabla de prestamos
           
           //verificar en Personas
-          $sql = "select p.id from personas p, bn_socios s where p.id=s.id_socio and (p.nro_dui=:nrodni) and (s.id_coopac=:coopacID);";
-          $params = [":nrodni"=>$data->nroDNI,":coopacID"=>$web->coopacID];
+          $sql = "select p.id from personas p join app_alumnos a on  p.id=a.id where (p.nro_dui=:nrodni) and (a.id_colegio=:colegioID);";
+          $params = [":nrodni"=>$data->nroDNI,":colegioID"=>$web->colegioID];
           $qry = $db->query_all($sql,$params);
           if($qry){
             $rs = reset($qry);
@@ -351,6 +312,20 @@
             "persona"=>$persona,
             "activo"=>$activo,
             "mensajeNOadd" => "");
+          echo json_encode($rpta);
+          break;
+        case "comboNivel":
+          switch($data->tipoID){
+            case 3: //actualiza grados
+              $grados = $fn->getComboBox("select id,nombre from app_niveles where id_padre=".$data->padreID." order by abrevia;");
+              $secciones = $fn->getComboBox("select id,nombre from app_niveles where id_padre=".$grados[0]["ID"]." order by abrevia;");
+              $rpta = array( "grados" => $grados, "secciones" => $secciones );
+              break;
+            case 4: //actualiza secciones
+              $secciones = $fn->getComboBox("select id,nombre from app_niveles where id_padre=".$data->padreID." order by abrevia;");
+              $rpta = array( "secciones" => $secciones );
+              break;
+          }
           echo json_encode($rpta);
           break;
       }
