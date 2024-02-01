@@ -19,10 +19,11 @@ function appSolMatriGrid(){
         fila += '<tr>'+
                 '<td><input type="checkbox" name="chk_Borrar" value="'+(valor.ID)+'" '+disabledDelete+'/></td>'+
                 '<td>'+((menu.oper.submenu.solmatri.aprueba===1)?('<a href="javascript:appSolMatriAprueba('+(valor.ID)+');"><i class="fa fa-thumbs-up" style="color:#FF0084;"></i></a>'):(''))+'</td>'+
+                '<td><a href="javascript:appSolMatriView('+(valor.ID)+');" title="'+(valor.ID)+'">'+(valor.codigo)+'</a></td>'+
                 '<td>'+(moment(valor.fecha_solmatri).format("DD/MM/YYYY"))+'</td>'+
                 '<td>'+(valor.nro_dui)+'</td>'+
                 '<td>'+(valor.alumno)+'</td>'+
-                '<td><a href="javascript:appSolMatriView('+(valor.ID)+');" title="'+(valor.ID)+'">'+(valor.codigo)+(' &raquo; ')+(valor.producto)+'; '+(valor.mon_abrevia)+'; '+appFormatMoney(valor.tasa,2)+'%</a></td>'+
+                '<td>'+(valor.nivel)+' &raquo; '+(valor.grado)+' &raquo; '+(valor.seccion)+'</td>'+
                 '</tr>';
       });
       $('#grdDatos').html(fila);
@@ -196,7 +197,7 @@ function appSolMatriSetData(data,txtSocio){
   document.querySelector("#txt_SolMatriSegDesgr").value = (Number(data.desgr).toFixed(2));
   document.querySelector("#txt_SolMatriNroCuotas").value = (data.nrocuotas);
   document.querySelector("#txt_SolMatriCuota").value = (data.cuota);
-  document.querySelector("#txt_SolMatriObserv").value = (data.observac);
+  document.querySelector("#txt_SolMatriObservac").value = (data.observac);
 }
 
 function appSolMatriClear(txtSocio){
@@ -217,14 +218,14 @@ function appSolMatriClear(txtSocio){
   
   appFetch(datos,rutaSQL).then(resp => {
     appLlenarDataEnComboBox(resp.comboNiveles,"#cbo_SolMatriNiveles",2); //seteado a primaria
-    appLlenarDataEnComboBox(resp.comboGrados,"#cbo_SolMatriGrados",0);
-    appLlenarDataEnComboBox(resp.comboSecciones,"#cbo_SolMatriSecciones",0);
+    appLlenarDataEnComboBox(resp.comboGrados,"#cbo_SolMatriGrados",0); //prmer grado
+    appLlenarDataEnComboBox(resp.comboSecciones,"#cbo_SolMatriSecciones",0); //seccion A
     
     document.querySelector("#hid_SolMatriID").value = (0);
     document.querySelector("#txt_SolMatriAlumno").value = (txtSocio);
     document.querySelector("#txt_SolMatriFechaSolicita").disabled = (resp.rolUser==resp.rolROOT) ? (false):(true);
     document.querySelector("#txt_SolMatriCodigo").value = ("");
-    document.querySelector("#txt_SolMatriObserv").value = ("");
+    document.querySelector("#txt_SolMatriObservac").value = ("");
 
     $("#txt_SolMatriFechaSolicita").datepicker("setDate",moment(resp.fecha).format("DD/MM/YYYY"));
   });
@@ -233,14 +234,7 @@ function appSolMatriClear(txtSocio){
 function appSolMatriValidarCampos(){
   let esError = false;
   $('.form-group').removeClass('has-error');
-  if(document.querySelector("#txt_SolMatriImporte").value=="") { document.querySelector("#div_SolMatriImporte").className = "form-group has-error"; esError = true; }
-  if(document.querySelector("#txt_SolMatriNroCuotas").value=="")  { document.querySelector("#div_SolMatriNroCuotas").className = "form-group has-error"; esError = true; }
-  if(document.querySelector("#txt_SolMatriTasa").value=="")  { document.querySelector("#div_SolMatriTasa").className = "form-group has-error"; esError = true; }
-  if(document.querySelector("#txt_SolMatriMora").value=="")  { document.querySelector("#div_SolMatriMora").className = "form-group has-error"; esError = true; }
-  if(document.querySelector("#txt_SolMatriSegDesgr").value=="")  { document.querySelector("#div_SolMatriSegDesgr").className = "form-group has-error"; esError = true; }
-  if(document.querySelector("#txt_SolMatriFechaOtorga").value=="")  { document.querySelector("#div_SolMatriFechaOtorga").className = "form-group has-error"; esError = true; }
-  if(document.querySelector("#txt_SolMatriFechaPriCuota").value=="")  { document.querySelector("#div_SolMatriFechaPriCuota").className = "form-group has-error"; esError = true; }
-  if(document.querySelector("#cbo_SolMatriTipo").value==2 && document.querySelector("#txt_SolMatriFrecuencia").value=="")  { document.querySelector("#div_SolMatriFrecuencia").className = "form-group has-error"; esError = true; }
+  if(document.querySelector("#txt_SolMatriFechaSolicita").value=="")  { document.querySelector("#div_SolMatriFechaSolicita").className = "form-group has-error"; esError = true; }
   return esError;
 }
 
@@ -249,41 +243,23 @@ function appSolMatriGetDatosToDatabase(){
     TipoQuery : "execSolMatri",
     TipoExec : null,
     ID : document.querySelector('#hid_SolMatriID').value,
-    socioID : document.querySelector("#hid_PersID").value,
-    agenciaID : document.querySelector("#cbo_SolMatriAgencia").value,
-    promotorID : document.querySelector("#cbo_SolMatriPromotor").value,
-    analistaID : document.querySelector("#cbo_SolMatriAnalista").value,
-    productoID : document.querySelector("#cbo_SolMatriProducto").value,
-    tiposbsID : document.querySelector("#cbo_SolMatriTipoSBS").value,
-    destsbsID : document.querySelector("#cbo_SolMatriDestSBS").value,
-    clasificaID : document.querySelector("#cbo_SolMatriClasifica").value,
-    condicionID : document.querySelector("#cbo_SolMatriCondicion").value,
-    monedaID : document.querySelector("#cbo_SolMatriMoneda").value,
-    importe : appConvertToNumero(document.querySelector("#txt_SolMatriImporte").value),
-    saldo : appConvertToNumero(document.querySelector("#txt_SolMatriImporte").value),
-    tasa : appConvertToNumero(document.querySelector("#txt_SolMatriTasa").value),
-    mora : appConvertToNumero(document.querySelector("#txt_SolMatriMora").value),
-    desgr : appConvertToNumero(document.querySelector("#txt_SolMatriSegDesgr").value),
-    nrocuotas : appConvertToNumero(document.querySelector("#txt_SolMatriNroCuotas").value),
-    fecha_solmatri : appConvertToFecha(document.querySelector("#txt_SolMatriFechaSolici").value),
-    fecha_otorga : appConvertToFecha(document.querySelector("#txt_SolMatriFechaOtorga").value),
-    fecha_pricuota : appConvertToFecha(document.querySelector("#txt_SolMatriFechaPriCuota").value),
-    frecuencia : appConvertToNumero(document.querySelector("#txt_SolMatriFrecuencia").value),
-    tipocredID : document.querySelector("#cbo_SolMatriTipo").value,
-    observac : document.querySelector("#txt_SolMatriObserv").value
+    alumnoID : document.querySelector("#hid_PersID").value,
+    seccionID : document.querySelector("#cbo_SolMatriSecciones").value,
+    fecha_solicita : appConvertToFecha(document.querySelector("#txt_SolMatriFechaSolicita").value),
+    observac : document.querySelector("#txt_SolMatriObservac").value
   }
   return rpta;
 }
 
 function appPersonaSetData(data){
   //pestaña datos personales
+  document.querySelector("#hid_PersID").value = (data.ID);
   document.querySelector("#lbl_PersTipoNombres").innerHTML = ("Nombres");
   document.querySelector("#lbl_PersTipoProfesion").innerHTML = ("Profesion");
   document.querySelector("#lbl_PersTipoApellidos").style.display = 'block';
   document.querySelector("#lbl_PersTipoSexo").style.display = 'block';
   document.querySelector("#lbl_PersTipoECivil").style.display = 'block';
   document.querySelector("#lbl_PersTipoGIntruc").style.display = 'block';
-  document.querySelector("#hid_PersID").value = (data.ID);
   document.querySelector("#lbl_PersNombres").innerHTML = (data.nombres);
   document.querySelector("#lbl_PersApellidos").innerHTML = (data.ap_paterno+" "+data.ap_materno);
   document.querySelector("#lbl_PersTipoDNI").innerHTML = (data.tipoDUI);

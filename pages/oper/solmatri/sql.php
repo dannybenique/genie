@@ -56,6 +56,7 @@
                 "fecha_solmatri" => $rs["fecha_solicita"],
                 "nro_dui"=> str_replace($buscar, '<span style="background:yellow;">'.$buscar.'</span>', $rs["nro_dui"]),
                 "alumno" => str_ireplace($buscar, '<span style="background:yellow;">'.$buscar.'</span>', $rs["alumno"]),
+                "codigo" => $rs["codigo"],
                 "nivel" => $rs["nivel"],
                 "grado" => $rs["grado"],
                 "seccion" => $rs["seccion"]
@@ -65,36 +66,20 @@
           $rpta = array("tabla"=>$tabla,"cuenta"=>$rsCount["cuenta"]);
           echo json_encode($rpta);
           break;
-        case "execSoliCred":
-          //inicialmente el estado debe ser 3 en bn_saldos
-          $sql = "select sp_prestamos (:TipoExec,:id,:socioID,:coopacID,:agenciaID,:promotorID,:analistaID,:apruebaID,:productoID,:tiposbsID,:destsbsID,:clasificaID,:condicionID,:monedaID,:importe,:saldo,:tasa,:mora,:desgr,:nrocuotas,:fechaSoli,:fechaApru,:fechaOtor,:fechaPriC,:tipocredID,:frecuencia,:estado,:sysIP,:userID,:observac) as nro;";
+        case "execSolMatri":
+          //inicialmente el estado debe ser 3 en la matricula
+          $sql = "select sp_matriculas (:TipoExec,:id,:colegioID,:alumnoID,:seccionID,:userSolicitaID,:userApruebaID,:fechaSolicita,:fechaAprueba,:fechaMatricula,:estado,:sysIP,:userID,:observac) as nro;";
           $params = [
             ":TipoExec"=>$data->TipoExec,
             ":id"=>$data->ID,
-            ":socioID"=>$data->socioID,
-            ":coopacID"=>$web->coopacID,
-            ":agenciaID"=>$data->agenciaID,
-            ":promotorID"=>$data->promotorID,
-            ":analistaID"=>$data->analistaID,
-            ":apruebaID"=>null,
-            ":productoID"=>$data->productoID,
-            ":tiposbsID"=>$data->tiposbsID,
-            ":destsbsID"=>$data->destsbsID,
-            ":clasificaID"=>$data->clasificaID,
-            ":condicionID"=>$data->condicionID,
-            ":monedaID"=>$data->monedaID,
-            ":importe"=>$data->importe,
-            ":saldo"=>$data->saldo,
-            ":tasa"=>$data->tasa,
-            ":mora"=>$data->mora,
-            ":desgr"=>$data->desgr,
-            ":nrocuotas"=>$data->nrocuotas,
-            ":fechaSoli"=>$data->fecha_solicred,
-            ":fechaApru"=>null,
-            ":fechaOtor"=>$data->fecha_otorga,
-            ":fechaPriC"=>$data->fecha_pricuota,
-            ":tipocredID"=>$data->tipocredID,
-            ":frecuencia"=>($data->tipocredID==2)?($data->frecuencia):(null),
+            ":colegioID"=>$web->colegioID,
+            ":alumnoID"=>$data->alumnoID,
+            ":seccionID"=>$data->seccionID,
+            ":userSolicitaID"=>$_SESSION['usr_ID'],
+            ":userApruebaID"=>null,
+            ":fechaSolicita"=>$data->fecha_solicita,
+            ":fechaAprueba"=>null,
+            ":fechaMatricula"=>null,
             ":estado"=>3,
             ":sysIP"=>$fn->getClientIP(),
             ":userID"=>$_SESSION['usr_ID'],
@@ -114,12 +99,14 @@
           break;
         case "delSoliCred":
           $params = array();
+          $sysIP = $fn->getClientIP();
+          $userID = $_SESSION['usr_ID'];
           for($i=0; $i<count($data->arr); $i++){
-            $sql = "update bn_saldos set estado=0,sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id=:id";
+            $sql = "update app_matriculas set estado=0,sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id=:id";
             $params = [
               ":id"=>$data->arr[$i],
-              ":sysIP"=>$fn->getClientIP(),
-              ":userID"=>$_SESSION['usr_ID']
+              ":sysIP"=>$sysIP,
+              ":userID"=>$userID
             ];
             $qry = $db->query_all($sql,$params);
             $rs = ($qry) ? (reset($qry)) : (null);

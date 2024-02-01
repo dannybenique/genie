@@ -39,6 +39,7 @@
                 <tr>
                   <th style="width:25px;"><input type="checkbox" id="chk_All" onclick="toggleAll(this,'chk_Borrar');" /></th>
                   <th style="width:30px;" title="Aprobacion de Solicitud"><i class="fa fa-thumbs-up"></i></th>
+                  <th style="width:110px;text-align:center;" title="Codigo de Matricula">Codigo</th>
                   <th style="width:85px;text-align:center;" title="Fecha de Solicitud">Solicitud</th>
                   <th style="width:110px;" title="Documento Unico de Identidad = DNI, RUC">DNI</th>
                   <th style="">Alumno <i class="fa fa-sort"></i></th>
@@ -73,7 +74,7 @@
                 </div>
                 <div class="col-md-7">
                   <div class="box-body">
-                    <div class="form-group" style="margin-bottom:3px;">
+                    <div id="div_SolMatriFechaSolicita" class="form-group" style="margin-bottom:3px;">
                       <div class="input-group">
                         <span class="input-group-addon" style="width:100px;background:#eeeeee;"><b>Solicita</b></span>
                         <input id="txt_SolMatriFechaSolicita" type="text" class="form-control" style="width:105px;" disabled="disabled" />
@@ -110,7 +111,7 @@
                   <div class="box-body">
                     <div class="form-group">
                       <div class="input-group">
-                        <textarea id="txt_SolMatriObserv" type="text" placeholder="Observaciones de solicitud..." cols="100" rows="5" style="width:100%;"></textarea>
+                        <textarea id="txt_SolMatriObservac" type="text" placeholder="Observaciones de solicitud..." cols="100" rows="5" style="width:100%;"></textarea>
                       </div>
                     </div>
                   </div>
