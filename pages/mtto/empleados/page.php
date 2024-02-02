@@ -92,6 +92,8 @@
             <button id="btnInsert" type="button" class="btn btn-primary pull-right" onclick="javascript:appWorkersBotonInsert();"><i class="fa fa-save"></i> Guardar</button>
             <button id="btnUpdate" type="button" class="btn btn-info pull-right" onclick="javascript:appWorkersBotonUpdate();"><i class="fa fa-save"></i> Actualizar</button>
           </div>
+          <div id="div_Estado" class="box-body" style="padding-top:0;">
+          </div>
         </div>
       </div>
       <div class="col-md-9">

@@ -117,7 +117,7 @@ function appWorkersBotonNuevo(){
   $('#btn_modPersAddToForm').on('click',handlerWorkersAddToForm_Click);
 }
 
-function appWorkersBotonViewAll(){
+function appWorkersBotonViewAll(){ //mostrar inclusive los empleados eliminados
   document.querySelector("#icoViewAll").classList.toggle("fa-toggle-on");
   document.querySelector("#icoViewAll").classList.toggle("fa-toggle-off");
   document.querySelector("#hidViewAll").value = (document.querySelector("#hidViewAll").value==1) ? (0) : (1);
@@ -171,6 +171,16 @@ function appWorkersBotonBorrar(){
   }
 }
 
+function appWorkersBotonEstado(){
+  let datos = {
+    TipoQuery : 'addWorker', //quitar el soft delete (estado)
+    workerID : document.querySelector("#lbl_ID").innerHTML
+  }
+  appFetch(datos,rutaSQL).then(resp => {
+    document.querySelector("#div_Estado").innerHTML = "";
+  });
+}
+
 function appWorkerView(personaID){
   let datos = {
     TipoQuery : 'viewWorker',
@@ -200,6 +210,7 @@ function appWorkerView(personaID){
 function appWorkerSetData(data){
   //info corta
   document.querySelector("#lbl_Codigo").innerHTML = (data.codigo);
+  if (data.estado==0) { document.querySelector("#div_Estado").innerHTML = '<button type="button" class="btn btn-success pull-right" onclick="javascript:appWorkersBotonEstado();"><i class="fa fa-flash"></i> Habilitar Empleado</button>'; }
 
   //pestaña de Empleado
   appLlenarDataEnComboBox(data.comboCargos,"#cbo_WorkerCargo",data.cargoID);

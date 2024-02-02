@@ -221,6 +221,20 @@
           $rpta = array("error"=>false, "delete"=>$data->arr);
           echo json_encode($rpta);
           break;
+        case "addWorker": //quitar el soft delete (estado)
+          $sql = "update app_empleados set estado=1,sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id=:workerID";
+          $params = [
+            ":workerID"=>$data->workerID,
+            ":sysIP"=>$fn->getClientIP(),
+            ":userID"=>$_SESSION['usr_ID']
+          ];
+          $qry = $db->query_all($sql,$params);
+          $rs = ($qry) ? (reset($qry)) : (null);
+
+          //respuesta
+          $rpta = array("error"=>(($rs==null)?true:false));
+          echo json_encode($rpta);
+          break;
         case "viewWorker":
           //respuesta
           $rpta = array(
