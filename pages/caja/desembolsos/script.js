@@ -1,6 +1,6 @@
 const rutaSQL = "pages/caja/desembolsos/sql.php";
 var menu = "";
-var desemb = null;
+var objDesemb = null;
 
 //=========================funciones para Personas============================
 function appDesembGrid(){
@@ -12,8 +12,8 @@ function appDesembGrid(){
   };
 
   appFetch(datos,rutaSQL).then(resp => {
-    let disabledDelete = (menu.caja.submenu.desemb.cmdDelete===1) ? "" : "disabled";
-    document.querySelector("#chk_All").disabled = (menu.caja.submenu.desemb.cmdDelete===1) ? false : true;
+    let disabledDelete = (menu.caja.submenu.desembolsos.cmdDelete===1) ? "" : "disabled";
+    document.querySelector("#chk_All").disabled = (menu.caja.submenu.desembolsos.cmdDelete===1) ? false : true;
     if(resp.tabla.length>0){
       let fila = "";
       resp.tabla.forEach((valor,key)=>{
@@ -38,9 +38,9 @@ function appDesembGrid(){
 
 function appDesembReset(){
   appFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php").then(resp => {
-    desemb = null;
+    objDesemb = null;
     menu = JSON.parse(resp.menu);
-    document.querySelector("#btn_DEL").style.display = (menu.caja.submenu.desemb.cmdDelete==1)?('inline'):('none');
+    document.querySelector("#btn_DEL").style.display = (menu.caja.submenu.desembolsos.cmdDelete==1)?('inline'):('none');
 
     document.querySelector("#txtBuscar").value = ("");
     document.querySelector("#grdDatos").innerHTML = ("");
@@ -62,7 +62,7 @@ function appDesembBotonCancel(){
 
 function appDesembBotonDesembolsar(){
   // //obliga a desembolsar en la fecha actual
-  // let desemb = appConvertToFecha(document.querySelector("#txt_DesembFecha").value,"-");
+  // let objDesemb = appConvertToFecha(document.querySelector("#txt_DesembFecha").value,"-");
   // let inicio = appConvertToFecha(document.querySelector("#lbl_DesembFechaIniCred").innerHTML,"-");
   // console.log("desemb: "+desemb);
   // console.log("inicio: "+inicio);
@@ -131,7 +131,7 @@ function appDesembView(solicredID){
     $('.tab-content .tab-pane').removeClass('active');
     $('a[href="#datosSoliCred"]').closest('li').addClass('active');
     $('#datosSoliCred').addClass('active');
-    document.querySelector("#btnInsert").style.display = (menu.caja.submenu.desemb.cmdUpdate==1)?('inline'):('none');
+    document.querySelector("#btnInsert").style.display = (menu.caja.submenu.desembolsos.cmdUpdate==1)?('inline'):('none');
     document.querySelector('#grid').style.display = 'none';
     document.querySelector('#edit').style.display = 'block';
 
@@ -142,7 +142,7 @@ function appDesembView(solicredID){
 
 function appDesembSetData(data){
   //pestaña de desembolso
-  desemb = {
+  objDesemb = {
     id : data.ID,
     tipopagoID : 164,
     tipocredID : data.tipocredID,

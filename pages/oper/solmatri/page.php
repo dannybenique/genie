@@ -196,80 +196,53 @@
   </div>
   <div class="modal fade" id="modalPers" role="dialog"></div>
   <div class="modal fade" id="modalAprueba" role="dialog">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog">
       <div class="modal-content">
         <form class="form-horizontal" id="frmSolMatriAprueba" autocomplete="off">
           <div class="modal-header" style="background:#f9f9f9;padding:8px;">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" style="font-family:flexoregular;font-weight:bold;">Aprobacion de Credito</h4>
+            <h4 class="modal-title" style="font-family:flexoregular;font-weight:bold;">Aprobacion de Matricula</h4>
           </div>
           <div class="modal-body" style="border-right:1px solid white;">
             <div class="box-body row">
-              <div class="col-md-6">
+              <div class="col-md-12">
                 <div class="box-body">
                   <strong><i class="fa fa-thumbs-up margin-r-5"></i> Aprobacion</strong>
                   <div class="form-group" style="margin-bottom:15px;">
                     <div class="input-group">
                       <span class="input-group-addon" style="background:#eeeeee;"><b>Fecha</b></span>
-                      <input id="txt_modApruebaFechaAprueba" type="text" class="form-control" style="width:105px;" disabled="disabled" />
+                      <input id="txt_modapruebaFechaAprueba" type="text" class="form-control" style="width:105px;" disabled="disabled" />
                     </div>
-                  </div>
-                  <strong><i class="fa fa-pencil margin-r-5"></i> Basicos</strong>
+                  </div><br>
+                  <strong><i class="fa fa-user margin-r-5"></i> Basicos</strong>
                   <p class="text-muted">
-                    <input type="hidden" id="hid_modApruebaID" value=""/>
-                    Socio: <a id="lbl_modApruebaSocio"></a><br>
-                    Fecha Solicitud: <a id="lbl_modApruebaFechaSolMatri"></a><br>
-                    Codigo: <a id="lbl_modApruebaCodigo"></a><br>
-                    Moneda: <a id="lbl_modApruebaMoneda"></a><br>
-                    Clasif. Cred.: <a id="lbl_modApruebaClasifica"></a><br>
-                    Condición: <a id="lbl_modApruebaCondicion"></a><br>
+                    <input type="hidden" id="hid_modapruebaID" value=""/>
+                    Alumno: <a id="lbl_modapruebaAlumno"></a><br>
+                    DNI: <a id="lbl_modapruebaDNI"></a><br>
                   </p>
                   <hr/>
 
-                  <strong><i class="fa fa-briefcase margin-r-5"></i> Agencia</strong>
+                  <strong><i class="fa fa-gg-circle margin-r-5"></i> Matricula</strong>
                   <p class="text-muted">
-                    Agencia: <a id="lbl_modApruebaAgencia"></a><br>
-                    Promotor: <a id="lbl_modApruebaPromotor"></a><br>
-                    Analista: <a id="lbl_modApruebaAnalista"></a><br>
+                    Fecha Solicitud: <a id="lbl_modapruebaFechaSolMatri"></a><br>
+                    Codigo: <a id="lbl_modapruebaCodigo"></a><br>
+                    Nivel: <a id="lbl_modapruebaNivel"></a><br>
+                    Grado: <a id="lbl_modapruebaGrado"></a><br>
+                    Seccion: <a id="lbl_modapruebaSeccion"></a>
                   </p>
                   <hr/>
-
-                  <strong><i class="fa fa-gavel margin-r-5"></i> SBS</strong>
-                  <p class="text-muted">
-                    Tipo: <a id="lbl_modApruebaTipoSBS"></a><br>
-                    Destino: <a id="lbl_modApruebaDestinoSBS"></a>
-                  </p>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="box-body">
-                  <strong><i class="fa fa-gg-circle margin-r-5"></i> Credito</strong>
-                  <p class="text-muted">
-                    Tipo Credito: <a id="lbl_modApruebaTipoCredito"></a><br>
-                    Producto: <a id="lbl_modApruebaProducto"></a><br>
-                    Importe: <a id="lbl_modApruebaImporte"></a><br>
-                    N° Cuotas: <a id="lbl_modApruebaNrocuotas"></a><br>
-                    Tasa Credito: <a id="lbl_modApruebaTasaCred"></a><a>% <span style="font-size:10px;">(TEA)</span></a><br>
-                    Tasa Mora: <a id="lbl_modApruebaTasaMora"></a><a>% <span style="font-size:10px;">(TEA)</span></a><br>
-                    Tasa Desgr: <a id="lbl_modApruebaTasaDesgr"></a><a>% <span style="font-size:10px;">(TEA)</span></a><br>
-                    Fecha Inicio: <a id="lbl_modApruebaFechaOtorga"></a><br>
-                    1° Cuota: <a id="lbl_modApruebaFechaPriCuota"></a><br>
-                    <span id="lbl_modEtiqFrecuencia" style="display:none;">Frecuencia: <a id="lbl_modApruebaFrecuencia"></a><br></span><br>
-                    Cuota: <span id="lbl_modApruebaCuota" class="badge bg-green" style="font-weight:normal;font-size:14px;"></span>
-                  </p>
-                  <hr/>
-
+                  
                   <strong><i class="fa fa-file-text-o margin-r-5"></i> Observaciones</strong>
                   <p class="text-muted">
-                    <span id="lbl_modApruebaObservac"></span>
-                  </p><br><br>
+                    <span id="lbl_modapruebaObservac"></span>
+                  </p><br>
                 </div>
               </div>
             </div>
           </div>
           <div class="modal-footer" style="background:#f9f9f9;padding:8px;">
             <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><i class="fa fa-close"></i> Cerrar</button>
-            <button type="button" class="btn btn-primary" onclick="javascript:modAprueba_BotonAprobar();"><i class="fa fa-thumbs-up"></i> Aprobar Solicitud</button>
+            <button type="button" class="btn btn-primary" onclick="javascript:modaprueba_BotonAprobar();"><i class="fa fa-thumbs-up"></i> Aprobar Solicitud</button>
           </div>
         </form>
       </div>

@@ -112,41 +112,25 @@ function appSolMatriBotonBorrar(){
   }
 }
 
-function appSolMatriAprueba(solmatriID){
+function appSolMatriAprueba(matriculaID){
   $("#modalAprueba").modal("show");
   let datos = {
     TipoQuery: 'viewApruebaSolMatri',
-    SolMatriID: solmatriID
+    matriculaID: matriculaID
   }
   appFetch(datos,rutaSQL).then(resp => {
-    document.querySelector("#txt_modApruebaFechaAprueba").disabled = (resp.rolUser==resp.rolROOT) ? (false):(true);
-    $("#txt_modApruebaFechaAprueba").datepicker("setDate",moment(resp.fecha_aprueba).format("DD/MM/YYYY"));
+    document.querySelector("#txt_modapruebaFechaAprueba").disabled = (resp.rolUser==resp.rolROOT) ? (false):(true);
+    $("#txt_modapruebaFechaAprueba").datepicker("setDate",moment(resp.fecha_aprueba).format("DD/MM/YYYY"));
 
-    document.querySelector("#hid_modApruebaID").value = (resp.ID);
-    document.querySelector("#lbl_modApruebaSocio").innerHTML = (resp.socio);
-    document.querySelector("#lbl_modApruebaFechaSolMatri").innerHTML = (moment(resp.fecha_solicred).format("DD/MM/YYYY"));
-    document.querySelector("#lbl_modApruebaCodigo").innerHTML = (resp.codigo);
-    document.querySelector("#lbl_modApruebaMoneda").innerHTML = (resp.moneda);
-    document.querySelector("#lbl_modApruebaClasifica").innerHTML = (resp.clasifica);
-    document.querySelector("#lbl_modApruebaCondicion").innerHTML = (resp.condicion);
-    document.querySelector("#lbl_modApruebaAgencia").innerHTML = (resp.agencia);
-    document.querySelector("#lbl_modApruebaPromotor").innerHTML = (resp.promotor);
-    document.querySelector("#lbl_modApruebaAnalista").innerHTML = (resp.analista);
-    document.querySelector("#lbl_modApruebaTipoSBS").innerHTML = (resp.tiposbs);
-    document.querySelector("#lbl_modApruebaDestinoSBS").innerHTML = (resp.destsbs);
-    document.querySelector("#lbl_modApruebaTipoCredito").innerHTML = (resp.tipocred);
-    document.querySelector("#lbl_modApruebaProducto").innerHTML = (resp.producto);
-    document.querySelector("#lbl_modApruebaImporte").innerHTML = (appFormatMoney(resp.importe,2));
-    document.querySelector("#lbl_modApruebaNrocuotas").innerHTML = (resp.nrocuotas);
-    document.querySelector("#lbl_modApruebaTasaCred").innerHTML = (appFormatMoney(resp.tasa,2));
-    document.querySelector("#lbl_modApruebaTasaMora").innerHTML = (appFormatMoney(resp.mora,2));
-    document.querySelector("#lbl_modApruebaTasaDesgr").innerHTML = (appFormatMoney(resp.desgr,2));
-    document.querySelector("#lbl_modApruebaFechaOtorga").innerHTML = (moment(resp.fecha_otorga).format("DD/MM/YYYY"));
-    document.querySelector("#lbl_modApruebaFechaPriCuota").innerHTML = (moment(resp.fecha_pricuota).format("DD/MM/YYYY"));
-    document.querySelector("#lbl_modApruebaFrecuencia").innerHTML = (resp.frecuencia+" dias");
-    document.querySelector("#lbl_modApruebaCuota").innerHTML = ("&nbsp;<small style='font-size:10px;'>"+resp.mon_abrevia+"</small>&nbsp;&nbsp;"+resp.cuota+"&nbsp;");
-    document.querySelector("#lbl_modApruebaObservac").innerHTML = (resp.observac);
-    document.querySelector("#lbl_modEtiqFrecuencia").style.display = (resp.tipocredID==1)?('none'):('inherit');
+    document.querySelector("#hid_modapruebaID").value = (resp.ID);
+    document.querySelector("#lbl_modapruebaAlumno").innerHTML = (resp.alumno);
+    document.querySelector("#lbl_modapruebaDNI").innerHTML = (resp.nro_dui);
+    document.querySelector("#lbl_modapruebaFechaSolMatri").innerHTML = (moment(resp.fecha_solicita).format("DD/MM/YYYY"));
+    document.querySelector("#lbl_modapruebaCodigo").innerHTML = (resp.codigo);
+    document.querySelector("#lbl_modapruebaNivel").innerHTML = (resp.nivel);
+    document.querySelector("#lbl_modapruebaGrado").innerHTML = (resp.grado);
+    document.querySelector("#lbl_modapruebaSeccion").innerHTML = (resp.seccion);
+    document.querySelector("#lbl_modapruebaObservac").innerHTML = (resp.observac);
   });
 }
 
@@ -192,7 +176,7 @@ function appSolMatriSetData(data){
   document.querySelector("#txt_SolMatriFechaSolicita").disabled = (data.rolUser==data.rolROOT) ? (false):(true);
   document.querySelector("#txt_SolMatriCodigo").value = (data.codigo);
   document.querySelector("#txt_SolMatriObservac").value = (data.observac);
-  $("#txt_SolMatriFechaSolicita").datepicker("setDate",moment(data.fecha).format("DD/MM/YYYY"));
+  $("#txt_SolMatriFechaSolicita").datepicker("setDate",moment(data.fecha_solicita).format("DD/MM/YYYY"));
   
   document.querySelector("#btnUpdate").style.display = 'none';
   document.querySelector("#btnInsert").style.display = 'inline';
@@ -310,12 +294,12 @@ function comboSecciones(){
 }
 
 //modal
-function modAprueba_BotonAprobar(){
+function modaprueba_BotonAprobar(){
   if(confirm("¿Esta seguro de continuar?")) {
     let datos = {
-      ID : document.querySelector("#hid_modApruebaID").value,
-      FechaAprueba : appConvertToFecha(document.querySelector("#txt_modApruebaFechaAprueba").value),
       TipoQuery : "aprobarSolMatri",
+      ID : document.querySelector("#hid_modapruebaID").value,
+      fecha_aprueba : appConvertToFecha(document.querySelector("#txt_modapruebaFechaAprueba").value),
       TipoExec : "APRU" //aprueba solicitud de credito
     }
     appFetch(datos,rutaSQL).then(resp => {

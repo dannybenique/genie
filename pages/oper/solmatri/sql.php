@@ -159,45 +159,21 @@
           $rpta = array('tablaSolMatri'=> $tabla,'tablaPers'=>$fn->getViewPersona($alumnoID));
           echo json_encode($rpta);
           break;
-        case "viewApruebaSoliCred":
-          $qry = $db->query_all("select * from vw_prestamos_ext where id=:id",[":id"=>$data->SoliCredID]);
+        case "viewApruebaSolMatri":
+          $qry = $db->query_all("select * from vw_matriculas where id=:id",[":id"=>$data->matriculaID]);
           if ($qry) {
             $rs = reset($qry);
-            $date = new DateTime($rs["fecha_pricuota"]);
-            $pivot = ($rs["id_tipocred"]==1)?($date->format('Ymd')):($rs["frecuencia"]);
-            $cuota = $fn->getSimulacionCredito($rs["id_tipocred"],$rs["importe"],$rs["tasa_cred"],$rs["tasa_desgr"],$rs["nro_cuotas"],$rs["fecha_otorga"],$pivot);
             $tabla = array(
               "ID" => $rs["id"],
               "codigo" => $rs["codigo"],
-              "socio" => $rs["socio"],
-              "coopacID" => $rs["id_coopac"],
-              "agencia" => $rs["agencia"],
-              "promotor" => $rs["promotor"],
-              "analista" => $rs["analista"],
-              "producto" => $rs["producto"],
-              "tiposbs" => $rs["tiposbs"],
-              "destsbs" => $rs["destsbs"],
-              "clasifica" => $rs["clasifica"],
-              "condicion" => $rs["condicion"],
-              "moneda" => $rs["moneda"],
-              "mon_abrevia" => $rs["mon_abrevia"],
-              "importe" => $rs["importe"],
-              "saldo" => $rs["saldo"],
-              "tasa" => $rs["tasa_cred"],
-              "mora" => $rs["tasa_mora"],
-              "desgr" => $rs["tasa_desgr"],
-              "nrocuotas" => $rs["nro_cuotas"],
-              "fecha_solicred" => $rs["fecha_solicred"],
-              "fecha_otorga" => $rs["fecha_otorga"],
-              "fecha_pricuota" => $rs["fecha_pricuota"],
-              "tipocred" => $rs["tipocred"],
-              "tipocredID" => $rs["id_tipocred"],
-              "fecha_solicred" => $rs["fecha_solicred"],
-              "fecha_aprueba" => $fn->getFechaActualDB(),
-              "frecuencia" => $rs["frecuencia"],
-              "cuota" => $cuota[1]["cuota"],
+              "alumno" => $rs["alumno"],
+              "nro_dui" => $rs["nro_dui"],
+              "fecha_solicita" => $rs["fecha_solicita"],
+              "nivel" => $rs["nivel"],
+              "grado" => $rs["grado"],
+              "seccion" => $rs["seccion"],
               "observac" => $rs["observac"],
-              "estado" => ($rs["estado"]*1),
+              "estado" => $rs["estado"],
               "rolUser" => $_SESSION['usr_data']['rolID'],
               "rolROOT" => 101
             );
@@ -207,36 +183,20 @@
           $rpta = $tabla;
           echo json_encode($rpta);
           break;
-        case "aprobarSoliCred":
+        case "aprobarSolMatri":
           //inicialmente el estado debe ser 3 en bn_saldos
-          $sql = "select sp_prestamos (:TipoExec,:id,:socioID,:coopacID,:agenciaID,:promotorID,:analistaID,:apruebaID,:productoID,:tiposbsID,:destsbsID,:clasificaID,:condicionID,:monedaID,:importe,:saldo,:tasa,:mora,:desgr,:nrocuotas,:fechaSoli,:fechaApru,:fechaOtor,:fechaPriC,:tipocredID,:frecuencia,:estado,:sysIP,:userID,:observac) as nro;";
+          $sql = "select sp_matriculas (:TipoExec,:id,:colegioID,:alumnoID,:seccionID,:userSolicitaID,:userApruebaID,:fechaSolicita,:fechaAprueba,:fechaMatricula,:estado,:sysIP,:userID,:observac) as nro;";
           $params = [
             ":TipoExec"=>$data->TipoExec,
             ":id"=>$data->ID,
-            ":socioID"=>null,
-            ":coopacID"=>null,
-            ":agenciaID"=>null,
-            ":promotorID"=>null,
-            ":analistaID"=>null,
-            ":apruebaID"=>$_SESSION['usr_ID'],
-            ":productoID"=>null,
-            ":tiposbsID"=>null,
-            ":destsbsID"=>null,
-            ":clasificaID"=>null,
-            ":condicionID"=>null,
-            ":monedaID"=>null,
-            ":importe"=>null,
-            ":saldo"=>null,
-            ":tasa"=>null,
-            ":mora"=>null,
-            ":desgr"=>null,
-            ":nrocuotas"=>null,
-            ":fechaSoli"=>null,
-            ":fechaApru"=>$data->FechaAprueba,
-            ":fechaOtor"=>null,
-            ":fechaPriC"=>null,
-            ":tipocredID"=>null,
-            ":frecuencia"=>null,
+            ":colegioID"=>null,
+            ":alumnoID"=>null,
+            ":seccionID"=>null,
+            ":userSolicitaID"=>null,
+            ":userApruebaID"=>$_SESSION['usr_ID'],
+            ":fechaSolicita"=>null,
+            ":fechaAprueba"=>$data->fecha_aprueba,
+            ":fechaMatricula"=>null,
             ":estado"=>2,
             ":sysIP"=>$fn->getClientIP(),
             ":userID"=>$_SESSION['usr_ID'],

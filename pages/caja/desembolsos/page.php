@@ -1,4 +1,4 @@
-<?php if(isset($menu->caja->submenu->desemb)){?>
+<?php if(isset($menu->caja->submenu->desembolsos)){?>
 <!-- bootstrap datepicker -->
 <link rel="stylesheet" href="libs/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
 <script src="libs/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
@@ -6,10 +6,10 @@
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-  <h1><i class="fa fa-wrench"></i> <b>Desembolso</b></h1>
+  <h1><i class="fa fa-wrench"></i> <b>Ejecutar Matricula</b></h1>
   <ol class="breadcrumb">
     <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-    <li class="active">desembolso</li>
+    <li class="active">Ejecutar</li>
   </ol>
 </section>
 <!-- Main content -->

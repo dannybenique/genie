@@ -89,7 +89,7 @@ function appAlumnosBotonNuevo(){
   $('#btn_modPersAddToForm').on('click',handlerAlumnosAddToForm_Click);
 }
 
-function appAlumnosBotonViewAll(){
+function appAlumnosBotonViewAll(){ //mostrar inclusive los alumnos eliminados
   document.querySelector("#icoViewAll").classList.toggle("fa-toggle-on");
   document.querySelector("#icoViewAll").classList.toggle("fa-toggle-off");
   document.querySelector("#hidViewAll").value = (document.querySelector("#hidViewAll").value==1) ? (0) : (1);
@@ -178,7 +178,7 @@ function appAlumnoView(personaID){
 function appAlumnoSetData(data){
   //info corta
   document.querySelector("#lbl_Codigo").innerHTML = (data.codigo);
-  document.querySelector("#div_Estado").innerHTML = '<button type="button" class="btn btn-success pull-right" onclick="javascript:appAlumnosBotonEstado();"><i class="fa fa-flash"></i> Habilitar Alumno</button>';
+  if (data.estado==0) { document.querySelector("#div_Estado").innerHTML = '<button type="button" class="btn btn-success pull-right" onclick="javascript:appAlumnosBotonEstado();"><i class="fa fa-flash"></i> Habilitar Alumno</button>'; }
 
   //pestaña de Alumno
   document.querySelector('#txt_AlumnoFechaIng').value = (moment(data.fecha).format("DD/MM/YYYY"));
