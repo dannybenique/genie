@@ -39,9 +39,9 @@
                 <tr>
                   <th style="width:25px;"><input type="checkbox" id="chk_All" onclick="toggleAll(this,'chk_Borrar');" /></th>
                   <th style="width:30px;" title="Aprobacion de Solicitud"><i class="fa fa-thumbs-up"></i></th>
-                  <th style="width:110px;text-align:center;" title="Codigo de Matricula">Codigo</th>
+                  <th style="width:120px;text-align:center;" title="Codigo de Matricula">Codigo</th>
                   <th style="width:85px;text-align:center;" title="Fecha de Solicitud">Solicitud</th>
-                  <th style="width:110px;" title="Documento Unico de Identidad = DNI, RUC">DNI</th>
+                  <th style="width:95px;" title="Documento Unico de Identidad = DNI, RUC">DNI</th>
                   <th style="">Alumno <i class="fa fa-sort"></i></th>
                   <th style="" title="Grado y Seccion">Grado</th>
                 </tr>

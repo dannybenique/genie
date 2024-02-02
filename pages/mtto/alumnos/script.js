@@ -140,6 +140,16 @@ function appAlumnosBotonBorrar(){
   }
 }
 
+function appAlumnosBotonEstado(){
+  let datos = {
+    TipoQuery : 'addAlumno', //quitar el soft delete (estado)
+    alumnoID : document.querySelector("#lbl_ID").innerHTML
+  }
+  appFetch(datos,rutaSQL).then(resp => {
+    document.querySelector("#div_Estado").innerHTML = "";
+  });
+}
+
 function appAlumnoView(personaID){
   let datos = {
     TipoQuery : 'viewAlumno',
@@ -168,6 +178,8 @@ function appAlumnoView(personaID){
 function appAlumnoSetData(data){
   //info corta
   document.querySelector("#lbl_Codigo").innerHTML = (data.codigo);
+  document.querySelector("#div_Estado").innerHTML = '<button type="button" class="btn btn-success pull-right" onclick="javascript:appAlumnosBotonEstado();"><i class="fa fa-flash"></i> Habilitar Alumno</button>';
+
   //pestaña de Alumno
   document.querySelector('#txt_AlumnoFechaIng').value = (moment(data.fecha).format("DD/MM/YYYY"));
   document.querySelector("#txt_AlumnoCodigo").value = (data.codigo);
@@ -375,21 +387,12 @@ function appPersonaSetData(data){
   document.querySelector("#lbl_DNI").innerHTML = (data.nroDUI);
 
   //pestaña datos personales
-  if(data.tipoPersona==2){ //persona juridica
-    document.querySelector("#lbl_PersTipoNombres").innerHTML = ("Razon Social");
-    document.querySelector("#lbl_PersTipoProfesion").innerHTML = ("Rubro");
-    document.querySelector("#lbl_PersTipoApellidos").style.display = 'none';
-    document.querySelector("#lbl_PersTipoSexo").style.display = 'none';
-    document.querySelector("#lbl_PersTipoECivil").style.display = 'none';
-    document.querySelector("#lbl_PersTipoGIntruc").style.display = 'none';
-  }else{
-    document.querySelector("#lbl_PersTipoNombres").innerHTML = ("Nombres");
-    document.querySelector("#lbl_PersTipoProfesion").innerHTML = ("Profesion");
-    document.querySelector("#lbl_PersTipoApellidos").style.display = 'block';
-    document.querySelector("#lbl_PersTipoSexo").style.display = 'block';
-    document.querySelector("#lbl_PersTipoECivil").style.display = 'block';
-    document.querySelector("#lbl_PersTipoGIntruc").style.display = 'block';
-  }
+  document.querySelector("#lbl_PersTipoNombres").innerHTML = ("Nombres");
+  document.querySelector("#lbl_PersTipoProfesion").innerHTML = ("Profesion");
+  document.querySelector("#lbl_PersTipoApellidos").style.display = 'block';
+  document.querySelector("#lbl_PersTipoSexo").style.display = 'block';
+  document.querySelector("#lbl_PersTipoECivil").style.display = 'block';
+  document.querySelector("#lbl_PersTipoGIntruc").style.display = 'block';
   document.querySelector("#lbl_PersNombres").innerHTML = (data.nombres);
   document.querySelector("#lbl_PersApellidos").innerHTML = (data.ap_paterno+" "+data.ap_materno);
   document.querySelector("#lbl_PersTipoDNI").innerHTML = (data.tipoDUI);

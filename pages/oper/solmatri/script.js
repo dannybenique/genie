@@ -19,7 +19,7 @@ function appSolMatriGrid(){
         fila += '<tr>'+
                 '<td><input type="checkbox" name="chk_Borrar" value="'+(valor.ID)+'" '+disabledDelete+'/></td>'+
                 '<td>'+((menu.oper.submenu.solmatri.aprueba===1)?('<a href="javascript:appSolMatriAprueba('+(valor.ID)+');"><i class="fa fa-thumbs-up" style="color:#FF0084;"></i></a>'):(''))+'</td>'+
-                '<td><a href="javascript:appSolMatriView('+(valor.ID)+');" title="'+(valor.ID)+'">'+(valor.codigo)+'</a></td>'+
+                '<td style="text-align:center;"><a href="javascript:appSolMatriView('+(valor.ID)+');" title="'+(valor.ID)+'">'+(valor.codigo)+'</a></td>'+
                 '<td>'+(moment(valor.fecha_solmatri).format("DD/MM/YYYY"))+'</td>'+
                 '<td>'+(valor.nro_dui)+'</td>'+
                 '<td>'+(valor.alumno)+'</td>'+
@@ -150,22 +150,22 @@ function appSolMatriAprueba(solmatriID){
   });
 }
 
-function appSolMatriView(solmatriID){
+function appSolMatriView(matriculaID){
   let datos = {
     TipoQuery : 'viewSolMatri',
-    SolMatriID : solmatriID
+    matriculaID : matriculaID
   };
   
+  //tabs default en primer tab
+  $('.nav-tabs li').removeClass('active');
+  $('.tab-content .tab-pane').removeClass('active');
+  $('a[href="#datosSolMatri"]').closest('li').addClass('active');
+  $('#datosSolMatri').addClass('active');
   appFetch(datos,rutaSQL).then(resp => {
-    //tabs default en primer tab
-    $('.nav-tabs li').removeClass('active');
-    $('.tab-content .tab-pane').removeClass('active');
-    $('a[href="#datosSolMatri"]').closest('li').addClass('active');
-    $('#datosSolMatri').addClass('active');
     document.querySelector("#btnUpdate").style.display = (menu.oper.submenu.solmatri.cmdUpdate==1)?('inline'):('none');
     document.querySelector("#btnInsert").style.display = 'none';
-
-    appSolMatriSetData(resp.tablaSolMatri,resp.tablaPers.persona);  //pestaña Solicitud de credito
+    resp.tablaSolMatri.persona = resp.tablaPers.persona;
+    appSolMatriSetData(resp.tablaSolMatri);  //pestaña Solicitud de Matricula
     appPersonaSetData(resp.tablaPers); //pestaña Personales
 
     document.querySelector('#grid').style.display = 'none';
@@ -173,31 +173,29 @@ function appSolMatriView(solmatriID){
   });
 }
 
-function appSolMatriSetData(data,txtSocio){
-  //pestaña de SolMatri
-  appLlenarDataEnComboBox(data.comboClasifica,"#cbo_SolMatriClasifica",data.clasificaID);
-  appLlenarDataEnComboBox(data.comboCondicion,"#cbo_SolMatriCondicion",data.condicionID);
-  appLlenarDataEnComboBox(data.comboMoneda,"#cbo_SolMatriMoneda",data.monedaID);
-  $("#cbo_SolMatriTipo").val(data.tipocredID);
-  $("#txt_SolMatriFechaSolici").datepicker("setDate",moment(data.fecha_solmatri).format("DD/MM/YYYY"));
-  $("#txt_SolMatriFechaOtorga").datepicker("setDate",moment(data.fecha_otorga).format("DD/MM/YYYY"));
-  $("#txt_SolMatriFechaPriCuota").datepicker("setDate",moment(data.fecha_pricuota).format("DD/MM/YYYY"));
-  $("#txt_SolMatriFrecuencia").val(data.frecuencia);
-  $('#txt_SolMatriFechaOtorga').datepicker().on('changeDate', function(e) { appSolMatriUpdatePriCuotaByFechaOtorga(); });
-  $('#txt_SolMatriFrecuencia').on('input', function(e) { appSolMatriUpdatePriCuotaByFrecuencia(); });
-  $("#txt_SolMatriFrecuencia").val(data.frecuencia);
-  appSolMatriCambiarTipoCredito();
+function appSolMatriSetData(data){
+  //todos los inputs sin error y panel error deshabilitado
+  $('.form-group').removeClass('has-error');
+    
+  //tabs default en primer tab
+  $('.nav-tabs li').removeClass('active');
+  $('.tab-content .tab-pane').removeClass('active');
+  $('a[href="#datosSolMatri"]').closest('li').addClass('active');
+  $('#datosSolMatri').addClass('active');
   
-  document.querySelector('#hid_SolMatriID').value = (data.ID);
-  document.querySelector('#txt_SolMatriSocio').value = (txtSocio);
+  //pestaña de SolMatri
+  appLlenarDataEnComboBox(data.comboNiveles,"#cbo_SolMatriNiveles",data.nivelID); //seteado a primaria
+  appLlenarDataEnComboBox(data.comboGrados,"#cbo_SolMatriGrados",data.gradoID); //prmer grado
+  appLlenarDataEnComboBox(data.comboSecciones,"#cbo_SolMatriSecciones",data.seccionID); //seccion A
+  document.querySelector("#hid_SolMatriID").value = (data.ID);
+  document.querySelector("#txt_SolMatriAlumno").value = (data.persona);
+  document.querySelector("#txt_SolMatriFechaSolicita").disabled = (data.rolUser==data.rolROOT) ? (false):(true);
   document.querySelector("#txt_SolMatriCodigo").value = (data.codigo);
-  document.querySelector("#txt_SolMatriImporte").value = (Number(data.importe).toFixed(2));
-  document.querySelector("#txt_SolMatriTasa").value = (Number(data.tasa).toFixed(2));
-  document.querySelector("#txt_SolMatriMora").value = (Number(data.mora).toFixed(2));
-  document.querySelector("#txt_SolMatriSegDesgr").value = (Number(data.desgr).toFixed(2));
-  document.querySelector("#txt_SolMatriNroCuotas").value = (data.nrocuotas);
-  document.querySelector("#txt_SolMatriCuota").value = (data.cuota);
   document.querySelector("#txt_SolMatriObservac").value = (data.observac);
+  $("#txt_SolMatriFechaSolicita").datepicker("setDate",moment(data.fecha).format("DD/MM/YYYY"));
+  
+  document.querySelector("#btnUpdate").style.display = 'none';
+  document.querySelector("#btnInsert").style.display = 'inline';
 }
 
 function appSolMatriClear(txtSocio){

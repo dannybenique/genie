@@ -17,7 +17,7 @@
         $web = $GLOBALS["web"]; //web-config
         
         //obtener datos personales
-        $sql = "select a.*,fn_get_persona(pd.tipo_persona::numeric, pd.ap_paterno::text, pd.ap_materno::text, pd.nombres::text) AS pd_nombre,pd.id as pd_id,pd.nro_dui as pd_nrodni,pd.direccion as pd_direccion,fn_get_persona(md.tipo_persona::numeric, md.ap_paterno::text, md.ap_materno::text, md.nombres::text) AS md_nombre,md.id as md_id,md.nro_dui as md_nrodni,md.direccion as md_direccion,fn_get_persona(ap.tipo_persona::numeric, ap.ap_paterno::text, ap.ap_materno::text, ap.nombres::text) AS ap_nombre,ap.id as ap_id,ap.nro_dui as ap_nrodni,ap.direccion as ap_direccion,e.nombrecorto as usermod from app_alumnos a left join app_empleados e on e.id=a.sys_user left join personas pd on a.id_padre=pd.id left join personas md on a.id_madre=md.id left join personas ap on a.id_apoderado=ap.id where a.estado=1 and a.id=:alumnoID and a.id_colegio=:colegioID";
+        $sql = "select a.*,fn_get_persona(pd.tipo_persona::numeric, pd.ap_paterno::text, pd.ap_materno::text, pd.nombres::text) AS pd_nombre,pd.id as pd_id,pd.nro_dui as pd_nrodni,pd.direccion as pd_direccion,fn_get_persona(md.tipo_persona::numeric, md.ap_paterno::text, md.ap_materno::text, md.nombres::text) AS md_nombre,md.id as md_id,md.nro_dui as md_nrodni,md.direccion as md_direccion,fn_get_persona(ap.tipo_persona::numeric, ap.ap_paterno::text, ap.ap_materno::text, ap.nombres::text) AS ap_nombre,ap.id as ap_id,ap.nro_dui as ap_nrodni,ap.direccion as ap_direccion,e.nombrecorto as usermod from app_alumnos a left join app_empleados e on e.id=a.sys_user left join personas pd on a.id_padre=pd.id left join personas md on a.id_madre=md.id left join personas ap on a.id_apoderado=ap.id where a.id=:alumnoID and a.id_colegio=:colegioID";
         $params = [":alumnoID"=>$personaID,"colegioID"=>$web->colegioID];
         $qry = $db->query_all($sql,$params);
         
@@ -40,6 +40,7 @@
               "ap_nombre" => $rs["ap_nombre"],
               "ap_nrodni" => $rs["ap_nrodni"],
               "ap_direccion" => $rs["ap_direccion"],
+              "estado" => ($rs["estado"]),
               "usermod" => ($rs["usermod"]),
               "sysuser" => ($rs["sys_user"]),
               "sysfecha" => ($rs["sys_fecha"])
@@ -126,7 +127,7 @@
             $params = [
               ":alumnoID"=>$data->arr[$i],
               ":sysIP"=>$fn->getClientIP(),
-              "userID"=>$_SESSION['usr_ID']
+              ":userID"=>$_SESSION['usr_ID']
             ];
             $qry = $db->query_all($sql,$params);
             $rs = ($qry) ? (reset($qry)) : (null);
@@ -156,6 +157,20 @@
                 'tablaCony'=>$fn->getViewConyuge($data->personaID));
               break;
           }
+          echo json_encode($rpta);
+          break;
+        case "addAlumno": //quitar el soft delete (estado)
+          $sql = "update app_alumnos set estado=1,sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id=:alumnoID";
+          $params = [
+            ":alumnoID"=>$data->alumnoID,
+            ":sysIP"=>$fn->getClientIP(),
+            ":userID"=>$_SESSION['usr_ID']
+          ];
+          $qry = $db->query_all($sql,$params);
+          $rs = ($qry) ? (reset($qry)) : (null);
+
+          //respuesta
+          $rpta = array("error"=>(($rs==null)?true:false));
           echo json_encode($rpta);
           break;
         case "VerifyAlumno":
