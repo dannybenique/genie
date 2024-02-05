@@ -11,7 +11,7 @@
       $rpta = 0;
 
       //****************personas****************
-      function getViewSocio($personaID){
+      function getViewAlumno($personaID){
         $db = $GLOBALS["db"]; //base de datos
         $fn = $GLOBALS["fn"]; //funciones
         $web = $GLOBALS["web"]; //web-config
@@ -43,29 +43,24 @@
           $whr = "";
           $tabla = array();
           $buscar = strtoupper($data->buscar);
-          $whr = " and id_coopac=:coopacID and (socio LIKE :buscar or nro_dui LIKE :buscar) ";
-          $params = [":coopacID"=>$web->coopacID,":buscar"=>'%'.$buscar.'%'];
-          $qry = $db->query_all("select count(*) as cuenta from vw_prestamos_min where estado=2 ".$whr.";",$params);
+          $whr = " and id_colegio=:colegioID and (alumno LIKE :buscar or nro_dui LIKE :buscar) ";
+          $params = [":colegioID"=>$web->colegioID,":buscar"=>'%'.$buscar.'%'];
+          $qry = $db->query_all("select count(*) as cuenta from vw_matriculas where estado=2 ".$whr.";",$params);
           $rsCount = reset($qry);
 
-          $qry = $db->query_all("select * from vw_prestamos_min where estado=2 ".$whr." order by socio limit 25 offset 0;",$params);
+          $qry = $db->query_all("select * from vw_matriculas where estado=2 ".$whr." order by alumno limit 25 offset 0;",$params);
           if ($qry) {
             foreach($qry as $rs){
               $tabla[] = array(
                 "ID" => $rs["id"],
-                "codigo" => $rs["codigo"],
-                "fecha" => $rs["fecha_solicred"],
-                "otorga" => $rs["fecha_otorga"],
+                "fecha_solicita" => $rs["fecha_solicita"],
+                "fecha_aprueba" => $rs["fecha_aprueba"],
                 "nro_dui"=> str_replace($buscar, '<span style="background:yellow;">'.$buscar.'</span>', $rs["nro_dui"]),
-                "socio" => str_ireplace($buscar, '<span style="background:yellow;">'.$buscar.'</span>', $rs["socio"]),
-                "tipo_oper" => $rs["tipo_oper"],
-                "producto" => $rs["producto"],
-                "mon_abrevia" => $rs["mon_abrevia"],
-                "tiposbs" => $rs["tipo_sbs"],
-                "destsbs" => $rs["dest_sbs"],
-                "tasa" => $rs["tasa"]*1,
-                "importe" => $rs["importe"]*1,
-                "nro_cuotas" => $rs["nro_cuotas"]*1
+                "alumno" => str_ireplace($buscar, '<span style="background:yellow;">'.$buscar.'</span>', $rs["alumno"]),
+                "codigo" => $rs["codigo"],
+                "nivel" => $rs["nivel"],
+                "grado" => $rs["grado"],
+                "seccion" => $rs["seccion"]
               );
             }
           }
@@ -77,57 +72,29 @@
         
         case "viewDesembolso":
           $tabla = 0;
-          $socioID = 0;
-          $qry = $db->query_all("select *,now() as fecha_desemb from vw_prestamos_ext where id=".$data->SoliCredID);
+          $alumnoID = 0;
+          $qry = $db->query_all("select * from vw_matriculas where id=:id",[":id"=>$data->matriculaID]);
           if ($qry) {
             $rs = reset($qry);
-            $socioID = $rs["id_socio"];
-            $date = new DateTime($rs["fecha_pricuota"]);
-            $pivot = ($rs["id_tipocred"]==1)?($date->format('Ymd')):($rs["frecuencia"]);
-            $cuota = $fn->getSimulacionCredito($rs["id_tipocred"],$rs["importe"],$rs["tasa_cred"],$rs["tasa_desgr"],$rs["nro_cuotas"],$rs["fecha_otorga"],$pivot);
+            $alumnoID = $rs["id"];
             $tabla = array(
               "ID" => $rs["id"],
               "codigo" => $rs["codigo"],
-              "socio" => $rs["socio"],
-              "coopacID" => $rs["id_coopac"],
-              "agenciaID" => $rs["id_agencia"],
-              "tipocredID" => $rs["id_tipocred"],
-              "productoID" => $rs["id_producto"],
-              "socioID" => $rs["id_socio"],
-              "monedaID" => $rs["id_moneda"],
-              "agencia" => $rs["agencia"],
-              "promotor" => $rs["promotor"],
-              "analista" => $rs["analista"],
-              "aprueba" => ($rs["id_aprueba"]==null)?(""):($rs["aprueba"]),
-              "producto" => $rs["producto"],
-              "tiposbs" => $rs["tiposbs"],
-              "destsbs" => $rs["destsbs"],
-              "clasifica" => $rs["clasifica"],
-              "condicion" => $rs["condicion"],
-              "moneda" => $rs["moneda"],
-              "mon_abrevia" => $rs["mon_abrevia"],
-              "importe" => $rs["importe"],
-              "saldo" => $rs["saldo"],
-              "tasa_cred" => $rs["tasa_cred"],
-              "tasa_mora" => $rs["tasa_mora"],
-              "tasa_desgr" => $rs["tasa_desgr"],
-              "nrocuotas" => $rs["nro_cuotas"],
-              "fecha_desemb" => $rs["fecha_desemb"],
-              "fecha_solicred" => $rs["fecha_solicred"],
-              "fecha_otorga" => $rs["fecha_otorga"],
-              "fecha_pricuota" => $rs["fecha_pricuota"],
-              "tipocred" => $rs["tipocred"],
-              "frecuencia" => $rs["frecuencia"],
-              "cuota" => $cuota[1]["cuota"],
+              "alumno" => $rs["alumno"],
+              "nro_dui" => $rs["nro_dui"],
+              "fecha_solicita" => $rs["fecha_solicita"],
+              "nivel" => $rs["nivel"],
+              "grado" => $rs["grado"],
+              "seccion" => $rs["seccion"],
               "observac" => $rs["observac"],
-              "estado" => ($rs["estado"]*1),
+              "estado" => $rs["estado"],
               "rolUser" => $_SESSION['usr_data']['rolID'],
               "rolROOT" => 101
             );
           }
           
           //respuesta
-          $rpta = array('tablaDesembolso'=> $tabla,'tablaPers'=>$fn->getViewPersona($socioID));
+          $rpta = array('tablaDesembolso'=> $tabla,'tablaPers'=>$fn->getViewPersona($alumnoID));
           echo json_encode($rpta);
           break;
         case "delDesembolsos":

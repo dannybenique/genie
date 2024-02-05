@@ -17,16 +17,15 @@ function appDesembGrid(){
     if(resp.tabla.length>0){
       let fila = "";
       resp.tabla.forEach((valor,key)=>{
-        fila += '<tr>';
-        fila += '<td><input type="checkbox" name="chk_Borrar" value="'+(valor.ID)+'" '+disabledDelete+'/></td>';
-        fila += '<td>'+(moment(valor.fecha).format("DD/MM/YYYY"))+'</td>';
-        fila += '<td>'+(valor.socio+' &raquo; '+valor.nro_dui)+'</td>';
-        fila += '<td><a href="javascript:appDesembView('+(valor.ID)+');" title="'+(valor.ID)+'">'+(valor.codigo+' &raquo; '+valor.producto+'; '+valor.mon_abrevia+'; '+appFormatMoney(valor.tasa,2))+'%</a></td>';
-        fila += '<td>'+(valor.tiposbs)+'</td>';
-        fila += '<td>'+(moment(valor.inicio).format("DD/MM/YYYY"))+'</td>';
-        fila += '<td style="text-align:right;">'+appFormatMoney(valor.importe,2)+'</td>';
-        fila += '<td style="text-align:center;">'+(valor.nro_cuotas)+'</td>';
-        fila += '</tr>';
+        fila += '<tr>'+
+                '<td><input type="checkbox" name="chk_Borrar" value="'+(valor.ID)+'" '+disabledDelete+'/></td>'+
+                '<td style="text-align:center;"><a href="javascript:appDesembView('+(valor.ID)+');" title="'+(valor.ID)+'">'+(valor.codigo)+'</a></td>'+
+                '<td>'+(moment(valor.fecha_solicita).format("DD/MM/YYYY"))+'</td>'+
+                '<td>'+(moment(valor.fecha_aprueba).format("DD/MM/YYYY"))+'</td>'+
+                '<td>'+(valor.nro_dui)+'</td>'+
+                '<td>'+(valor.alumno)+'</td>'+
+                '<td>'+(valor.nivel)+' &raquo; '+(valor.grado)+' &raquo; '+(valor.seccion)+'</td>'+
+                '</tr>';
       });
       $('#grdDatos').html(fila);
     }else{
@@ -119,13 +118,14 @@ function appDesembBotonBorrar(){
   }
 }
 
-function appDesembView(solicredID){
+function appDesembView(matriculaID){
   let datos = {
     TipoQuery : 'viewDesembolso',
-    SoliCredID : solicredID
+    matriculaID : matriculaID
   };
   
   appFetch(datos,rutaSQL).then(resp => {
+    console.log(menu);
     //tabs default en primer tab
     $('.nav-tabs li').removeClass('active');
     $('.tab-content .tab-pane').removeClass('active');

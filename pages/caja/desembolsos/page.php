@@ -34,13 +34,12 @@
               <thead>
                 <tr>
                   <th style="width:25px;"><input type="checkbox" id="chk_All" onclick="toggleAll(this,'chk_Borrar');" /></th>
+                  <th style="width:120px;text-align:center;" title="Codigo de Matricula">Codigo</th>
                   <th style="width:85px;text-align:center;" title="Fecha de Solicitud">Solicitud</th>
-                  <th style="">Socio <i class="fa fa-sort"></i></th>
-                  <th style="" title="Producto + TEA%">Producto</th>
-                  <th style="width:180px;">Tipo Credito</th>
-                  <th style="width:85px;text-align:center;" title="Fecha Tentativa del Desembolso">Inicio T.</th>
-                  <th style="width:90px;text-align:right;">Importe</th>
-                  <th style="width:50px;text-align:center;" title="Nro de Cuotas">Cuo</th>
+                  <th style="width:85px;text-align:center;" title="Fecha de Aprobacion">Aprobacion</th>
+                  <th style="width:95px;" title="Documento Unico de Identidad = DNI, RUC">DNI</th>
+                  <th style="">Alumno <i class="fa fa-sort"></i></th>
+                  <th style="" title="Grado y Seccion">Grado</th>
                 </tr>
               </thead>
               <tbody id="grdDatos"></tbody>
@@ -61,76 +60,37 @@
           <div class="tab-content">
             <div id="datosSoliCred" class="tab-pane active">
               <div class="box-body">
-                <div class="form-group" style="margin-left:0px;margin-bottom:3px;">
-                  <div class="input-group">
-                    <span class="input-group-addon" style="width:100px;background:#eeeeee;"><b>Desembolso</b></span>
-                    <input id="txt_DesembFecha" type="text" class="form-control" style="width:105px;" disabled="disabled" />
-                  </div>
-                </div>
-              </div>
-              <div class="box-body row">
-                <div class="col-md-6">
-                  <div class="box-body">
-                    <strong><i class="fa fa-pencil margin-r-5"></i> Basicos</strong>
-                    <p class="text-muted">
-                      <input type="hidden" id="hid_tipocredID" value=""/>
-                      <input type="hidden" id="hid_productoID" value=""/>
-                      <input type="hidden" id="hid_agenciaID" value=""/>
-                      <input type="hidden" id="hid_monedaID" value=""/>
-                      <input type="hidden" id="hid_socioID" value=""/>
-                      Socio: <a id="lbl_DesembSocio"></a><br>
-                      Solicitud: <a id="lbl_DesembFechaSoliCred"></a><br>
-                      ID: <a id="lbl_DesembPrestamoID"></a><br>
-                      Codigo: <a id="lbl_DesembCodigo"></a><br>
-                      Moneda: <a id="lbl_DesembMoneda"></a><br>
-                      Clasif. Cred. : <a id="lbl_DesembClasifi"></a><br>
-                      Condicion: <a id="lbl_DesembCondicion"></a><br>
-                    </p>
-                    <hr/>
+                <div class="box-body">
+                  <strong><i class="fa fa-thumbs-up margin-r-5"></i> Desembolso</strong>
+                  <div class="form-group" style="margin-bottom:15px;">
+                    <div class="input-group">
+                      <span class="input-group-addon" style="background:#eeeeee;"><b>Fecha</b></span>
+                      <input id="txt_DesembFecha" type="text" class="form-control" style="width:105px;" disabled="disabled" />
+                    </div>
+                  </div><br>
+                  <strong><i class="fa fa-user margin-r-5"></i> Basicos</strong>
+                  <p class="text-muted">
+                    <input type="hidden" id="hid_modapruebaID" value=""/>
+                    Alumno: <a id="lbl_modapruebaAlumno"></a><br>
+                    DNI: <a id="lbl_modapruebaDNI"></a><br>
+                  </p>
+                  <hr/>
 
-                    <strong><i class="fa fa-briefcase margin-r-5"></i> Agencia</strong>
-                    <p class="text-muted">
-                      Agencia: <a id="lbl_DesembAgencia"></a><br>
-                      Promotor: <a id="lbl_DesembPromotor"></a><br>
-                      Analista: <a id="lbl_DesembAnalista"></a><br>
-                      <span id="lbl_FormAprueba">Aprobacion:</span> <a id="lbl_DesembAprueba"></a><br>
-                    </p>
-                    <hr/>
-
-                    <strong><i class="fa fa-legal margin-r-5"></i> SBS</strong>
-                    <p class="text-muted">
-                      Tipo: <a id="lbl_DesembTipoSBS"></a><br>
-                      Destino: <a id="lbl_DesembDestSBS"></a><br>
-                    </p>
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="box-body">
-                    <strong><i class="fa fa-gg-circle margin-r-5"></i> Credito</strong>
-                    <p class="text-muted">
-                      Tipo: <a id="lbl_DesembTipoCred"></a><br><br>
-                      Producto: <a id="lbl_DesembProducto"></a><br>
-                      Importe: <a id="lbl_DesembImporte"></a><br>
-                      N° Cuotas: <a id="lbl_DesembNrocuotas"></a><br>
-                      Tasa Credito: <a id="lbl_DesembTasaCred"></a><a>% <span style="font-size:10px;">(TEA)</span></a><br>
-                      Tasa Mora: <a id="lbl_DesembTasaMora"></a><a>% <span style="font-size:10px;">(TEA)</span></a><br>
-                      Tasa Desgr.: <a id="lbl_DesembTasaDesgr"></a><a>% <span style="font-size:10px;">(TEA)</span></a><br>
-                      Fecha Inicio: <a id="lbl_DesembFechaOtorga"></a><br>
-                      Fecha 1° Cuota: <a id="lbl_DesembFechaPriCuota"></a><br>
-                      <span id="lbl_DesembEtqFrecuencia" style="display:none;">Frecuencia: <a id="lbl_DesembFrecuencia"></a><br></span><br>
-                      Cuota: <span id="lbl_DesembCuota" class="badge bg-green" style="font-weight:normal;font-size:14px;"></span>
-                    </p>
-                    <hr/>
-
-                    <strong><i class="fa fa-file-text-o margin-r-5"></i> Observaciones</strong>
-                    <p class="text-muted">
-                      <a id="lbl_DesembObservac"></a><br>
-                    </p>
-                  </div>
-                  <div class="box-body">
-                    <button id="btnCancel" type="button" class="btn btn-default" onclick="javascript:appDesembBotonCancel();"><i class="fa fa-angle-double-left"></i> Regresar</button>
-                    <button id="btnInsert" type="button" class="btn btn-primary pull-right" onclick="javascript:appDesembBotonDesembolsar();"><i class="fa fa-flash"></i> Desembolsar</button>
-                  </div>
+                  <strong><i class="fa fa-gg-circle margin-r-5"></i> Matricula</strong>
+                  <p class="text-muted">
+                    Fecha Solicitud: <a id="lbl_modapruebaFechaSolicita"></a><br>
+                    Fecha Aprobacion: <a id="lbl_modapruebaFechaAprueba"></a><br>
+                    Codigo: <a id="lbl_modapruebaCodigo"></a><br>
+                    Nivel: <a id="lbl_modapruebaNivel"></a><br>
+                    Grado: <a id="lbl_modapruebaGrado"></a><br>
+                    Seccion: <a id="lbl_modapruebaSeccion"></a>
+                  </p>
+                  <hr/>
+                  
+                  <strong><i class="fa fa-file-text-o margin-r-5"></i> Observaciones</strong>
+                  <p class="text-muted">
+                    <span id="lbl_modapruebaObservac"></span>
+                  </p><br>
                 </div>
               </div>
             </div>
