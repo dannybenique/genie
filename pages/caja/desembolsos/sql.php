@@ -45,10 +45,10 @@
           $buscar = strtoupper($data->buscar);
           $whr = " and id_colegio=:colegioID and (alumno LIKE :buscar or nro_dui LIKE :buscar) ";
           $params = [":colegioID"=>$web->colegioID,":buscar"=>'%'.$buscar.'%'];
-          $qry = $db->query_all("select count(*) as cuenta from vw_matriculas where estado=2 ".$whr.";",$params);
+          $qry = $db->query_all("select count(*) as cuenta from vw_matriculas_state2 where estado=2 ".$whr.";",$params);
           $rsCount = reset($qry);
 
-          $qry = $db->query_all("select * from vw_matriculas where estado=2 ".$whr." order by alumno limit 25 offset 0;",$params);
+          $qry = $db->query_all("select * from vw_matriculas_state2 where estado=2 ".$whr." order by alumno limit 25 offset 0;",$params);
           if ($qry) {
             foreach($qry as $rs){
               $tabla[] = array(
@@ -73,16 +73,20 @@
         case "viewDesembolso":
           $tabla = 0;
           $alumnoID = 0;
-          $qry = $db->query_all("select * from vw_matriculas where id=:id",[":id"=>$data->matriculaID]);
+          $qry = $db->query_all("select * from vw_matriculas_state2 where id=:id",[":id"=>$data->matriculaID]);
           if ($qry) {
             $rs = reset($qry);
-            $alumnoID = $rs["id"];
+            $alumnoID = $rs["id_alumno"];
             $tabla = array(
               "ID" => $rs["id"],
               "codigo" => $rs["codigo"],
+              "alumnoID" => $rs["id_alumno"],
               "alumno" => $rs["alumno"],
               "nro_dui" => $rs["nro_dui"],
               "fecha_solicita" => $rs["fecha_solicita"],
+              "user_solicita" => $rs["user_solicita"],
+              "fecha_aprueba" => $rs["fecha_aprueba"],
+              "user_aprueba" => $rs["user_aprueba"],
               "nivel" => $rs["nivel"],
               "grado" => $rs["grado"],
               "seccion" => $rs["seccion"],

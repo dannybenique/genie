@@ -11,49 +11,22 @@
       $rpta = 0;
 
       //****************personas****************
-      function getViewSocio($personaID){
-        $db = $GLOBALS["db"]; //base de datos
-        $fn = $GLOBALS["fn"]; //funciones
-        $web = $GLOBALS["web"]; //web-config
-        
-        //obtener datos personales
-        $sql = "select s.*,b.nombre as agencia from bn_socios s,bn_bancos b where s.estado=1 and s.id_agencia=b.id and s.id_socio=:socioID and s.id_coopac=:coopacID";
-        $params = [":socioID"=>$personaID,"coopacID"=>$web->coopacID];
-        $qry = $db->query_all($sql,$params);
-        
-        if ($qry) {
-            $rs = reset($qry);
-            $tabla = array(
-              "ID" => ($rs["id_socio"]),
-              "coopacID" => ($rs["id_coopac"]),
-              "agenciaID" => ($rs["id_agencia"]),
-              "comboAgencias" => ($fn->getComboBox("select id,nombre from bn_bancos where estado=1 and id_padre=".$web->coopacID." order by codigo;")),
-              "agencia" => $rs["agencia"],
-              "fecha" => $rs["fecha"],
-              "codigo" => $rs["codigo"],
-              "observac" => ($rs["observac"]),
-              "sysuser" => ($rs["sys_user"]),
-              "sysfecha" => ($rs["sys_fecha"])
-            );
-        }
-        return $tabla; 
-      }
       switch ($data->TipoQuery) {
         case "selSolMatri":
           $tabla = array();
           $buscar = strtoupper($data->buscar);
           $whr = " and id_colegio=:colegioID and (alumno LIKE :buscar or nro_dui LIKE :buscar) ";
           $params = [":colegioID"=>$web->colegioID,":buscar"=>'%'.$buscar.'%'];
-          $qry = $db->query_all("select count(*) as cuenta from vw_matriculas where estado=3 ".$whr.";",$params);
+          $qry = $db->query_all("select count(*) as cuenta from vw_matriculas_state3 where estado=3 ".$whr.";",$params);
           $rsCount = reset($qry);
 
-          $sql = "select * from vw_matriculas where estado=3 ".$whr." order by alumno limit 25 offset 0;";
+          $sql = "select * from vw_matriculas_state3 where estado=3 ".$whr." order by alumno limit 25 offset 0;";
           $qry = $db->query_all($sql,$params);
           if ($qry) {
             foreach($qry as $rs){
               $tabla[] = array(
                 "ID" => $rs["id"],
-                "fecha_solmatri" => $rs["fecha_solicita"],
+                "fecha_solicita" => $rs["fecha_solicita"],
                 "nro_dui"=> str_replace($buscar, '<span style="background:yellow;">'.$buscar.'</span>', $rs["nro_dui"]),
                 "alumno" => str_ireplace($buscar, '<span style="background:yellow;">'.$buscar.'</span>', $rs["alumno"]),
                 "codigo" => $rs["codigo"],
@@ -160,7 +133,7 @@
           echo json_encode($rpta);
           break;
         case "viewApruebaSolMatri":
-          $qry = $db->query_all("select * from vw_matriculas where id=:id",[":id"=>$data->matriculaID]);
+          $qry = $db->query_all("select * from vw_matriculas_state3 where id=:id",[":id"=>$data->matriculaID]);
           if ($qry) {
             $rs = reset($qry);
             $tabla = array(

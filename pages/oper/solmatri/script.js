@@ -20,7 +20,7 @@ function appSolMatriGrid(){
                 '<td><input type="checkbox" name="chk_Borrar" value="'+(valor.ID)+'" '+disabledDelete+'/></td>'+
                 '<td>'+((menu.oper.submenu.solmatri.aprueba===1)?('<a href="javascript:appSolMatriAprueba('+(valor.ID)+');"><i class="fa fa-thumbs-up" style="color:#FF0084;"></i></a>'):(''))+'</td>'+
                 '<td style="text-align:center;"><a href="javascript:appSolMatriView('+(valor.ID)+');" title="'+(valor.ID)+'">'+(valor.codigo)+'</a></td>'+
-                '<td>'+(moment(valor.fecha_solmatri).format("DD/MM/YYYY"))+'</td>'+
+                '<td>'+(moment(valor.fecha_solicita).format("DD/MM/YYYY"))+'</td>'+
                 '<td>'+(valor.nro_dui)+'</td>'+
                 '<td>'+(valor.alumno)+'</td>'+
                 '<td>'+(valor.nivel)+' &raquo; '+(valor.grado)+' &raquo; '+(valor.seccion)+'</td>'+

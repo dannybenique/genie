@@ -125,12 +125,11 @@ function appDesembView(matriculaID){
   };
   
   appFetch(datos,rutaSQL).then(resp => {
-    console.log(menu);
     //tabs default en primer tab
     $('.nav-tabs li').removeClass('active');
     $('.tab-content .tab-pane').removeClass('active');
-    $('a[href="#datosSoliCred"]').closest('li').addClass('active');
-    $('#datosSoliCred').addClass('active');
+    $('a[href="#datosMatricula"]').closest('li').addClass('active');
+    $('#datosMatricula').addClass('active');
     document.querySelector("#btnInsert").style.display = (menu.caja.submenu.desembolsos.cmdUpdate==1)?('inline'):('none');
     document.querySelector('#grid').style.display = 'none';
     document.querySelector('#edit').style.display = 'block';
@@ -144,62 +143,29 @@ function appDesembSetData(data){
   //pestaña de desembolso
   objDesemb = {
     id : data.ID,
-    tipopagoID : 164,
-    tipocredID : data.tipocredID,
-    productoID : data.productoID,
-    monedaID : data.monedaID,
-    socioID : data.socioID,
-    agenciaID : data.agenciaID
+    alumnoID : data.alumnoID
   }
-  document.querySelector("#lbl_FormAprueba").style.color = (data.aprueba=="")?("#D00"):("#777");
   document.querySelector("#txt_DesembFecha").disabled = (data.rolUser==data.rolROOT) ? (false):(true);
   $('#txt_DesembFecha').datepicker("setDate",moment(data.fecha_desemb).format("DD/MM/YYYY"));
 
-  document.querySelector('#lbl_DesembSocio').innerHTML = (data.socio);
-  document.querySelector('#lbl_DesembFechaSoliCred').innerHTML = (moment(data.fecha_solicred).format("DD/MM/YYYY"));
+  document.querySelector('#lbl_DesembAlumno').innerHTML = (data.alumno);
+  document.querySelector('#lbl_DesembAlumnoDNI').innerHTML = (data.nro_dui);
+  document.querySelector('#lbl_DesembFechaSolicita').innerHTML = (moment(data.fecha_solicita).format("DD/MM/YYYY") + " &raquo; " + data.user_solicita);
+  document.querySelector('#lbl_DesembFechaAprueba').innerHTML = (moment(data.fecha_aprueba).format("DD/MM/YYYY") + " &raquo; " + data.user_aprueba);
   document.querySelector("#lbl_DesembCodigo").innerHTML = (data.codigo);
-  document.querySelector("#lbl_DesembMoneda").innerHTML = (data.moneda);
-  document.querySelector("#lbl_DesembClasifi").innerHTML = (data.clasifica);
-  document.querySelector("#lbl_DesembCondicion").innerHTML = (data.condicion);
-  document.querySelector("#lbl_DesembAgencia").innerHTML = (data.agencia);
-  document.querySelector("#lbl_DesembPromotor").innerHTML = (data.promotor);
-  document.querySelector("#lbl_DesembAnalista").innerHTML = (data.analista);
-  document.querySelector("#lbl_DesembAprueba").innerHTML = (data.aprueba);
-  document.querySelector("#lbl_DesembTipoSBS").innerHTML = (data.tiposbs);
-  document.querySelector("#lbl_DesembDestSBS").innerHTML = (data.destsbs);
-  document.querySelector("#lbl_DesembPrestamoID").innerHTML = (data.ID);
-  document.querySelector("#lbl_DesembTipoCred").innerHTML = (data.tipocred);
-  document.querySelector("#lbl_DesembProducto").innerHTML = (data.producto);
-  document.querySelector("#lbl_DesembImporte").innerHTML = (appFormatMoney(data.importe,2));
-  document.querySelector("#lbl_DesembNrocuotas").innerHTML = (data.nrocuotas);
-  document.querySelector("#lbl_DesembTasaCred").innerHTML = (appFormatMoney(data.tasa_cred,2));
-  document.querySelector("#lbl_DesembTasaMora").innerHTML = (appFormatMoney(data.tasa_mora,2));
-  document.querySelector("#lbl_DesembTasaDesgr").innerHTML = (appFormatMoney(data.tasa_desgr,2));
-  document.querySelector("#lbl_DesembFechaOtorga").innerHTML = (moment(data.fecha_otorga).format("DD/MM/YYYY"));
-  document.querySelector("#lbl_DesembFechaPriCuota").innerHTML = (moment(data.fecha_pricuota).format("DD/MM/YYYY"));
-  document.querySelector("#lbl_DesembEtqFrecuencia").style.display = (data.tipocredID=="1")?("none"):("inherit");
-  document.querySelector("#lbl_DesembFrecuencia").innerHTML = (data.frecuencia);
-  document.querySelector("#lbl_DesembCuota").innerHTML = ("&nbsp;<small style='font-size:10px;'>"+data.mon_abrevia+"</small>&nbsp;&nbsp;"+data.cuota+"&nbsp;");
+  document.querySelector("#lbl_DesembNivel").innerHTML = (data.nivel);
+  document.querySelector("#lbl_DesembGrado").innerHTML = (data.grado);
+  document.querySelector("#lbl_DesembSeccion").innerHTML = (data.seccion);
   document.querySelector("#lbl_DesembObservac").innerHTML = (data.observac);
 }
 
 function appPersonaSetData(data){
-  //pestaña datos personales
-  if(data.tipoPersona==2){ //persona juridica
-    document.querySelector("#lbl_PersTipoNombres").innerHTML = ("Razon Social");
-    document.querySelector("#lbl_PersTipoProfesion").innerHTML = ("Rubro");
-    document.querySelector("#lbl_PersTipoApellidos").style.display = 'none';
-    document.querySelector("#lbl_PersTipoSexo").style.display = 'none';
-    document.querySelector("#lbl_PersTipoECivil").style.display = 'none';
-    document.querySelector("#lbl_PersTipoGIntruc").style.display = 'none';
-  }else{
-    document.querySelector("#lbl_PersTipoNombres").innerHTML = ("Nombres");
-    document.querySelector("#lbl_PersTipoProfesion").innerHTML = ("Profesion");
-    document.querySelector("#lbl_PersTipoApellidos").style.display = 'block';
-    document.querySelector("#lbl_PersTipoSexo").style.display = 'block';
-    document.querySelector("#lbl_PersTipoECivil").style.display = 'block';
-    document.querySelector("#lbl_PersTipoGIntruc").style.display = 'block';
-  }
+  document.querySelector("#lbl_PersTipoNombres").innerHTML = ("Nombres");
+  document.querySelector("#lbl_PersTipoProfesion").innerHTML = ("Profesion");
+  document.querySelector("#lbl_PersTipoApellidos").style.display = 'block';
+  document.querySelector("#lbl_PersTipoSexo").style.display = 'block';
+  document.querySelector("#lbl_PersTipoECivil").style.display = 'block';
+  document.querySelector("#lbl_PersTipoGIntruc").style.display = 'block';
   document.querySelector("#hid_PersID").value = (data.ID);
   document.querySelector("#lbl_PersNombres").innerHTML = (data.nombres);
   document.querySelector("#lbl_PersApellidos").innerHTML = (data.ap_paterno+" "+data.ap_materno);

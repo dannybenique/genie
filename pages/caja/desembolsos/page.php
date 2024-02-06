@@ -54,43 +54,42 @@
       <div class="col-md-9">
         <div class="nav-tabs-custom">
           <ul class="nav nav-tabs">
-            <li  class="active"><a href="#datosSoliCred" data-toggle="tab"><i class="fa fa-briefcase"></i> Solicitud de Credito</a></li>
-            <li><a href="#datosPersonal" data-toggle="tab"><i class="fa fa-male"></i> Datos Socio</a></li>
+            <li  class="active"><a href="#datosMatricula" data-toggle="tab"><i class="fa fa-briefcase"></i> Solicitud de Credito</a></li>
+            <li><a href="#datosPersonal" data-toggle="tab"><i class="fa fa-male"></i> Datos Alumno</a></li>
           </ul>
           <div class="tab-content">
-            <div id="datosSoliCred" class="tab-pane active">
+            <div id="datosMatricula" class="tab-pane active">
               <div class="box-body">
                 <div class="box-body">
-                  <strong><i class="fa fa-thumbs-up margin-r-5"></i> Desembolso</strong>
+                  <strong><i class="fa fa-thumbs-up margin-r-5"></i> Ejecucion</strong>
                   <div class="form-group" style="margin-bottom:15px;">
                     <div class="input-group">
                       <span class="input-group-addon" style="background:#eeeeee;"><b>Fecha</b></span>
                       <input id="txt_DesembFecha" type="text" class="form-control" style="width:105px;" disabled="disabled" />
                     </div>
                   </div><br>
-                  <strong><i class="fa fa-user margin-r-5"></i> Basicos</strong>
-                  <p class="text-muted">
-                    <input type="hidden" id="hid_modapruebaID" value=""/>
-                    Alumno: <a id="lbl_modapruebaAlumno"></a><br>
-                    DNI: <a id="lbl_modapruebaDNI"></a><br>
-                  </p>
-                  <hr/>
-
                   <strong><i class="fa fa-gg-circle margin-r-5"></i> Matricula</strong>
                   <p class="text-muted">
-                    Fecha Solicitud: <a id="lbl_modapruebaFechaSolicita"></a><br>
-                    Fecha Aprobacion: <a id="lbl_modapruebaFechaAprueba"></a><br>
-                    Codigo: <a id="lbl_modapruebaCodigo"></a><br>
-                    Nivel: <a id="lbl_modapruebaNivel"></a><br>
-                    Grado: <a id="lbl_modapruebaGrado"></a><br>
-                    Seccion: <a id="lbl_modapruebaSeccion"></a>
+                    <input type="hidden" id="hid_DesembID" value=""/>
+                    Codigo: <a id="lbl_DesembCodigo"></a><br>
+                    Solicitud: <a id="lbl_DesembFechaSolicita"></a><br>
+                    Aprobacion: <a id="lbl_DesembFechaAprueba"></a><br><br>
+                    Nivel: <a id="lbl_DesembNivel"></a><br>
+                    Grado: <a id="lbl_DesembGrado"></a><br>
+                    Seccion: <a id="lbl_DesembSeccion"></a><br><br>
+                    Alumno: <a id="lbl_DesembAlumno"></a><br>
+                    DNI: <a id="lbl_DesembAlumnoDNI"></a><br>
                   </p>
                   <hr/>
                   
                   <strong><i class="fa fa-file-text-o margin-r-5"></i> Observaciones</strong>
                   <p class="text-muted">
-                    <span id="lbl_modapruebaObservac"></span>
-                  </p><br>
+                    <span id="lbl_DesembObservac"></span>
+                  </p>
+                </div>
+                <div class="box-body">
+                  <button id="btnCancel" type="button" class="btn btn-default" onclick="javascript:appDesembBotonCancel();"><i class="fa fa-angle-double-left"></i> Regresar</button>
+                  <button id="btnInsert" type="button" class="btn btn-primary pull-right" onclick="javascript:appDesembBotonDesembolsar();"><i class="fa fa-flash"></i> Matricular</button>
                 </div>
               </div>
             </div>
