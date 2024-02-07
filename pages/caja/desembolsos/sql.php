@@ -71,13 +71,13 @@
           break;
         
         case "viewDesembolso":
-          $tabla = 0;
+          $matricula = 0;
           $alumnoID = 0;
           $qry = $db->query_all("select * from vw_matriculas_state2 where id=:id",[":id"=>$data->matriculaID]);
           if ($qry) {
             $rs = reset($qry);
             $alumnoID = $rs["id_alumno"];
-            $tabla = array(
+            $matricula = array(
               "ID" => $rs["id"],
               "codigo" => $rs["codigo"],
               "alumnoID" => $rs["id_alumno"],
@@ -96,9 +96,26 @@
               "rolROOT" => 101
             );
           }
-          
+
+          $pagos = array();
+          $qry = $db->query_all("select c.*,p.nombre as producto,p.abrevia from app_colprod c join app_productos p on c.id_producto=p.id where c.obliga=1 and id_colegio=:colegioID order by abrevia",[":colegioID"=>$web->colegioID]);
+          if ($qry) {
+            foreach($qry as $rs){
+              $pagos[] = array(
+                "productoID" => $rs["id_producto"],
+                "producto" => $rs["producto"],
+                "abrevia" => $rs["abrevia"],
+                "importe" => $rs["importe"],
+                "vencimiento" => $rs["fecha"]
+              );
+            }
+          }
           //respuesta
-          $rpta = array('tablaDesembolso'=> $tabla,'tablaPers'=>$fn->getViewPersona($alumnoID));
+          $rpta = array(
+            'tablaDesembolso'=> $matricula,
+            'tablaPagos'=> $pagos,
+            'tablaPers'=>$fn->getViewPersona($alumnoID)
+          );
           echo json_encode($rpta);
           break;
         case "delDesembolsos":

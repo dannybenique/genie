@@ -1,6 +1,7 @@
 const rutaSQL = "pages/caja/desembolsos/sql.php";
 var menu = "";
 var objDesemb = null;
+var objPagos = null;
 
 //=========================funciones para Personas============================
 function appDesembGrid(){
@@ -38,6 +39,7 @@ function appDesembGrid(){
 function appDesembReset(){
   appFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php").then(resp => {
     objDesemb = null;
+    objPagos = null;
     menu = JSON.parse(resp.menu);
     document.querySelector("#btn_DEL").style.display = (menu.caja.submenu.desembolsos.cmdDelete==1)?('inline'):('none');
 
@@ -135,6 +137,7 @@ function appDesembView(matriculaID){
     document.querySelector('#edit').style.display = 'block';
 
     appDesembSetData(resp.tablaDesembolso);  //pestaña Solicitud de credito
+    appPagosSetData(resp.tablaPagos);
     appPersonaSetData(resp.tablaPers);
   });
 }
@@ -145,18 +148,39 @@ function appDesembSetData(data){
     id : data.ID,
     alumnoID : data.alumnoID
   }
-  document.querySelector("#txt_DesembFecha").disabled = (data.rolUser==data.rolROOT) ? (false):(true);
-  $('#txt_DesembFecha').datepicker("setDate",moment(data.fecha_desemb).format("DD/MM/YYYY"));
-
+  //info corta
   document.querySelector('#lbl_DesembAlumno').innerHTML = (data.alumno);
   document.querySelector('#lbl_DesembAlumnoDNI').innerHTML = (data.nro_dui);
-  document.querySelector('#lbl_DesembFechaSolicita').innerHTML = (moment(data.fecha_solicita).format("DD/MM/YYYY") + " &raquo; " + data.user_solicita);
-  document.querySelector('#lbl_DesembFechaAprueba').innerHTML = (moment(data.fecha_aprueba).format("DD/MM/YYYY") + " &raquo; " + data.user_aprueba);
   document.querySelector("#lbl_DesembCodigo").innerHTML = (data.codigo);
   document.querySelector("#lbl_DesembNivel").innerHTML = (data.nivel);
   document.querySelector("#lbl_DesembGrado").innerHTML = (data.grado);
   document.querySelector("#lbl_DesembSeccion").innerHTML = (data.seccion);
+
+  //pestaña matricula
+  document.querySelector("#txt_DesembFecha").disabled = (data.rolUser==data.rolROOT) ? (false):(true);
+  $('#txt_DesembFecha').datepicker("setDate",moment(data.fecha_desemb).format("DD/MM/YYYY"));
+
+  document.querySelector('#lbl_DesembFechaSolicita').innerHTML = (moment(data.fecha_solicita).format("DD/MM/YYYY") + " &raquo; " + data.user_solicita);
+  document.querySelector('#lbl_DesembFechaAprueba').innerHTML = (moment(data.fecha_aprueba).format("DD/MM/YYYY") + " &raquo; " + data.user_aprueba);
   document.querySelector("#lbl_DesembObservac").innerHTML = (data.observac);
+}
+
+function appPagosSetData(data){
+  if(data.length>0){
+    let fila = "";
+    data.forEach((valor,key)=>{
+      fila += '<tr>'+
+              '<td><input type="checkbox" name="chk_BorrarPagos" value="'+(valor.productoID)+'"/></td>'+
+              '<td>'+(valor.abrevia)+'</td>'+
+              '<td>'+(valor.producto)+'</td>'+
+              '<td>'+moment(valor.vencimiento).format("DD/MM/YYYY")+'</td>'+
+              '<td style="text-align:right;">'+appFormatMoney(valor.importe,2)+'</td>'+
+              '</tr>';
+    });
+    $('#grdPagos').html(fila);
+  }else{
+    $('#grdPagos').html('<tr><td colspan="5" style="text-align:center;color:red;">Sin Resultados</td></tr>');
+  }
 }
 
 function appPersonaSetData(data){
