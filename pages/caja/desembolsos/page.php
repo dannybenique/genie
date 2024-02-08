@@ -106,7 +106,7 @@
                       <table class="table table-hover">
                         <thead>
                           <tr>
-                            <th style="width:25px;"><input type="checkbox" id="chk_All" onclick="toggleAll(this,'chk_BorrarPagos');" /></th>
+                            <th style="width:25px;"></th>
                             <th style="width:45px;" title="Abreviatura">Abr</th>
                             <th style="">Pago <i class="fa fa-sort"></i></th>
                             <th style="width:85px;text-align:center;" title="Fecha de Vencimiento">Vcmto</th>

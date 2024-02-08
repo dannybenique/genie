@@ -137,15 +137,11 @@
         case "ejecutarDesembolso":
           $userID = $_SESSION['usr_ID'];
           $clientIP = $fn->getClientIP();
+          $colegioID = $web->colegioID;
+          $matriculaID = $data->matriculaID;
 
-          $sql = "select sp_desembolsos ('DESEM',:saldoID,:socioID,:coopacID,:agenciaID,:productoID,:monedaID,:tipopagoID,:importe,:tasa,:desgr,:nrocuotas,:fechaOtor,:tipocredID,:pivot,:sysIP,:userID) as movim_id;";
+          $sql = "insert into app_saldos ('DESEM',:saldoID,:socioID,:coopacID,:agenciaID,:productoID,:monedaID,:tipopagoID,:importe,:tasa,:desgr,:nrocuotas,:fechaOtor,:tipocredID,:pivot,:sysIP,:userID) as movim_id;";
           $params = [
-            ":saldoID"=>$data->ID,
-            ":socioID"=>$data->socioID,
-            ":coopacID"=>$web->coopacID,
-            ":agenciaID"=>$data->agenciaID,
-            ":productoID"=>$data->productoID,
-            ":monedaID"=>$data->monedaID,
             ":tipopagoID"=>$data->tipopagoID,
             ":importe"=>$data->importe,
             ":tasa"=>$data->tasa_cred,

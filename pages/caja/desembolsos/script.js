@@ -2,6 +2,7 @@ const rutaSQL = "pages/caja/desembolsos/sql.php";
 var menu = "";
 var objDesemb = null;
 var objPagos = null;
+var totPagos = 0;
 
 //=========================funciones para Personas============================
 function appDesembGrid(){
@@ -28,11 +29,11 @@ function appDesembGrid(){
                 '<td>'+(valor.nivel)+' &raquo; '+(valor.grado)+' &raquo; '+(valor.seccion)+'</td>'+
                 '</tr>';
       });
-      $('#grdDatos').html(fila);
+      document.querySelector('#grdDatos').innerHTML =fila;
     }else{
-      $('#grdDatos').html('<tr><td colspan="9" style="text-align:center;color:red;">Sin Resultados '+((txtBuscar==="")?(""):("para "+txtBuscar))+'</td></tr>');
+      document.querySelector('#grdDatos').innerHTML = '<tr><td colspan="9" style="text-align:center;color:red;">Sin Resultados '+((txtBuscar==="")?(""):("para "+txtBuscar))+'</td></tr>';
     }
-    $('#grdCount').html(resp.tabla.length+"/"+resp.cuenta);
+    document.querySelector('#grdCount').innerHTML = resp.tabla.length+"/"+resp.cuenta;
   });
 }
 
@@ -40,6 +41,7 @@ function appDesembReset(){
   appFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php").then(resp => {
     objDesemb = null;
     objPagos = null;
+    totPagos = 0;
     menu = JSON.parse(resp.menu);
     document.querySelector("#btn_DEL").style.display = (menu.caja.submenu.desembolsos.cmdDelete==1)?('inline'):('none');
 
@@ -72,13 +74,13 @@ function appDesembBotonDesembolsar(){
   if(confirm("¿Esta seguro de continuar?")) {
     let datos = {
       TipoQuery : 'ejecutarDesembolso',
-      ID : desemb.id,
-      socioID : desemb.socioID,
-      monedaID : desemb.monedaID,
-      agenciaID : desemb.agenciaID,
-      tipopagoID : desemb.tipopagoID,
-      tipocredID : desemb.tipocredID,
-      productoID : desemb.productoID,
+      ID : objDesemb.id,
+      socioID : objDesemb.socioID,
+      monedaID : objDesemb.monedaID,
+      agenciaID : objDesemb.agenciaID,
+      tipopagoID : objDesemb.tipopagoID,
+      tipocredID : objDesemb.tipocredID,
+      productoID : objDesemb.productoID,
       cod_prod : document.querySelector("#lbl_DesembCodigo").innerHTML,
       fecha_desemb : appConvertToFecha(document.querySelector("#txt_DesembFecha").value,""),
       fecha_otorga : appConvertToFecha(document.querySelector("#lbl_DesembFechaOtorga").innerHTML),
@@ -172,17 +174,23 @@ function appPagosSetData(data){
     console.log(objPagos);
     let fila = "";
     objPagos.forEach((valor,key)=>{
+      totPagos += (valor.diferencia>=0) ? (valor.importe):(0);
       fila += '<tr>'+
-              '<td><input type="checkbox" name="chk_BorrarPagos" value="'+(valor.productoID)+'" '+((valor.diferencia>=0) ? ("checked disabled"):(""))+'/></td>'+
+              '<td><input type="checkbox" name="chk_BorrarPagos" value="'+(valor.productoID)+'" '+((valor.diferencia>=0) ? ("checked disabled"):(""))+' onchange="javascript:appPagosCheck(this);"/></td>'+
               '<td>'+(valor.abrevia)+'</td>'+
               '<td>'+(valor.producto)+'</td>'+
               '<td>'+moment(valor.vencimiento).format("DD/MM/YYYY")+'</td>'+
               '<td style="text-align:right;">'+appFormatMoney(valor.importe,2)+'</td>'+
               '</tr>';
     });
-    $('#grdPagos').html(fila);
+    fila += '<tfoot><tr>'+
+            '<td colspan="3">TOTAL</td>'+
+            '<td colspan="2" style="text-align:right;border-bottom-style:double;"><span id="lbl_DesembTotal">'+appFormatMoney(totPagos,2)+'</span></td>'+
+            '</tr></tfoot>';
+    document.querySelector('#grdPagos').innerHTML = fila;
+    document.querySelector('#lbl_DesembImporte').innerHTML = appFormatMoney(totPagos,2);
   }else{
-    $('#grdPagos').html('<tr><td colspan="5" style="text-align:center;color:red;">Sin Resultados</td></tr>');
+    document.querySelector('#grdPagos').innerHTML = '<tr><td colspan="5" style="text-align:center;color:red;">Sin Resultados</td></tr>';
   }
 }
 
@@ -219,4 +227,16 @@ function appPersonaSetData(data){
   document.querySelector("#lbl_PersObservac").innerHTML = (data.observPers);
   document.querySelector("#lbl_PersSysFecha").innerHTML = (moment(data.sysfechaPers).format("DD/MM/YYYY HH:mm:ss"));
   document.querySelector("#lbl_PersSysUser").innerHTML = (data.sysuserPers);
+}
+
+function appPagosCheck(e){
+  // console.log(e.value);
+  let idx = objPagos.findIndex(elemento => elemento.productoID === Number(e.value));
+  if(e.checked){
+    totPagos += objPagos[idx]["importe"];
+  } else {
+    totPagos -= objPagos[idx]["importe"];
+  }
+  document.querySelector('#lbl_DesembImporte').innerHTML = appFormatMoney(totPagos,2);
+  document.querySelector('#lbl_DesembTotal').innerHTML = appFormatMoney(totPagos,2);
 }
