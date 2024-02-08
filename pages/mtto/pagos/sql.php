@@ -28,7 +28,7 @@
                 "estado" => $rs["estado"],
                 "obliga" => $rs["obliga"],
                 "importe" => $rs["importe"],
-                "fecha" => $rs["fecha"]
+                "vencimiento" => $rs["vencimiento"]
               );
             }
           }
@@ -53,7 +53,7 @@
               "nombre" => ($rs["nombre"]),
               "obliga" => ($rs["obliga"]),
               "importe" => ($rs["importe"]*1),
-              "fecha" => ($rs["fecha"]),
+              "vencimiento" => ($rs["vencimiento"]),
               "estado" => ($rs["estado"]),
               "comboTipoProd" => $fn->getComboBox("select id,nombre from app_productos where estado=1;"),
             );
@@ -64,13 +64,13 @@
           break;
         case "insPago":
           //agregando a la tabla
-          $sql = "insert into app_colprod values (:colegioID,:productoID,:obliga,:importe,:fecha,:estado,:sysIP,:userID,now())";
+          $sql = "insert into app_colprod values (:colegioID,:productoID,:obliga,:importe,:vencimiento,:estado,:sysIP,:userID,now())";
           $params = [
             ":productoID"=>$data->productoID,
             ":colegioID"=>$web->colegioID,
             ":obliga"=>$data->obliga,
             ":importe"=>$data->importe,
-            ":fecha"=>$data->fecha,
+            ":vencimiento"=>$data->vencimiento,
             ":estado"=>1,
             ":sysIP"=>$fn->getClientIP(),
             ":userID"=>$_SESSION['usr_ID']
@@ -83,13 +83,13 @@
           echo json_encode($rpta);
           break;
         case "updPago":
-          $sql = "update app_colprod set obliga=:obliga,importe=:importe,fecha=:fecha,sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id_producto=:productoID and id_colegio=:colegioID";
+          $sql = "update app_colprod set obliga=:obliga,importe=:importe,vencimiento=:vencimiento,sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id_producto=:productoID and id_colegio=:colegioID";
           $params = [
             ":productoID"=>$data->productoID,
             ":colegioID"=>$web->colegioID,
             ":obliga"=>$data->obliga,
             ":importe"=>$data->importe,
-            ":fecha"=>$data->fecha,
+            ":vencimiento"=>$data->vencimiento,
             ":sysIP"=>$fn->getClientIP(),
             ":userID"=>$_SESSION['usr_ID']
           ];

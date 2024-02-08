@@ -136,7 +136,7 @@ function appDesembView(matriculaID){
     document.querySelector('#grid').style.display = 'none';
     document.querySelector('#edit').style.display = 'block';
 
-    appDesembSetData(resp.tablaDesembolso);  //pestaña Solicitud de credito
+    appDesembSetData(resp.tablaDesembolso);  //pestaña matricula
     appPagosSetData(resp.tablaPagos);
     appPersonaSetData(resp.tablaPers);
   });
@@ -155,6 +155,7 @@ function appDesembSetData(data){
   document.querySelector("#lbl_DesembNivel").innerHTML = (data.nivel);
   document.querySelector("#lbl_DesembGrado").innerHTML = (data.grado);
   document.querySelector("#lbl_DesembSeccion").innerHTML = (data.seccion);
+  document.querySelector("#lbl_DesembImporte").innerHTML = "0.00";
 
   //pestaña matricula
   document.querySelector("#txt_DesembFecha").disabled = (data.rolUser==data.rolROOT) ? (false):(true);
@@ -167,10 +168,12 @@ function appDesembSetData(data){
 
 function appPagosSetData(data){
   if(data.length>0){
+    objPagos = data;
+    console.log(objPagos);
     let fila = "";
-    data.forEach((valor,key)=>{
+    objPagos.forEach((valor,key)=>{
       fila += '<tr>'+
-              '<td><input type="checkbox" name="chk_BorrarPagos" value="'+(valor.productoID)+'"/></td>'+
+              '<td><input type="checkbox" name="chk_BorrarPagos" value="'+(valor.productoID)+'" '+((valor.diferencia>=0) ? ("checked disabled"):(""))+'/></td>'+
               '<td>'+(valor.abrevia)+'</td>'+
               '<td>'+(valor.producto)+'</td>'+
               '<td>'+moment(valor.vencimiento).format("DD/MM/YYYY")+'</td>'+

@@ -48,6 +48,28 @@
         }
         return $tabla; 
       }
+      function setPadreID($personaID){
+        $db = $GLOBALS["db"]; //base de datos
+        $fn = $GLOBALS["fn"]; //funciones
+        $web = $GLOBALS["web"]; //web-config
+        $rs = null;
+        if($personaID!=""){
+          $qry = $db->query_all("select id from app_padres where id=".$personaID);
+          if(!$qry){
+            $params = [
+              ":padreID" => $personaID,
+              ":colegioID" => $web->colegioID,
+              ":estado"=>1,
+              ":sysIP"=>$fn->getClientIP(),
+              ":userID"=>$_SESSION['usr_ID']
+            ];
+            $sql = "insert into app_padres values(:padreID,:colegioID,now(),:estado,:sysIP,:userID,now());";
+            $ins = $db->query_all($sql,$params);
+            $rs = ($ins) ? (reset($ins)) : (null);
+          }
+        }
+        return $rs;
+      }
       switch ($data->TipoQuery) {
         case "selAlumnos":
           $tabla = array();
@@ -80,6 +102,11 @@
           echo json_encode($rpta);
           break;
         case "insAlumno":
+          //verificar padres
+          $padreID = setPadreID($data->alumnoPadreID);
+          $madreID = setPadreID($data->alumnoMadreID);
+          $apoderaID = setPadreID($data->alumnoApoderaID);
+          
           //ingresar datos del alumno
           $qry = $db->query_all("select right('000000'||cast(coalesce(max(right(codigo,6)::integer)+1,1) as text),6) as code from app_alumnos where id_colegio=".$web->colegioID.";");
           $codigo = ($qry) ? (reset($qry)["code"]) : (null);
@@ -104,6 +131,12 @@
           echo json_encode($rpta);
           break;
         case "updAlumno":
+          //verificar padres
+          $padreID = setPadreID($data->alumnoPadreID);
+          $madreID = setPadreID($data->alumnoMadreID);
+          $apoderaID = setPadreID($data->alumnoApoderaID);
+
+          //actualizar datos del alumno
           $sql = "update app_alumnos set id_padre=:padreID,id_madre=:madreID,id_apoderado=:apoderaID,sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id=:alumnoID and id_colegio=:colegioID;";
           $params = [
             ":alumnoID"=>$data->alumnoID,

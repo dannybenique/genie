@@ -40,7 +40,7 @@
                   <th style="width:250px;">Pago</th>
                   <th style="width:70px;text-align:center;" title="Abreviatura">Abrev</th>
                   <th style="width:100px;text-align:right;" title="Importe">Importe</th>
-                  <th style="width:105px;text-align:center;" title="Fecha de cumplimiento">Fecha</th>
+                  <th style="width:105px;text-align:center;" title="Fecha de Vencimiento">Vencimiento</th>
                   <th></th>
                 </tr>
               </thead>

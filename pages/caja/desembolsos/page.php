@@ -54,7 +54,7 @@
       <div class="col-md-3">
         <div class="box box-primary">
           <div class="box-header with-border">
-            <h3 class="box-title" style="font-family:flexoregular;"><b>Datos de Matricula</b></h3>
+            <h3 class="box-title" style="font-family:flexoregular;"><b>Datos de Solicitud</b></h3>
           </div>
           <div class="box-body">
             <p class="text-muted">
@@ -64,7 +64,8 @@
               Grado: <a id="lbl_DesembGrado"></a><br>
               Seccion: <a id="lbl_DesembSeccion"></a><br><br>
               Alumno: <a id="lbl_DesembAlumno"></a><br>
-              DNI: <a id="lbl_DesembAlumnoDNI"></a><br>
+              DNI: <a id="lbl_DesembAlumnoDNI"></a><br><br>
+              Importe: <a id="lbl_DesembImporte"></a>
             </p>
             <hr/>
             <button id="btnCancel" type="button" class="btn btn-default" onclick="javascript:appDesembBotonCancel();"><i class="fa fa-angle-double-left"></i> Regresar</button>
@@ -75,7 +76,7 @@
       <div class="col-md-9">
         <div class="nav-tabs-custom">
           <ul class="nav nav-tabs">
-            <li  class="active"><a href="#datosMatricula" data-toggle="tab"><i class="fa fa-briefcase"></i> Solicitud</a></li>
+            <li  class="active"><a href="#datosMatricula" data-toggle="tab"><i class="fa fa-briefcase"></i> Aprobacion</a></li>
             <li><a href="#datosPersonal" data-toggle="tab"><i class="fa fa-male"></i> Datos Alumno</a></li>
           </ul>
           <div class="tab-content">
@@ -83,7 +84,6 @@
               <div class="box-body row">
                 <div class="col-md-6">
                   <div class="box-body">
-                    <div class="box-body">
                       <strong><i class="fa fa-thumbs-up margin-r-5"></i> Ejecucion</strong>
                       <div class="form-group" style="margin-bottom:15px;">
                         <div class="input-group">
@@ -97,24 +97,25 @@
                       <p class="text-muted">
                         <span id="lbl_DesembObservac"></span>
                       </p>
-                    </div>
                   </div>
                 </div>
                 <div class="col-md-6">
-                  <strong><i class="fa fa-ticket margin-r-5"></i> Pagos</strong>
-                  <div class="box-body table-responsive no-padding">
-                    <table class="table table-hover">
-                      <thead>
-                        <tr>
-                          <th style="width:25px;"><input type="checkbox" id="chk_All" onclick="toggleAll(this,'chk_BorrarPagos');" /></th>
-                          <th style="width:45px;" title="Abreviatura">Abr</th>
-                          <th style="">Pago <i class="fa fa-sort"></i></th>
-                          <th style="width:85px;text-align:center;" title="Fecha de Vencimiento">Vcmto</th>
-                          <th style="text-align:right;" title="Costo">Importe</th>
-                        </tr>
-                      </thead>
-                      <tbody id="grdPagos"></tbody>
-                    </table>
+                  <div class="box-body">
+                    <strong><i class="fa fa-ticket margin-r-5"></i> Pagos</strong>
+                    <div class="box-body table-responsive no-padding">
+                      <table class="table table-hover">
+                        <thead>
+                          <tr>
+                            <th style="width:25px;"><input type="checkbox" id="chk_All" onclick="toggleAll(this,'chk_BorrarPagos');" /></th>
+                            <th style="width:45px;" title="Abreviatura">Abr</th>
+                            <th style="">Pago <i class="fa fa-sort"></i></th>
+                            <th style="width:85px;text-align:center;" title="Fecha de Vencimiento">Vcmto</th>
+                            <th style="text-align:right;" title="Costo">Importe</th>
+                          </tr>
+                        </thead>
+                        <tbody id="grdPagos"></tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               </div>

@@ -98,15 +98,16 @@
           }
 
           $pagos = array();
-          $qry = $db->query_all("select c.*,p.nombre as producto,p.abrevia from app_colprod c join app_productos p on c.id_producto=p.id where c.obliga=1 and id_colegio=:colegioID order by abrevia",[":colegioID"=>$web->colegioID]);
+          $qry = $db->query_all("select c.*,p.nombre as producto,p.abrevia,extract(days from age(now(),c.vencimiento)) as diferencia from app_colprod c join app_productos p on c.id_producto=p.id where c.obliga=1 and id_colegio=:colegioID order by abrevia",[":colegioID"=>$web->colegioID]);
           if ($qry) {
             foreach($qry as $rs){
               $pagos[] = array(
                 "productoID" => $rs["id_producto"],
                 "producto" => $rs["producto"],
                 "abrevia" => $rs["abrevia"],
-                "importe" => $rs["importe"],
-                "vencimiento" => $rs["fecha"]
+                "importe" => $rs["importe"]*1,
+                "vencimiento" => $rs["vencimiento"],
+                "diferencia" => $rs["diferencia"]*1
               );
             }
           }
