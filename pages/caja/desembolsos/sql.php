@@ -107,7 +107,7 @@
                 "abrevia" => $rs["abrevia"],
                 "importe" => $rs["importe"]*1,
                 "vencimiento" => $rs["vencimiento"],
-                "diferencia" => $rs["diferencia"]*1
+                "obliga" => ($rs["diferencia"]>=0) ? (1):(0)
               );
             }
           }
@@ -139,25 +139,70 @@
           $clientIP = $fn->getClientIP();
           $colegioID = $web->colegioID;
           $matriculaID = $data->matriculaID;
-
-          $sql = "insert into app_saldos ('DESEM',:saldoID,:socioID,:coopacID,:agenciaID,:productoID,:monedaID,:tipopagoID,:importe,:tasa,:desgr,:nrocuotas,:fechaOtor,:tipocredID,:pivot,:sysIP,:userID) as movim_id;";
+          
+          //pagos
+          foreach($data->pagos as $pago){
+            $sql = "insert into app_saldos(id_colegio,id_matricula,id_producto,saldo,estado,sys_ip,sys_user,sys_fecha) values(:colegioID,:matriculaID,:productoID,:saldo,:estado,:sysIP,:userID,now());";
+            $params = [
+              ":colegioID"   => $colegioID,
+              ":matriculaID" => $matriculaID,
+              ":productoID"  => $pago->productoID,
+              ":saldo"  => ($pago->obliga==1) ? (0):($pago->importe),
+              ":estado" => 1,
+              ":sysIP"  => $clientIP,
+              ":userID" => $userID
+            ];
+            $qry = $db->query_all($sql,$params);
+            $rs = reset($qry);
+          }
+          
+          //movim
+          $qry = $db->query_all("select concat(".$userID.",'-',right('0000000'||cast(coalesce(max(right(codigo,7)::integer)+1,1) as text),7)) as code from app_movim where id_cajera=".$userID.";");
+          $voucher = ($qry) ? (reset($qry)["code"]) : (null);
+          $sql = "insert into app_movim(id_colegio,id_matricula,id_tipo_oper,id_tipo_pago,id_tipo_mov,id_cajera,fecha,codigo,total,estado,sys_ip,sys_user,sys_fecha,observac) values(:colegioID,:matriculaID,:tipooperID,:tipopagoID,:tipomovID,:cajeraID,:fecha,:voucher,:total,:estado,:sysIP,:userID,now(),:observac) returning id;";
           $params = [
-            ":tipopagoID"=>$data->tipopagoID,
-            ":importe"=>$data->importe,
-            ":tasa"=>$data->tasa_cred,
-            ":desgr"=>$data->tasa_desgr,
-            ":nrocuotas"=>$data->nrocuotas,
-            ":fechaOtor"=>$data->fecha_otorga,
-            ":tipocredID"=>$data->tipocredID,
-            ":pivot"=>$data->pivot,
+            ":colegioID"   => $colegioID,
+            ":matriculaID" => $matriculaID,
+            ":tipooperID"  => 124, //entrega de credito
+            ":tipopagoID"  => 164, //en efectivo
+            ":tipomovID"  => 9, //entrega de credito
+            ":cajeraID"  => $userID,
+            ":fecha"  => $data->fecha,
+            ":voucher"  => $voucher, //codigo del movimiento = voucher
+            ":total"  => $data->total,
+            ":estado" => 1,
+            ":sysIP"  => $clientIP,
+            ":userID" => $userID,
+            ":observac" => ""
+          ];
+          $qry = $db->query_all($sql,$params);
+          $rs = reset($qry);
+          $movimID = $rs["id"];
+
+          foreach($data->pagos as $indice=>$pago){
+            $sql = "insert into app_movim_det(id_movim,item,id_producto,importe) values(:movimID,:item,:productoID,:importe);";
+            $params = [
+              ":movimID" => $movimID,
+              ":item" => $indice+1,
+              ":productoID" => $pago->productoID,
+              ":importe" => $pago->importe
+            ];
+            if($pago->obliga==1) { $qry = $db->query_all($sql,$params); $rs = reset($qry); }
+          }
+
+          //matriculas
+          $sql = "update app_matriculas set fecha_matricula=:fecha,estado=:estado,sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id=:id";
+          $params = [
+            ":id" => $matriculaID,
+            ":fecha" => $data->fecha,
+            ":estado" => 1,
             ":sysIP"=>$clientIP,
             ":userID"=>$userID
           ];
-          
           $qry = $db->query_all($sql,$params);
           if($qry){
             $rs = reset($qry);
-            $rpta = array("error"=>false, "insert"=>1, "movimID"=>$rs["movim_id"]);
+            $rpta = array("error"=>false, "insert"=>1, "movimID"=>$movimID);
           } else {
             $rpta = array("error"=>true, "insert"=>0);
           }

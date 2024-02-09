@@ -3,24 +3,22 @@
   include_once("../../../includes/web_config.php");
   $movimID = $_REQUEST["movimID"];
   //bancos
-  $qry = $db->query_all("select * from bn_bancos where id=".$web->coopacID);
+  $qry = $db->query_all("select * from app_colegios where id=".$web->colegioID);
   $rs = reset($qry);
-  $banco_nombre = strtoupper($rs["nombre"]);
-  $banco_ruc = $rs["ruc"];
+  $colegio_nombre = strtoupper($rs["nombre"]);
+  $colegio_ruc = $rs["ruc"];
 
-  //movimientos
+  //cabecera
   $params = [":movimID"=>$movimID];
-  $sql = "select m.*,b.nombre as agencia,t.nombre as tipo_oper,o.nombre as moneda,pr.nombre as producto,to_char(fecha,'DD/MM/YYYY HH24:MI:SS') as fechamov,fn_get_persona(p.tipo_persona, p.ap_paterno, p.ap_materno, p.nombres) AS socio,p.nro_dui from bn_movim m join bn_bancos b on m.id_agencia=b.id join bn_productos pr on m.id_producto=pr.id join sis_tipos t on m.id_tipo_oper=t.id join personas p on m.id_socio=p.id join sis_tipos o on m.id_moneda=o.id where m.id=:movimID;";
+  $sql = "select m.*,t.nombre as tipooper,pg.nombre as tipopago,to_char(fecha,'DD/MM/YYYY HH24:MI:SS') as fechamov,fn_get_persona(p.tipo_persona, p.ap_paterno, p.ap_materno, p.nombres) AS alumno,p.nro_dui from app_movim m join app_matriculas mt on m.id_matricula=mt.id join sis_tipos t on m.id_tipo_oper=t.id join sis_tipos pg on m.id_tipo_pago=pg.id join personas p on mt.id_alumno=p.id where m.id=:movimID;";
   $qry = $db->query_all($sql,$params);
   if($qry) {
     $rs = reset($qry); 
-    $mov_agencia = strtoupper($rs["agencia"]);
-    $mov_tipo_oper = strtoupper($rs["tipo_oper"]);
-    $mov_moneda = strtoupper($rs["moneda"]);
-    $mov_producto =$rs["producto"];
-    $mov_codigo = $rs["codigo"];
+    $mov_tipooper = strtoupper($rs["tipooper"]);
+    $mov_tipopago = strtoupper($rs["tipopago"]);
+    $mov_voucher = $rs["codigo"];
     $mov_fecha = $rs["fechamov"];
-    $mov_socio = $rs["socio"];
+    $mov_alumno = $rs["alumno"];
     $mov_DNI = $rs["nro_dui"];
   }
 
@@ -54,23 +52,19 @@
       <div class="clearfix">
         <div>
           <div style="font-size:10px;text-align:center;">
-            <b><u>'.$banco_nombre.'</u></b><br>
-            <span style="font-size:9px;">RUC: '.$banco_ruc.'</span>
+            <b><u>'.$colegio_nombre.'</u></b><br>
+            <span style="font-size:9px;">RUC: '.$colegio_ruc.'</span>
           </div>
           <br><br>
           <table border="0" cellspacing="0" cellpadding="0" style="width:100%;font-size:7px;">
             <tbody>
               <tr>
-                <td style="text-align:left;width:40px;">Agencia</td>
-                <td style="text-align:left;">'.$mov_agencia.'</td>
-              </tr>
-              <tr>
                 <td style="text-align:left;">Tipo Oper.</td>
-                <td style="text-align:left;">'.$mov_tipo_oper.'&nbsp;&nbsp;/&nbsp;&nbsp;'.$mov_moneda.'</td>
+                <td style="text-align:left;">'.$mov_tipooper.'</td>
               </tr>
               <tr>
                 <td style="text-align:left;">Codigo</td>
-                <td style="text-align:left;">'.$mov_codigo.'</td>
+                <td style="text-align:left;">'.$mov_voucher.'</td>
               </tr>
               <tr>
                 <td style="text-align:left;">Fecha</td>
@@ -78,11 +72,7 @@
               </tr>
               <tr>
                 <td style="text-align:left;vertical-align:top;">Socio</td>
-                <td style="text-align:left;">'.$mov_socio.' / '.$mov_DNI.'</td>
-              </tr>
-              <tr>
-                <td style="text-align:left;vertical-align:top;">Producto</td>
-                <td style="text-align:left;">'.$mov_producto.'</td>
+                <td style="text-align:left;">'.$mov_alumno.' / '.$mov_DNI.'</td>
               </tr>
             </tbody>
           </table>

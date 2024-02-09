@@ -64,36 +64,16 @@ function appDesembBotonCancel(){
 }
 
 function appDesembBotonDesembolsar(){
-  // //obliga a desembolsar en la fecha actual
-  // let objDesemb = appConvertToFecha(document.querySelector("#txt_DesembFecha").value,"-");
-  // let inicio = appConvertToFecha(document.querySelector("#lbl_DesembFechaIniCred").innerHTML,"-");
-  // console.log("desemb: "+desemb);
-  // console.log("inicio: "+inicio);
-  // console.log("resta: "+(moment(desemb).diff(moment(inicio),"days")));
-
   if(confirm("¿Esta seguro de continuar?")) {
     let datos = {
       TipoQuery : 'ejecutarDesembolso',
-      ID : objDesemb.id,
-      socioID : objDesemb.socioID,
-      monedaID : objDesemb.monedaID,
-      agenciaID : objDesemb.agenciaID,
-      tipopagoID : objDesemb.tipopagoID,
-      tipocredID : objDesemb.tipocredID,
-      productoID : objDesemb.productoID,
-      cod_prod : document.querySelector("#lbl_DesembCodigo").innerHTML,
-      fecha_desemb : appConvertToFecha(document.querySelector("#txt_DesembFecha").value,""),
-      fecha_otorga : appConvertToFecha(document.querySelector("#lbl_DesembFechaOtorga").innerHTML),
-      importe : appConvertToNumero(document.querySelector("#lbl_DesembImporte").innerHTML),
-      tasa_cred : appConvertToNumero(document.querySelector("#lbl_DesembTasaCred").innerHTML),
-      tasa_desgr : appConvertToNumero(document.querySelector("#lbl_DesembTasaDesgr").innerHTML),
-      nrocuotas : document.querySelector("#lbl_DesembNrocuotas").innerHTML,
-      pivot : (desemb.tipocredID==1)?(appConvertToFecha(document.querySelector("#lbl_DesembFechaPriCuota").innerHTML)):(document.querySelector("#lbl_DesembFrecuencia").innerHTML),
-      observac: document.querySelector("#lbl_DesembObservac").innerHTML
+      matriculaID : objDesemb.matriculaID,
+      pagos : objPagos,
+      total : totPagos,
+      fecha : appConvertToFecha(document.querySelector("#txt_DesembFecha").value)
     }
-    // console.log(datos);
+    console.log(datos);
     appFetch(datos,rutaSQL).then(resp => {
-      console.log(resp);
       if (!resp.error) { 
         if(confirm("¿Desea Imprimir el desembolso?")){
           $("#modalPrint").modal("show");
@@ -147,7 +127,7 @@ function appDesembView(matriculaID){
 function appDesembSetData(data){
   //pestaña de desembolso
   objDesemb = {
-    id : data.ID,
+    matriculaID : data.ID,
     alumnoID : data.alumnoID
   }
   //info corta
@@ -169,14 +149,13 @@ function appDesembSetData(data){
 }
 
 function appPagosSetData(data){
+  objPagos = data;
   if(data.length>0){
-    objPagos = data;
-    console.log(objPagos);
     let fila = "";
-    objPagos.forEach((valor,key)=>{
-      totPagos += (valor.diferencia>=0) ? (valor.importe):(0);
+    data.forEach((valor,key)=>{
+      totPagos += (valor.obliga==1) ? (valor.importe):(0);
       fila += '<tr>'+
-              '<td><input type="checkbox" name="chk_BorrarPagos" value="'+(valor.productoID)+'" '+((valor.diferencia>=0) ? ("checked disabled"):(""))+' onchange="javascript:appPagosCheck(this);"/></td>'+
+              '<td><input type="checkbox" name="chk_BorrarPagos" value="'+(valor.productoID)+'" '+((valor.obliga) ? ("checked disabled"):(""))+' onclick="javascript:appPagosCheck(this);"/></td>'+
               '<td>'+(valor.abrevia)+'</td>'+
               '<td>'+(valor.producto)+'</td>'+
               '<td>'+moment(valor.vencimiento).format("DD/MM/YYYY")+'</td>'+
@@ -189,7 +168,7 @@ function appPagosSetData(data){
             '</tr></tfoot>';
     document.querySelector('#grdPagos').innerHTML = fila;
     document.querySelector('#lbl_DesembImporte').innerHTML = appFormatMoney(totPagos,2);
-  }else{
+  } else {
     document.querySelector('#grdPagos').innerHTML = '<tr><td colspan="5" style="text-align:center;color:red;">Sin Resultados</td></tr>';
   }
 }
@@ -230,13 +209,12 @@ function appPersonaSetData(data){
 }
 
 function appPagosCheck(e){
-  // console.log(e.value);
   let idx = objPagos.findIndex(elemento => elemento.productoID === Number(e.value));
-  if(e.checked){
-    totPagos += objPagos[idx]["importe"];
-  } else {
-    totPagos -= objPagos[idx]["importe"];
-  }
+  
+  if(e.checked){ totPagos += objPagos[idx]["importe"]; } 
+  else { totPagos -= objPagos[idx]["importe"]; }
+  objPagos[idx]["obliga"] = (e.checked) ? (1):(0);
+
   document.querySelector('#lbl_DesembImporte').innerHTML = appFormatMoney(totPagos,2);
   document.querySelector('#lbl_DesembTotal').innerHTML = appFormatMoney(totPagos,2);
 }
