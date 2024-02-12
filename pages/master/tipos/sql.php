@@ -27,7 +27,8 @@
                 "abrevia" => $rs["abrevia"],
                 "tipo" => $rs["tipo"],
                 "padreID" => $rs["id_padre"],
-                "nivel" => $rs["nivel"]
+                "nivel" => $rs["nivel"],
+                "estado" => $rs["estado"]
               );
             }
           }

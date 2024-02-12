@@ -13,14 +13,14 @@ function appProductosGrid(){
     if(resp.productos.length>0){
       let fila = "";
       resp.productos.forEach((valor,key)=>{
-        fila += '<tr>';
-        fila += '<td><input type="checkbox" name="chk_Borrar" value="'+(valor.ID)+'" '+(disabledDelete)+'/></td>';
-        fila += '<td style="text-align:center;">'+(valor.codigo)+'</td>';
-        fila += '<td style="text-align:center;">'+((valor.obliga==1)?('<i class="fa fa-info-circle" style="color:#AF2031;" title="Obligatorio"></i>'):(''))+'</td>';
-        fila += '<td><a href="javascript:appProductoView('+(valor.ID)+');" title="'+(valor.ID)+'">'+(valor.producto)+'</a></td>';
-        fila += '<td>'+(valor.abrevia)+'</td>';
-        fila += '<td></td>';
-        fila += '</tr>';
+        fila += '<tr>'+
+                '<td><input type="checkbox" name="chk_Borrar" value="'+(valor.ID)+'" '+(disabledDelete)+'/></td>'+
+                '<td style="text-align:center;">'+(valor.codigo)+'</td>'+
+                '<td style="text-align:center;">'+((valor.obliga==1)?('<i class="fa fa-info-circle" style="color:#AF2031;" title="Obligatorio"></i>'):(''))+'</td>'+
+                '<td><a href="javascript:appProductoView('+(valor.ID)+');" title="'+(valor.ID)+'">'+(valor.producto)+'</a></td>'+
+                '<td>'+(valor.abrevia)+'</td>'+
+                '<td></td>'+
+                '</tr>';
       });
       document.querySelector('#grdDatos').innerHTML = (fila);
     }else{

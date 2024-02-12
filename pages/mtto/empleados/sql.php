@@ -28,7 +28,7 @@
               "ID" => ($rs["id"]),
               "colegioID" => ($rs["id_colegio"]),
               "cargoID" => ($rs["id_cargo"]),
-              "comboCargos" => ($fn->getComboBox("select id,nombre from sis_tipos where id_padre=7 order by id;")),
+              "comboCargos" => ($fn->getComboBox("select id,nombre from sis_tipos where estado=1 and id_padre=7 order by id;")),
               "codigo" => $rs["codigo"],
               "estado" => $rs["estado"],
               "nombrecorto" => $rs["nombrecorto"],
@@ -59,10 +59,10 @@
           $rs = reset($qry);
           $tabla = array(
             "ID" => ($rs["id"]*1),
-            "colegioID" => ($rs["id_colegio"]*1),
-            "rolID" => ($rs["id_rol"]*1),
+            "colegioID" => ($rs["id_colegio"]),
+            "rolID" => ($rs["id_rol"]),
             "login" => ($rs["login"]),
-            "comboRoles" => ($fn->getComboBox("select id,nombre from sis_tipos where id_padre=2 order by id;")),
+            "comboRoles" => ($fn->getComboBox("select id,nombre from sis_tipos where id_padre=2 and id>=".$rs["id_rol"]." order by id;")),
             "menu" => ($rs["menu"]),
             "sysuser" => ($rs["sys_user"]),
             "sysfecha" => ($rs["sys_fecha"])
@@ -284,7 +284,7 @@
         case "startWorker":
           //respuesta
           $rpta = array(
-            "comboCargos" => $fn->getComboBox("select id,nombre from sis_tipos where id_padre=7 order by id;"),
+            "comboCargos" => $fn->getComboBox("select id,nombre from sis_tipos where estado=1 and id_padre=7 order by id;"),
             "comboRoles" => $fn->getComboBox("select id,nombre from sis_tipos where id_padre=2 order by id;"),
             "fecha" => $fn->getFechaActualDB(),
             "colegio" => $web->colegioID);

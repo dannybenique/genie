@@ -159,7 +159,7 @@
           //movim
           $qry = $db->query_all("select concat(".$userID.",'-',right('0000000'||cast(coalesce(max(right(codigo,7)::integer)+1,1) as text),7)) as code from app_movim where id_cajera=".$userID.";");
           $voucher = ($qry) ? (reset($qry)["code"]) : (null);
-          $sql = "insert into app_movim(id_colegio,id_matricula,id_tipo_oper,id_tipo_pago,id_tipo_mov,id_cajera,fecha,codigo,total,estado,sys_ip,sys_user,sys_fecha,observac) values(:colegioID,:matriculaID,:tipooperID,:tipopagoID,:tipomovID,:cajeraID,:fecha,:voucher,:total,:estado,:sysIP,:userID,now(),:observac) returning id;";
+          $sql = "insert into app_movim(id_colegio,id_matricula,id_tipo_oper,id_tipo_pago,id_tipo_mov,id_cajera,fecha,codigo,total,estado,sys_ip,sys_user,sys_fecha,observac) values(:colegioID,:matriculaID,:tipooperID,:tipopagoID,:tipomovID,:cajeraID,now(),:voucher,:total,:estado,:sysIP,:userID,now(),:observac) returning id;";
           $params = [
             ":colegioID"   => $colegioID,
             ":matriculaID" => $matriculaID,
@@ -167,7 +167,6 @@
             ":tipopagoID"  => 164, //en efectivo
             ":tipomovID"  => 9, //entrega de credito
             ":cajeraID"  => $userID,
-            ":fecha"  => $data->fecha,
             ":voucher"  => $voucher, //codigo del movimiento = voucher
             ":total"  => $data->total,
             ":estado" => 1,

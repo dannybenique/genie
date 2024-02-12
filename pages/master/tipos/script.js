@@ -12,17 +12,17 @@ function appTiposGrid(){
     if(resp.tipos.length>0){
       let fila = "";
       resp.tipos.forEach((valor,key)=>{
-        fila += '<tr>';
-        fila += '<td>'+(valor.ID)+'</td>';
-        fila += '<td style="text-align:center;">'+((valor.tipoID!=null)?('<i class="fa fa-info-circle" title="Este ID esta habilitado para esta coopac" style="color:#0097BC;"></i>'):(''))+'</td>';
-        fila += '<td>'+(valor.nombre)+'</td>';
-        fila += '<td>'+(valor.codigo)+'</td>';
-        fila += '<td>'+(valor.abrevia)+'</td>';
-        fila += '<td style="text-align:center;">'+(valor.tipo)+'</td>';
-        fila += '<td style="text-align:center;">'+(valor.padreID)+'</td>';
-        fila += '<td>'+(valor.nivel)+'</td>';
-        fila += '<td></td>';
-        fila += '</tr>';
+        fila += '<tr style="'+((valor.estado==0)?("color:#bfbfbf;"):(""))+'">'+
+                '<td>'+(valor.ID)+'</td>'+
+                '<td style="text-align:center;">'+((valor.tipoID!=null)?('<i class="fa fa-info-circle" title="Este ID esta habilitado para esta coopac" style="color:#0097BC;"></i>'):(''))+'</td>'+
+                '<td>'+(valor.nombre)+'</td>'+
+                '<td>'+(valor.codigo)+'</td>'+
+                '<td>'+(valor.abrevia)+'</td>'+
+                '<td style="text-align:center;">'+(valor.tipo)+'</td>'+
+                '<td style="text-align:center;">'+(valor.padreID)+'</td>'+
+                '<td>'+(valor.nivel)+'</td>'+
+                '<td></td>'+
+                '</tr>';
       });
       document.querySelector('#grdDatos').innerHTML = (fila);
     }else{
