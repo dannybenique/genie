@@ -9,16 +9,18 @@
       $data = json_decode($_REQUEST['appSQL']);
       switch ($data->TipoQuery) {
         case "dashboard":
-          $qry = $db->query_all("select count(*) as cuenta from app_colegios where id_padre is null;");
-          $colegios = reset($qry)['cuenta'];
-          $qry = $db->query_all("select count(*) as cuenta from app_alumnos where id_colegio=:colegioID", [':colegioID'=>$web->colegioID]);
+          $colegioID = $web->colegioID;
+          
+          $qry = $db->query_all("select count(*) as cuenta from app_matriculas where estado=1 and id_colegio=:colegioID", [':colegioID'=>$colegioID]);
+          $matriculas = reset($qry)['cuenta'];
+          $qry = $db->query_all("select count(*) as cuenta from app_alumnos where id_colegio=:colegioID", [':colegioID'=>$colegioID]);
           $alumnos = reset($qry)['cuenta'];
-          $qry = $db->query_all("select count(*) as cuenta from app_padres where id_colegio=:colegioID", [':colegioID'=>$web->colegioID]);
+          $qry = $db->query_all("select count(*) as cuenta from app_padres where id_colegio=:colegioID", [':colegioID'=>$colegioID]);
           $padres = reset($qry)['cuenta'];
 
           //respuesta
           $rpta = array(
-            "colegios" => $colegios,
+            "matriculas" => $matriculas,
             "alumnos" => $alumnos,
             "padres" => $padres
           );

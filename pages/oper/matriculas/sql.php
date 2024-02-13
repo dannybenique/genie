@@ -12,32 +12,28 @@
 
       //****************prestamos****************
       switch ($data->TipoQuery) {
-        case "selCreditos":
+        case "selMatriculas":
           $whr = "";
           $tabla = array();
           $buscar = strtoupper($data->buscar);
-          $whr = " and id_coopac=:coopacID and (socio LIKE :buscar or nro_dui LIKE :buscar) ";
-          $params = [":coopacID"=>$web->coopacID,":buscar"=>'%'.$buscar.'%'];
-          $qry = $db->query_all("select count(*) as cuenta from vw_prestamos_min where estado=1 and saldo>0 ".$whr.";",$params);
+          $whr = " and id_colegio=:colegioID and (alumno LIKE :buscar or nro_dui LIKE :buscar) ";
+          $params = [":colegioID"=>$web->colegioID,":buscar"=>'%'.$buscar.'%'];
+          $qry = $db->query_all("select count(*) as cuenta from vw_matriculas_state1 where estado=1 ".$whr.";",$params);
           $rsCount = reset($qry);
 
-          $qry = $db->query_all("select * from vw_prestamos_min where estado=1 and saldo>0 ".$whr." order by socio limit 25 offset 0;",$params);
+          $qry = $db->query_all("select * from vw_matriculas_state1 where estado=1 ".$whr." order by alumno limit 25 offset 0;",$params);
           if($qry) {
             foreach($qry as $rs){
               $tabla[] = array(
                 "ID" => $rs["id"],
                 "codigo" => $rs["codigo"],
-                "fecha" => $rs["fecha_otorga"],
+                "fecha" => $rs["fecha_matricula"],
                 "nro_dui"=> str_replace($data->buscar, '<span style="background:yellow;">'.$data->buscar.'</span>', $rs["nro_dui"]),
-                "socio" => str_ireplace($data->buscar, '<span style="background:yellow;">'.$data->buscar.'</span>', $rs["socio"]),
-                "tipo_oper" => $rs["tipo_oper"],
-                "producto" => $rs["producto"],
-                "mon_abrevia" => $rs["mon_abrevia"],
-                "tiposbs" => $rs["tipo_sbs"],
-                "destsbs" => $rs["dest_sbs"],
-                "tasa" => $rs["tasa"]*1,
-                "importe" => $rs["importe"]*1,
-                "saldo" => $rs["saldo"]*1,
+                "alumno" => str_ireplace($data->buscar, '<span style="background:yellow;">'.$data->buscar.'</span>', $rs["alumno"]),
+                "nivel" => $rs["nivel"],
+                "grado" => $rs["grado"],
+                "seccion" => $rs["seccion"],
+                "saldo" => $rs["saldo"],
                 "nro_cuotas" => $rs["nro_cuotas"]*1
               );
             }

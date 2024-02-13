@@ -19,9 +19,9 @@
       <div class="box box-primary">
         <div class="box-header no-padding">
           <div class="mailbox-controls">
-            <button type="button" class="btn btn-default btn-sm" onclick="javascript:appCreditosReset();"><i class="fa fa-refresh"></i></button>
+            <button type="button" class="btn btn-default btn-sm" onclick="javascript:appMatriculasReset();"><i class="fa fa-refresh"></i></button>
             <div class="btn-group">
-              <input type="text" id="txtBuscar" name="txtBuscar" class="form-control input-sm pull-right" placeholder="DNI, persona..." onkeypress="javascript:appCreditosBuscar(event);" style="text-transform:uppercase;" autocomplete="off">
+              <input type="text" id="txtBuscar" name="txtBuscar" class="form-control input-sm pull-right" placeholder="DNI, persona..." onkeypress="javascript:appMatriculasBuscar(event);" style="text-transform:uppercase;" autocomplete="off">
               <span class="fa fa-search form-control-feedback"></span>
             </div>
             <span id="grdCount" style="display:inline-block;margin-left:5px;font-size:20px;font-weight:600;"></span>
@@ -31,11 +31,9 @@
               <thead>
                 <tr>
                   <th style="width:90px;">Fecha</th>
-                  <th style="width:110px;" title="Documento Unico de Identidad = DNI, RUC">DUI</th>
-                  <th style="">Socio <i class="fa fa-sort"></i></th>
-                  <th style="" title="Producto + TEA%">Producto</th>
-                  <th style="width:180px;">Tipo Credito</th>
-                  <th style="width:90px;text-align:right;">Importe</th>
+                  <th style="width:110px;" title="Documento Unico de Identidad = DNI">DNI</th>
+                  <th style="">Alumno <i class="fa fa-sort"></i></th>
+                  <th style="" title="Matricula">Matricula</th>
                   <th style="width:90px;text-align:right;">Saldo</th>
                   <th style="width:50px;text-align:center;" title="Nro de Cuotas">Cuo</th>
                 </tr>
@@ -73,10 +71,10 @@
               Saldo: <b><a id="lbl_crediSaldo"></a></b><br/><br/>
             </div>
             <div class="btn-group pull-left">
-              <button id="btnCancel" type="button" class="btn btn-default" onclick="javascript:appCreditosBotonCancel();"><i class="fa fa-angle-double-left"></i> Regresar</button>
+              <button id="btnCancel" type="button" class="btn btn-default" onclick="javascript:appMatriculasBotonCancel();"><i class="fa fa-angle-double-left"></i> Regresar</button>
             </div>
             <div class="btn-group pull-right">
-              <button type="button" class="btn btn-info btn-xm" onclick="javascript:appCreditosRefresh();"><i class="fa fa-refresh"></i></button>
+              <button type="button" class="btn btn-info btn-xm" onclick="javascript:appMatriculasRefresh();"><i class="fa fa-refresh"></i></button>
             </div>
           </div>
         </div>
@@ -86,10 +84,10 @@
           </div>
           <div class="box-body">
             <div class="btn-group pull-right">
-              <a id="lnk_viewTotalPagado" href="javascript:appCreditosViewTotalPagado();" style="color:#bbb;">Ver Total Pagado&nbsp;&nbsp;<span id="iconTotalPagado"><i class="fa fa-toggle-off"></i></span></a>
+              <a id="lnk_viewTotalPagado" href="javascript:appMatriculasViewTotalPagado();" style="color:#bbb;">Ver Total Pagado&nbsp;&nbsp;<span id="iconTotalPagado"><i class="fa fa-toggle-off"></i></span></a>
             </div><br>
             <div class="btn-group pull-right">
-              <a id="lnk_viewTotalPorVencer" href="javascript:appCreditosViewTotalPorVencer();" style="color:black;">Ver Total por Vencer&nbsp;&nbsp;<span id="iconTotalPorVencer"><i class="fa fa-toggle-off"></i></span></a>
+              <a id="lnk_viewTotalPorVencer" href="javascript:appMatriculasViewTotalPorVencer();" style="color:black;">Ver Total por Vencer&nbsp;&nbsp;<span id="iconTotalPorVencer"><i class="fa fa-toggle-off"></i></span></a>
             </div>
           </div>
         </div>
@@ -125,10 +123,10 @@
   </div>
 </section>
 
-<script src="pages/oper/creditos/script.js"></script>
+<script src="pages/oper/matriculas/script.js"></script>
 <script>
   $(document).ready(function(){
-    appCreditosReset();
+    appMatriculasReset();
   });
 </script>
 <?php } ?>

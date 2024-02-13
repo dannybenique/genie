@@ -14,16 +14,7 @@
 
 <!-- Main content -->
 <section class="content">
-  <div class="row">
-    <div class="col-md-3 col-sm-6 col-xs-12">
-      <div class="info-box">
-        <span class="info-box-icon bg-green"><i class="fa fa-building"></i></span>
-        <div class="info-box-content">
-          <span class="info-box-text">Colegios</span>
-          <span id="appTotalColegios" class="info-box-number" style="font-size:22px;"></span>
-        </div>
-      </div>
-    </div>
+  <div id="dashboard1" class="row">
     <div class="col-md-3 col-sm-6 col-xs-12">
       <div class="info-box">
         <span class="info-box-icon bg-blue"><i class="fa fa-graduation-cap"></i></span>
@@ -39,6 +30,17 @@
         <div class="info-box-content">
           <span class="info-box-text">Padres</span>
           <span id="appTotalPadres" class="info-box-number" style="font-size:22px;"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="dashboard2" class="row">
+    <div class="col-md-3 col-sm-6 col-xs-12">
+      <div class="info-box">
+        <span class="info-box-icon bg-green"><i class="fa fa-gg-circle"></i></span>
+        <div class="info-box-content">
+          <span class="info-box-text">Matriculas</span>
+          <span id="appTotalMatriculas" class="info-box-number" style="font-size:22px;"></span>
         </div>
       </div>
     </div>

@@ -1,14 +1,14 @@
-const rutaSQL = "pages/oper/creditos/sql.php";
+const rutaSQL = "pages/oper/matriculas/sql.php";
 var viewTotalPagado = false;
 var viewTotalPorVencer = false;
 var menu = "";
 
 //=========================funciones para Personas============================
-function appCreditosGrid(){
+function appMatriculasGrid(){
   document.querySelector('#grdDatos').innerHTML = ('<tr><td colspan="10"><div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></td></tr>');
   let txtBuscar = document.querySelector("#txtBuscar").value;
   let datos = {
-    TipoQuery: 'selCreditos',
+    TipoQuery: 'selMatriculas',
     buscar: txtBuscar
   };
 
@@ -16,16 +16,14 @@ function appCreditosGrid(){
     if(resp.tabla.length>0){
       let fila = "";
       resp.tabla.forEach((valor,key)=>{
-        fila += '<tr>';
-        fila += '<td>'+(moment(valor.fecha).format("DD/MM/YYYY"))+'</td>';
-        fila += '<td>'+(valor.nro_dui)+'</td>';
-        fila += '<td>'+(valor.socio)+'</td>';
-        fila += '<td><a href="javascript:appCreditosView('+(valor.ID)+');" title="'+(valor.ID)+'">'+(valor.codigo+' &raquo; '+valor.producto+'; '+valor.mon_abrevia+'; '+appFormatMoney(valor.tasa,2))+'%</a></td>';
-        fila += '<td>'+(valor.tiposbs)+'</td>';
-        fila += '<td style="text-align:right;">'+appFormatMoney(valor.importe,2)+'</td>';
-        fila += '<td style="text-align:right;">'+appFormatMoney(valor.saldo,2)+'</td>';
-        fila += '<td style="text-align:center;">'+(valor.nro_cuotas)+'</td>';
-        fila += '</tr>';
+        fila += '<tr>'+
+                '<td>'+(moment(valor.fecha).format("DD/MM/YYYY"))+'</td>'+
+                '<td>'+(valor.nro_dui)+'</td>'+
+                '<td>'+(valor.alumno)+'</td>'+
+                '<td><a href="javascript:appMatriculasView('+(valor.ID)+');" title="'+(valor.ID)+'">'+(valor.nivel)+' &raquo; '+(valor.grado)+' &raquo; '+(valor.seccion)+'%</a></td>'+
+                '<td style="text-align:right;">'+appFormatMoney(valor.saldo,2)+'</td>'+
+                '<td style="text-align:center;">'+(valor.nro_cuotas)+'</td>'+
+                '</tr>';
       });
       $('#grdDatos').html(fila);
     }else{
@@ -36,31 +34,31 @@ function appCreditosGrid(){
   });
 }
 
-function appCreditosReset(){
+function appMatriculasReset(){
   appFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php").then(resp => {
     menu = JSON.parse(resp.menu);
     document.querySelector("#txtBuscar").value = ("");
-    appCreditosGrid();
+    appMatriculasGrid();
   });
 }
 
-function appCreditosBuscar(e){
+function appMatriculasBuscar(e){
   let code = (e.keyCode ? e.keyCode : e.which);
-  if(code == 13) { load_flag = 0; $('#grdDatosBody').html(""); appCreditosGrid(); }
+  if(code == 13) { load_flag = 0; $('#grdDatosBody').html(""); appMatriculasGrid(); }
 }
 
-function appCreditosRefresh(){
+function appMatriculasRefresh(){
   let prestamoID = document.querySelector('#hid_crediID').value;
-  appCreditosView(prestamoID);
+  appMatriculasView(prestamoID);
 }
 
-function appCreditosBotonCancel(){
-  appCreditosGrid();
+function appMatriculasBotonCancel(){
+  appMatriculasGrid();
   $('#grid').show();
   $('#edit').hide();
 }
 
-function appCreditosView(prestamoID){
+function appMatriculasView(prestamoID){
   let datos = {
     TipoQuery : 'viewCredito',
     prestamoID : prestamoID
@@ -198,14 +196,14 @@ function appDetalleSetData(data){
   $('#grdDetalleDatos').html(fila);
 }
 
-function appCreditosViewTotalPagado(){
+function appMatriculasViewTotalPagado(){
   document.querySelector("#iconTotalPagado").innerHTML = (viewTotalPagado==true)?('<i class="fa fa-toggle-off"></i>'):('<i class="fa fa-toggle-on"></i>');
   viewTotalPagado = !viewTotalPagado;
-  appCreditosRefresh();
+  appMatriculasRefresh();
 }
 
-function appCreditosViewTotalPorVencer(){
+function appMatriculasViewTotalPorVencer(){
   document.querySelector("#iconTotalPorVencer").innerHTML = (viewTotalPorVencer==true)?('<i class="fa fa-toggle-off"></i>'):('<i class="fa fa-toggle-on"></i>');
   viewTotalPorVencer = !viewTotalPorVencer;
-  appCreditosRefresh();
+  appMatriculasRefresh();
 }
