@@ -27,23 +27,18 @@
       </div>
       <div class="box box-primary">
         <div class="box-header with-border">
-          <h3 class="box-title" style="font-family:flexoregular;"><b>Credito</b></h3>
+          <h3 class="box-title" style="font-family:flexoregular;"><b>Matricula</b></h3>
         </div>
         <div class="box-body">
           <div class="box-body">
-            Socio: <a id="lbl_crediSocio"></a><br/>
+            Alumno: <a id="lbl_crediAlumno"></a><br/>
             <span id="lbl_crediTipoDUI">DUI</span>: <a id="lbl_crediNroDUI"></a><br/><br/>
-            Desembolso: <a id="lbl_crediFecha"></a><br/>
-            Producto: <a id="lbl_crediProducto"></a><br/>
-            Codigo: <a id="lbl_crediCodigo"></a><br/>
-            tasa Credito: <a id="lbl_crediTasaCred"></a><br/>
-            tasa Mora: <a id="lbl_crediTasaMora"></a><br/>
-            Moneda: <a id="lbl_crediMoneda"></a><br/><br/>
-            Agencia: <a id="lbl_crediAgencia"></a><br/>
-            Promotor: <a id="lbl_crediPromotor"></a><br/>
-            Analista: <a id="lbl_crediAnalista"></a><br/><br/>
+            Matricula: <a id="lbl_crediFecha"></a><br/>
+            Codigo: <a id="lbl_crediCodigo"></a><br/><br/>
+            Nivel: <a id="lbl_crediNivel"></a><br/>
+            Grado: <a id="lbl_crediGrado"></a><br/>
+            Seccion: <a id="lbl_crediSeccion"></a><br/><br/>
             Atraso: <b><a id="lbl_crediAtraso"></a></b><br/>
-            Importe: <b><a id="lbl_crediImporte"></a></b><br/>
             Saldo: <b><a id="lbl_crediSaldo"></a></b><br/><br/>
           </div>
         </div>
@@ -64,24 +59,6 @@
                       <input id="txt_DeudaCapital" type="text" class="form-control" disabled="disabled"/>
                     </div>
                   </div>
-                  <div class="form-group" style="margin-bottom:5px;">
-                    <div class="input-group">
-                      <span class="input-group-addon" style="background:#eeeeee;"><b>INTERES</b></span>
-                      <input id="txt_DeudaInteres" type="text" class="form-control" disabled="disabled"/>
-                    </div>
-                  </div>
-                  <div class="form-group" style="margin-bottom:5px;">
-                    <div class="input-group">
-                      <span class="input-group-addon" style="background:#eeeeee;"><b>MORA</b></span>
-                      <input id="txt_DeudaMora" type="text" class="form-control" disabled="disabled"/>
-                    </div>
-                  </div>
-                  <div class="form-group" style="margin-bottom:5px;">
-                    <div class="input-group">
-                      <span class="input-group-addon" style="background:#eeeeee;"><b>OTROS</b></span>
-                      <input id="txt_DeudaOtros" type="text" class="form-control" disabled="disabled"/>
-                    </div>
-                  </div>
               </div>
             </div>
           </div>
@@ -100,12 +77,6 @@
                   <div class="input-group">
                     <span class="input-group-addon" style="background:#eeeeee;"><b>DEUDA NETA</b></span>
                     <input id="txt_DeudaTotalNeto" type="text" class="form-control" disabled="disabled"/>
-                  </div>
-                </div>
-                <div class="form-group" style="margin-bottom:5px;">
-                  <div class="input-group">
-                    <span class="input-group-addon" style="background:#eeeeee;"><b>MONEDA</b></span>
-                    <select id="cbo_DeudaMonedas" class="form-control selectpicker" disabled="disabled"></select>
                   </div>
                 </div>
                 <div class="form-group" style="margin-bottom:5px;">

@@ -16,30 +16,21 @@ function appPagosReset(){
     document.querySelector("#lbl_crediAtraso").style.color = "#777";
     
     document.querySelector('#lbl_crediAtraso').innerHTML = ("");
-    document.querySelector('#lbl_crediSocio').innerHTML = ("");
+    document.querySelector('#lbl_crediAlumno').innerHTML = ("");
     document.querySelector('#lbl_crediTipoDUI').innerHTML = ("DUI");
     document.querySelector('#lbl_crediNroDUI').innerHTML = ("");
     document.querySelector('#lbl_crediFecha').innerHTML = ("");
-    document.querySelector('#lbl_crediMoneda').innerHTML = ("");
-    document.querySelector('#lbl_crediProducto').innerHTML = ("");
     document.querySelector('#lbl_crediCodigo').innerHTML = ("");
-    document.querySelector('#lbl_crediTasaCred').innerHTML = ("");
-    document.querySelector('#lbl_crediTasaMora').innerHTML = ("");
-    document.querySelector('#lbl_crediAgencia').innerHTML = ("");
-    document.querySelector('#lbl_crediPromotor').innerHTML = ("");
-    document.querySelector('#lbl_crediAnalista').innerHTML = ("");
-    document.querySelector('#lbl_crediImporte').innerHTML = ("");
+    document.querySelector('#lbl_crediNivel').innerHTML = ("");
+    document.querySelector('#lbl_crediGrado').innerHTML = ("");
+    document.querySelector('#lbl_crediSeccion').innerHTML = ("");
     document.querySelector('#lbl_crediSaldo').innerHTML = ("");
 
     document.querySelector('#txt_DeudaCapital').value = ("");
-    document.querySelector('#txt_DeudaInteres').value = ("");
-    document.querySelector('#txt_DeudaMora').value = ("");
-    document.querySelector('#txt_DeudaOtros').value = ("");
     document.querySelector('#txt_DeudaFecha').value = ("");
     document.querySelector('#txt_DeudaTotalNeto').value = ("");
     document.querySelector('#txt_DeudaImporte').value = ("");
     document.querySelector('#cbo_DeudaMedioPago').innerHTML = ("");
-    document.querySelector('#cbo_DeudaMonedas').innerHTML = ("");
   });
 }
 
@@ -67,7 +58,6 @@ function appPagosBotonPagar(){
           productoID : pago.productoID,
           codprod : document.querySelector("#lbl_crediCodigo").innerHTML,
           medioPagoID : document.querySelector("#cbo_DeudaMedioPago").value*1,
-          monedaID : document.querySelector("#cbo_DeudaMonedas").value*1,
           importe : importe*1
         };
         appFetch(datos,rutaSQL).then(resp => {
@@ -144,7 +134,6 @@ function appCreditoPagoView(prestamoID){
     appCredi_Cabecera_SetData(resp.cabecera);
     appCredi_Detalle_SetData(resp.detalle);
     appLlenarDataEnComboBox(resp.comboTipoPago,"#cbo_DeudaMedioPago",0); //medios de pago
-    appLlenarDataEnComboBox(resp.comboMonedas,"#cbo_DeudaMonedas",0); //monedas
     $('#txt_DeudaFecha').datepicker("setDate",moment(resp.fecha).format("DD/MM/YYYY"));
     document.querySelector("#btn_PAGAR").disabled = false;
   });
@@ -152,7 +141,6 @@ function appCreditoPagoView(prestamoID){
 
 function appCredi_Cabecera_SetData(data){
   document.querySelector("#txt_DeudaFecha").disabled = (data.rolUser==data.rolROOT) ? (false):(true);
-  document.querySelector("#txt_DeudaMora").disabled = (data.rolUser==data.rolROOT) ? (false):(true);
   document.querySelector("#lbl_crediAtraso").style.color = (data.atraso>0)?("#D00"):("#777");
   document.querySelector('#lbl_crediAtraso').innerHTML = (data.atraso);
 
@@ -162,28 +150,20 @@ function appCredi_Cabecera_SetData(data){
     prestamoID : data.prestamoID,
     productoID : data.productoID
   }
-  document.querySelector('#lbl_crediSocio').innerHTML = (data.socio);
+  document.querySelector('#lbl_crediAlumno').innerHTML = (data.socio);
   document.querySelector('#lbl_crediTipoDUI').innerHTML = (data.dui);
   document.querySelector('#lbl_crediNroDUI').innerHTML = (data.nro_dui);
   document.querySelector('#lbl_crediFecha').innerHTML = (moment(data.fecha_otorga).format("DD/MM/YYYY"));
-  document.querySelector('#lbl_crediMoneda').innerHTML = (data.moneda+' <span style="font-size:10px;">('+data.mon_abrevia+')</span>');
-  document.querySelector('#lbl_crediProducto').innerHTML = (data.producto);
   document.querySelector('#lbl_crediCodigo').innerHTML = (data.codigo);
-  document.querySelector('#lbl_crediTasaCred').innerHTML = (appFormatMoney(data.tasa,2)+'% <span style="font-size:10px;">(TEA)</span>');
-  document.querySelector('#lbl_crediTasaMora').innerHTML = (appFormatMoney(data.mora,2)+'% <span style="font-size:10px;">(TEA)</span>');
-  document.querySelector('#lbl_crediAgencia').innerHTML = (data.agencia);
-  document.querySelector('#lbl_crediPromotor').innerHTML = (data.promotor);
-  document.querySelector('#lbl_crediAnalista').innerHTML = (data.analista);
-  document.querySelector('#lbl_crediImporte').innerHTML = (appFormatMoney(data.importe,2));
+  document.querySelector('#lbl_crediNivel').innerHTML = (data.agencia);
+  document.querySelector('#lbl_crediGrado').innerHTML = (data.promotor);
+  document.querySelector('#lbl_crediSeccion').innerHTML = (data.analista);
   document.querySelector('#lbl_crediSaldo').innerHTML = (appFormatMoney(data.saldo,2));
 }
 
 function appCredi_Detalle_SetData(data){
   let total = data.capital+data.interes+data.mora+data.otros;
   document.querySelector('#txt_DeudaCapital').value = (appFormatMoney(data.capital,2));
-  document.querySelector('#txt_DeudaInteres').value = (appFormatMoney(data.interes,2));
-  document.querySelector('#txt_DeudaMora').value = (appFormatMoney(data.mora,2));
-  document.querySelector('#txt_DeudaOtros').value = (appFormatMoney(data.otros,2));
   document.querySelector('#txt_DeudaTotalNeto').value = (appFormatMoney(total,2));
   document.querySelector('#txt_DeudaImporte').value = (appFormatMoney(total,2));
 }

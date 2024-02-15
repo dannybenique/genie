@@ -163,7 +163,7 @@ function appPagosSetData(data){
               '</tr>';
     });
     fila += '<tfoot><tr>'+
-            '<td colspan="3">TOTAL</td>'+
+            '<td colspan="3" style="text-align:center;"><b>TOTAL A PAGAR</b></td>'+
             '<td colspan="2" style="text-align:right;border-bottom-style:double;"><span id="lbl_DesembTotal">'+appFormatMoney(totPagos,2)+'</span></td>'+
             '</tr></tfoot>';
     document.querySelector('#grdPagos').innerHTML = fila;
