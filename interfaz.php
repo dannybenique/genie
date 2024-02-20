@@ -156,6 +156,7 @@
       case "mttoEmpleados" : $menuMtto = 'active menu-open'; $appPage = "pages/mtto/empleados/page.php"; break;
       case "masterPersonas"  : $menuMaster = 'active menu-open'; $appPage = "pages/master/personas/page.php"; break;
       case "masterProductos" : $menuMaster = 'active menu-open'; $appPage = "pages/master/productos/page.php"; break;
+      case "masterNiveles"   : $menuMaster = 'active menu-open'; $appPage = "pages/master/niveles/page.php"; break;
       case "masterTipos"     : $menuMaster = 'active menu-open'; $appPage = "pages/master/tipos/page.php"; break;
       case "masterMovim"     : $menuMaster = 'active menu-open'; $appPage = "pages/master/movim/page.php"; break;
       case "repoMovim"         : $menuRepo = 'active menu-open'; $appPage = "pages/repo/movim/page.php"; break;
@@ -166,33 +167,33 @@
   }
 ?>
 
-<aside class="main-sidebar">
-      <!-- MENU PRINCIPAL -->
-      <section class="sidebar">
-        <div class="user-panel" style="background:#1A2226;display:none;">
-          <div class="pull-left image">
-            <img id="ifaz_menu_imagen" src="" class="img-circle" alt="foto de usuario">
-          </div>
-          <div class="pull-left info">
-            <p id="ifaz_menu_nombrecorto"></p>
-            <small id="ifaz_menu_login" style="color:#859E9E;position:relative;top:-5px;"></small>
-          </div>
+  <aside class="main-sidebar">
+    <!-- MENU PRINCIPAL -->
+    <section class="sidebar">
+      <div class="user-panel" style="background:#1A2226;display:none;">
+        <div class="pull-left image">
+          <img id="ifaz_menu_imagen" src="" class="img-circle" alt="foto de usuario">
         </div>
-        <ul class="sidebar-menu" data-widget="tree">
-          <li <?php echo($menuDashboard);?>>
-            <a href="interfaz.php"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a>
-          </li>
-          <?php 
-            if(isset($menu->caja)){ crearMenu($menu->caja,$menuCaja,$link); }
-            if(isset($menu->oper)){ crearMenu($menu->oper,$menuOper,$link); }
-            if(isset($menu->fondos)){ crearMenu($menu->fondos,$menuFondos,$link); }
-            if(isset($menu->mtto)){ crearMenu($menu->mtto,$menuMtto,$link); }
-            if(isset($menu->master)){ crearMenu($menu->master,$menuMaster,$link); }
-            if(isset($menu->repo)){ crearMenu($menu->repo,$menuRepo,$link); }
-          ?>
-        </ul>
-      </section>
-    </aside>
+        <div class="pull-left info">
+          <p id="ifaz_menu_nombrecorto"></p>
+          <small id="ifaz_menu_login" style="color:#859E9E;position:relative;top:-5px;"></small>
+        </div>
+      </div>
+      <ul class="sidebar-menu" data-widget="tree">
+        <li <?php echo($menuDashboard);?> >
+          <a href="interfaz.php"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a>
+        </li>
+        <?php 
+          if(isset($menu->caja)){ crearMenu($menu->caja,$menuCaja,$link); }
+          if(isset($menu->oper)){ crearMenu($menu->oper,$menuOper,$link); }
+          if(isset($menu->fondos)){ crearMenu($menu->fondos,$menuFondos,$link); }
+          if(isset($menu->mtto)){ crearMenu($menu->mtto,$menuMtto,$link); }
+          if(isset($menu->master)){ crearMenu($menu->master,$menuMaster,$link); }
+          if(isset($menu->repo)){ crearMenu($menu->repo,$menuRepo,$link); }
+        ?>
+      </ul>
+    </section>
+  </aside>
   <!-- ========================= CONTENIDO  ====================== -->
   <div class="content-wrapper">
     <?php include_once($appPage); ?>

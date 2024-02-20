@@ -2,31 +2,70 @@ const rutaSQL = "pages/master/niveles/sql.php";
 var menu = "";
 
 //=========================funciones para Personas============================
-function appNivelesGrid(){
-  document.querySelector('#grdDatos').innerHTML = ('<tr><td colspan="7"><div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></td></tr>');
-  let txtBuscar = document.querySelector("#txtBuscar").value;
-  let datos = { TipoQuery: 'selNiveles', buscar:txtBuscar };
+function appNivelesGrid(tipo){
+  let strLoader = '<tr><td colspan="7"><div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></td></tr>';
+  let datos = { 
+    TipoQuery : 'selNiveles',
+    nivelID : document.querySelector('#cboNiveles').value,
+    tipo : tipo
+  };
 
+  //preloader
+  document.querySelector('#grdDatos').innerHTML = (strLoader);
+  if(tipo=='NIV') { document.querySelector('#grdDatos').innerHTML = (strLoader); }
+  
+  //respuesta
   appFetch(datos,rutaSQL).then(resp => {
     let disabledDelete = (menu.master.submenu.niveles.cmdDelete===1) ? "" : "disabled";
     document.querySelector("#chk_All").disabled = (menu.master.submenu.niveles.cmdDelete===1) ? false : true;
-    if(resp.productos.length>0){
-      let fila = "";
-      resp.productos.forEach((valor,key)=>{
-        fila += '<tr>'+
-                '<td><input type="checkbox" name="chk_Borrar" value="'+(valor.ID)+'" '+(disabledDelete)+'/></td>'+
-                '<td style="text-align:center;">'+(valor.codigo)+'</td>'+
-                '<td style="text-align:center;">'+((valor.obliga==1)?('<i class="fa fa-info-circle" style="color:#AF2031;" title="Obligatorio"></i>'):(''))+'</td>'+
-                '<td><a href="javascript:appNivelView('+(valor.ID)+');" title="'+(valor.ID)+'">'+(valor.producto)+'</a></td>'+
-                '<td>'+(valor.abrevia)+'</td>'+
-                '<td></td>'+
-                '</tr>';
-      });
-      document.querySelector('#grdDatos').innerHTML = (fila);
-    }else{
-      document.querySelector('#grdDatos').innerHTML = ('<tr><td colspan="7" style="text-align:center;color:red;">Sin Resultados para '+txtBuscar+'</td></tr>');
+    
+    switch (tipo){
+      case 'ALL':
+        //niveles
+        if(resp.niveles.length>0){
+          let fila = "";
+          let rowspan = 0;
+          let gradoID = 0;
+          resp.niveles.forEach((valor,key)=>{
+            rowspan = (gradoID!=valor.gradoID) ? (resp.niveles.filter((xx)=>xx.gradoID===valor.gradoID).length) : 0;
+            fila += '<tr>'+
+                    ((gradoID!=valor.gradoID) ? ('<td rowspan='+rowspan+'>'+(valor.nivel)+' &raquo; '+(valor.grado)+'</td>'):(''))+
+                    '<td><input type="checkbox" name="chk_Borrar" value="'+(valor.seccionID)+'" '+(disabledDelete)+'/></td>'+
+                    '<td style="text-align:center;">'+(valor.seccion)+'</td>'+
+                    '<td></td>'+
+                    '</tr>';
+            gradoID = valor.gradoID;
+          });
+          document.querySelector('#grdDatos').innerHTML = (fila);
+        }else{
+          document.querySelector('#grdDatos').innerHTML = ('<tr><td colspan="3" style="text-align:center;color:red;">Sin Resultados</td></tr>');
+        }
+        document.querySelector('#grdCount').innerHTML = (resp.niveles.length);
+        
+        //colniv
+        if(resp.colniv.length>0){
+          let fila = "";
+          let rowspan = 0;
+          let gradoID = 0;
+          resp.colniv.forEach((valor,key)=>{
+            rowspan = (gradoID!=valor.gradoID) ? (resp.colniv.filter((xx)=>xx.gradoID===valor.gradoID).length) : 0;
+            fila += '<tr>'+
+                    ((gradoID!=valor.gradoID) ? ('<td rowspan='+rowspan+'>'+(valor.nivel)+' &raquo; '+(valor.grado)+'</td>'):(''))+
+                    '<td><input type="checkbox" name="chk_Borrar" value="'+(valor.ID)+'" '+(disabledDelete)+'/></td>'+
+                    '<td style="text-align:center;">'+(valor.seccion)+'</td>'+
+                    '<td>'+(valor.alias)+'</td>'+
+                    '<td style="text-align:center;">'+(valor.capacidad)+'</td>'+
+                    '<td></td>'+
+                    '</tr>';
+            gradoID = valor.gradoID;
+          });
+          document.querySelector('#grdColNiv').innerHTML = (fila);
+        }else{
+          document.querySelector('#grdColNiv').innerHTML = ('<tr><td colspan="7" style="text-align:center;color:red;">Sin Resultados para '+txtBuscar+'</td></tr>');
+        }
+        document.querySelector('#grdColNivCount').innerHTML = (resp.colniv.length);
+        break;
     }
-    document.querySelector('#grdCount').innerHTML = (resp.productos.length);
   });
 }
 
@@ -35,9 +74,11 @@ function appNivelesReset(){
     menu = JSON.parse(resp.menu);
     document.querySelector("#btn_DEL").style.display = (menu.master.submenu.niveles.cmdDelete==1)?('inline'):('none');
     document.querySelector("#btn_NEW").style.display = (menu.master.submenu.niveles.cmdInsert==1)?('inline'):('none');
-    
-    document.querySelector("#txtBuscar").value = ("");
-    appNivelesGrid();
+    let datos = { TipoQuery:'startNivel' }
+    appFetch(datos,rutaSQL).then(resp => {
+      appLlenarDataEnComboBox(resp.comboNiveles,"#cboNiveles",0);
+      appNivelesGrid('ALL');
+    })
   });
 }
 
@@ -151,4 +192,8 @@ function appNivelCancel(){
   appNivelesGrid();
   document.querySelector('#grid').style.display = 'block';
   document.querySelector('#edit').style.display = 'none';
+}
+
+function appChangeNivel(){
+  appNivelesGrid('ALL'); 
 }

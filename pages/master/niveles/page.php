@@ -15,34 +15,63 @@
 <!-- Main content -->
 <section class="content">
   <div class="row" id="grid">
-    <div class="col-md-12">
+    <div class="col-md-6">
       <div class="box box-primary">
         <div class="box-header no-padding">
           <div class="mailbox-controls">
             <div class="btn-group">
-              <button type="button" id="btn_DEL" class="btn btn-default btn-sm" onclick="javascript:appNivelesBorrar();"><i class="fa fa-trash"></i></button>
               <button type="button" id="btn_NEW" class="btn btn-default btn-sm" onclick="javascript:appNivelNuevo();"><i class="fa fa-plus"></i></button>
+              <div class="input-group" style="width:110px;">
+                <span class="input-group-addon" style="background:#F4F4F4;"><b>Niveles</b></span>  
+                <span class="input-group-btn">
+                  <select id="cboNiveles" class="btn btn-default btn-sm" style="height:30px;text-align:left;" onchange="javascript:appChangeNivel();"></select>
+                </span>
+              </div>
             </div>
+            <button type="button" id="btn_SND" class="btn btn-default btn-sm" onclick="javascript:appNivelesEnviar();"><i class="fa fa-send"></i></button>
             <button type="button" id="btn_RST" class="btn btn-default btn-sm" onclick="javascript:appNivelesReset();"><i class="fa fa-refresh"></i></button>
-            <div class="btn-group">
-              <input type="text" id="txtBuscar" class="form-control input-sm pull-right" placeholder="producto..." onkeypress="javascript:appNivelesBuscar(event);" style="text-transform:uppercase;" autocomplete="off">
-              <span class="fa fa-search form-control-feedback"></span>
-            </div>
             <span id="grdCount" style="display:inline-block;margin-left:5px;font-size:20px;font-weight:600;"></span>
           </div>
           <div class="box-body table-responsive no-padding">
             <table class="table table-hover" id="grd">
               <thead>
                 <tr>
+                  <th style="">Nivel &raquo; Grado</th>
                   <th style="width:25px;"><input type="checkbox" id="chk_All" onclick="javascript:toggleAll(this,'chk_Borrar');" /></th>
-                  <th style="width:70px;text-align:center;">Codigo</th>
-                  <th style="width:30px;text-align:center;"><i class="fa fa-info-circle" title="Obligatorio"></i></th>
-                  <th style="width:250px;">Producto</th>
-                  <th style="width:70px;" title="Abreviatura">Abrev</th>
+                  <th style="text-align:center;width:80px;">Seccion</th>
                   <th></th>
                 </tr>
               </thead>
               <tbody id="grdDatos">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+    <div class="box box-primary">
+        <div class="box-header no-padding">
+          <div class="mailbox-controls">
+            <div class="btn-group">
+              <button type="button" id="btn_DEL" class="btn btn-default btn-sm" onclick="javascript:appColNivBorrar();"><i class="fa fa-trash"></i></button>
+            </div>
+            <button type="button" id="btn_RST" class="btn btn-default btn-sm" onclick="javascript:appColNivReset();"><i class="fa fa-refresh"></i></button>
+            <span id="grdColNivCount" style="display:inline-block;margin-left:5px;font-size:20px;font-weight:600;"></span>
+          </div>
+          <div class="box-body table-responsive no-padding">
+            <table class="table table-hover" id="grd">
+              <thead>
+                <tr>
+                  <th style="">Nivel &raquo; Grado</th>
+                  <th style="width:25px;"><input type="checkbox" id="chk_All" onclick="javascript:toggleAll(this,'chk_Borrar');" /></th>
+                  <th style="text-align:center;width:80px;">Seccion</th>
+                  <th title="Nombre con el que se reconocera">Alias</th>
+                  <th style="width:50px;" title="Capacidad">Cap</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="grdColNiv">
               </tbody>
             </table>
           </div>

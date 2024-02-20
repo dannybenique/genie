@@ -13,23 +13,49 @@
       //****************personas****************
       switch ($data->TipoQuery) {
         case "selNiveles":
-          $tabla = array();
-          $buscar = strtoupper($data->buscar);
-          $sql = "select * from app_productos where estado=1 and nombre LIKE :buscar order by nombre;";
-          $params = [":buscar"=>'%'.$buscar.'%'];
-          $qry = $db->query_all($sql,$params);
-          if ($qry) {
-            foreach($qry as $rs){
-              $tabla[] = array(
-                "ID" => $rs["id"],
-                "codigo" => $rs["codigo"],
-                "producto" => str_ireplace($buscar, '<span style="background:yellow;">'.$buscar.'</span>', $rs["nombre"]),
-                "abrevia" => $rs["abrevia"],
-                "estado" => $rs["estado"]
-              );
-            }
+          switch ($data->tipo){
+            case "ALL":
+              $niveles = array();
+              $sql = "select * from vw_niveles where id_nivel=".$data->nivelID." order by id_nivel,id_grado,seccion;";
+              $qry = $db->query_all($sql);
+              if ($qry) {
+                foreach($qry as $rs){
+                  $niveles[] = array(
+                    "nivelID" => $rs["id_nivel"],
+                    "nivel" => $rs["nivel"],
+                    "gradoID" => $rs["id_grado"],
+                    "grado" => $rs["grado"],
+                    "seccionID" => $rs["id_seccion"],
+                    "seccion" => $rs["seccion"]
+                  );
+                }
+              }
+              
+              $colniv = array();
+              $sql = "select n.*,cn.alias,cn.capacidad from vw_niveles n join app_colniv cn on (cn.id_nivel=n.id_seccion) where id_colegio=:colegioID and n.id_nivel=:nivelID order by id_nivel,id_grado,seccion;";
+              $params = [
+                ":colegioID" => $web->colegioID,
+                ":nivelID" => $data->nivelID
+              ];
+              $qry = $db->query_all($sql,$params);
+              if ($qry) {
+                foreach($qry as $rs){
+                  $colniv[] = array(
+                    "nivelID" => $rs["id_nivel"],
+                    "nivel" => $rs["nivel"],
+                    "gradoID" => $rs["id_grado"],
+                    "grado" => $rs["grado"],
+                    "seccionID" => $rs["id_seccion"],
+                    "seccion" => $rs["seccion"],
+                    "alias" => $rs["alias"],
+                    "capacidad" => $rs["capacidad"]
+                  );
+                }
+              }
+
+              $rpta = array("niveles"=>$niveles,"colniv"=>$colniv);
+              break;
           }
-          $rpta = array("productos"=>$tabla);
           echo json_encode($rpta);
           break;
         case "editNivel":
@@ -106,7 +132,7 @@
         case "startNivel":
           //respuesta
           $rpta = array(
-            "fecha" => $fn->getFechaActualDB(),
+            "comboNiveles" => $fn->getComboBox("select id,nombre from app_niveles where id_padre is null order by id;"),
             "colegio" => $web->colegioID);
           echo json_encode($rpta);
           break;
