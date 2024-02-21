@@ -22,13 +22,13 @@
             <div class="btn-group">
               <button type="button" id="btn_NEW" class="btn btn-default btn-sm" onclick="javascript:appNivelNuevo();"><i class="fa fa-plus"></i></button>
               <div class="input-group" style="width:110px;">
-                <span class="input-group-addon" style="background:#F4F4F4;"><b>Niveles</b></span>  
+                <span class="input-group-addon" style="background:#ddd;"><b>Niveles</b></span>  
                 <span class="input-group-btn">
                   <select id="cboNiveles" class="btn btn-default btn-sm" style="height:30px;text-align:left;" onchange="javascript:appChangeNivel();"></select>
                 </span>
               </div>
             </div>
-            <button type="button" id="btn_SND" class="btn btn-default btn-sm" onclick="javascript:appNivelesEnviar();"><i class="fa fa-send"></i></button>
+            <button type="button" id="btn_SND" class="btn btn-default btn-sm" onclick="javascript:appNivelSend();"><i class="fa fa-send"></i></button>
             <button type="button" id="btn_RST" class="btn btn-default btn-sm" onclick="javascript:appNivelesReset();"><i class="fa fa-refresh"></i></button>
             <span id="grdCount" style="display:inline-block;margin-left:5px;font-size:20px;font-weight:600;"></span>
           </div>
@@ -50,7 +50,7 @@
       </div>
     </div>
     <div class="col-md-6">
-    <div class="box box-primary">
+      <div class="box box-primary">
         <div class="box-header no-padding">
           <div class="mailbox-controls">
             <div class="btn-group">
@@ -84,35 +84,7 @@
       <form class="form-horizontal" autocomplete="off">
         <div class="box box-primary">
           <div class="box-body">
-            <div class="col-md-12">
-              <div class="box-body">
-                <input type="hidden" id="hid_productoID" value="">
-                <div class="row">
-                  <div class="col-xs-6">
-                    <div id="div_Codigo" class="form-group" style="margin-bottom:5px;">
-                      <div class="input-group">
-                        <span class="input-group-addon" style="background:#eeeeee;"><b>Codigo</b></span>
-                        <input id="txt_Codigo" type="text" maxlength="7" class="form-control" placeholder="0000"/>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-xs-6">
-                    <div id="div_Abrev" class="form-group" style="margin-bottom:5px;">
-                      <div class="input-group">
-                        <span class="input-group-addon" style="background:#eeeeee;"><b>Abrev.</b></span>
-                        <input id="txt_Abrev" type="text" maxlength="5" class="form-control" placeholder="abrev..."/>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div id="div_Nombre" class="form-group" style="margin-bottom:5px;">
-                  <div class="input-group">
-                    <span class="input-group-addon" style="background:#eeeeee;"><b>Nombre</b></span>
-                    <input id="txt_Nombre" type="text" maxlength="50" class="form-control" placeholder="nombre..."/>
-                  </div>
-                </div>
-              </div>
-            </div>
+            
           </div>
           <div class="box-body">
             <button type="button" class="btn btn-default" onclick="javascript:appNivelCancel();"><i class="fa fa-angle-double-left"></i> Regresar</button>
@@ -121,6 +93,55 @@
           </div>
         </div>
       </form>
+    </div>
+  </div>
+  <div class="modal fade" id="modalColNiv" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form class="form-horizontal" id="frmColNiv" autocomplete="off">
+          <div class="modal-header" style="background:#f9f9f9;padding:8px;">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" style="font-family:flexoregular;font-weight:bold;">Edicion de Niveles por Colegio</h4>
+          </div>
+          <div class="modal-body" style="border-right:1px solid white;">
+            <div class="box-body row">
+              <div class="col-md-12">
+                <div class="box-body">
+                  <input type="hidden" id="hid_colnivnivelID" value="">
+                  <div id="div_Nombre" class="form-group" style="margin-bottom:5px;">
+                    <div class="input-group">
+                      <span class="input-group-addon" style="background:#eeeeee;"><b>Nivel</b></span>
+                      <input id="txt_modColNivNombre" type="text" class="form-control" disabled/>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xs-6">
+                      <div id="div_Codigo" class="form-group" style="margin-bottom:5px;">
+                        <div class="input-group">
+                          <span class="input-group-addon" style="background:#eeeeee;"><b>Alias</b></span>
+                          <input id="txt_modColNivAlias" type="text" class="form-control"/>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xs-6">
+                      <div id="div_Abrev" class="form-group" style="margin-bottom:5px;">
+                        <div class="input-group">
+                          <span class="input-group-addon" style="background:#eeeeee;"><b>Capacidad</b></span>
+                          <input id="txt_modColNivCapacidad" type="number" class="form-control" placeholder="0..."/>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer" style="background:#f9f9f9;padding:8px;">
+            <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><i class="fa fa-close"></i> Cerrar</button>
+            <button type="button" class="btn btn-primary" onclick="javascript:appColNivUpdate();"><i class="fa fa-flash"></i> Actualizar</button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </section>

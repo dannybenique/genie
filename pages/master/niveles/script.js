@@ -12,61 +12,66 @@ function appNivelesGrid(tipo){
 
   //preloader
   document.querySelector('#grdDatos').innerHTML = (strLoader);
-  if(tipo=='NIV') { document.querySelector('#grdDatos').innerHTML = (strLoader); }
+  document.querySelector('#grdColNiv').innerHTML = (strLoader);
   
   //respuesta
   appFetch(datos,rutaSQL).then(resp => {
-    let disabledDelete = (menu.master.submenu.niveles.cmdDelete===1) ? "" : "disabled";
     document.querySelector("#chk_All").disabled = (menu.master.submenu.niveles.cmdDelete===1) ? false : true;
-    
     switch (tipo){
       case 'ALL':
-        //niveles
-        if(resp.niveles.length>0){
-          let fila = "";
-          let rowspan = 0;
-          let gradoID = 0;
-          resp.niveles.forEach((valor,key)=>{
-            rowspan = (gradoID!=valor.gradoID) ? (resp.niveles.filter((xx)=>xx.gradoID===valor.gradoID).length) : 0;
-            fila += '<tr>'+
-                    ((gradoID!=valor.gradoID) ? ('<td rowspan='+rowspan+'>'+(valor.nivel)+' &raquo; '+(valor.grado)+'</td>'):(''))+
-                    '<td><input type="checkbox" name="chk_Borrar" value="'+(valor.seccionID)+'" '+(disabledDelete)+'/></td>'+
-                    '<td style="text-align:center;">'+(valor.seccion)+'</td>'+
-                    '<td></td>'+
-                    '</tr>';
-            gradoID = valor.gradoID;
-          });
-          document.querySelector('#grdDatos').innerHTML = (fila);
-        }else{
-          document.querySelector('#grdDatos').innerHTML = ('<tr><td colspan="3" style="text-align:center;color:red;">Sin Resultados</td></tr>');
-        }
-        document.querySelector('#grdCount').innerHTML = (resp.niveles.length);
-        
-        //colniv
-        if(resp.colniv.length>0){
-          let fila = "";
-          let rowspan = 0;
-          let gradoID = 0;
-          resp.colniv.forEach((valor,key)=>{
-            rowspan = (gradoID!=valor.gradoID) ? (resp.colniv.filter((xx)=>xx.gradoID===valor.gradoID).length) : 0;
-            fila += '<tr>'+
-                    ((gradoID!=valor.gradoID) ? ('<td rowspan='+rowspan+'>'+(valor.nivel)+' &raquo; '+(valor.grado)+'</td>'):(''))+
-                    '<td><input type="checkbox" name="chk_Borrar" value="'+(valor.ID)+'" '+(disabledDelete)+'/></td>'+
-                    '<td style="text-align:center;">'+(valor.seccion)+'</td>'+
-                    '<td>'+(valor.alias)+'</td>'+
-                    '<td style="text-align:center;">'+(valor.capacidad)+'</td>'+
-                    '<td></td>'+
-                    '</tr>';
-            gradoID = valor.gradoID;
-          });
-          document.querySelector('#grdColNiv').innerHTML = (fila);
-        }else{
-          document.querySelector('#grdColNiv').innerHTML = ('<tr><td colspan="7" style="text-align:center;color:red;">Sin Resultados para '+txtBuscar+'</td></tr>');
-        }
-        document.querySelector('#grdColNivCount').innerHTML = (resp.colniv.length);
+        LlenarGridNiveles(resp.niveles); //niveles
+        LlenarGridColNiv(resp.colniv); //colniv
         break;
     }
   });
+}
+
+function LlenarGridNiveles(data){
+  let disabledDelete = (menu.master.submenu.niveles.cmdDelete===1) ? "" : "disabled";
+  if(data.length>0){
+    let fila = "";
+    let rowspan = 0;
+    let gradoID = 0;
+    data.forEach((valor,key)=>{
+      rowspan = (gradoID!=valor.gradoID) ? (data.filter((xx)=>xx.gradoID===valor.gradoID).length) : 0;
+      fila += '<tr>'+
+              ((gradoID!=valor.gradoID) ? ('<td rowspan='+rowspan+'>'+(valor.nivel)+' &raquo; '+(valor.grado)+'</td>'):(''))+
+              '<td><input type="checkbox" name="chk_Send" value="'+(valor.seccionID)+'" '+(disabledDelete)+'/></td>'+
+              '<td style="text-align:center;"><span data-toggle="tooltip" class="badge bg-light-blue">'+(valor.seccion)+'</span></td>'+
+              '<td></td>'+
+              '</tr>';
+      gradoID = valor.gradoID;
+    });
+    document.querySelector('#grdDatos').innerHTML = (fila);
+  }else{
+    document.querySelector('#grdDatos').innerHTML = ('<tr><td colspan="3" style="text-align:center;color:red;">Sin Resultados</td></tr>');
+  }
+  document.querySelector('#grdCount').innerHTML = (data.length);
+}
+
+function LlenarGridColNiv(data){
+  let disabledDelete = (menu.master.submenu.niveles.cmdDelete===1) ? "" : "disabled";
+  if(data.length>0){
+    let fila = "";
+    let rowspan = 0;
+    let gradoID = 0;
+    data.forEach((valor,key)=>{
+      rowspan = (gradoID!=valor.gradoID) ? (data.filter((xx)=>xx.gradoID===valor.gradoID).length) : 0;
+      fila += '<tr>'+
+              ((gradoID!=valor.gradoID) ? ('<td rowspan='+rowspan+'>'+(valor.nivel)+' &raquo; '+(valor.grado)+'</td>'):(''))+
+              '<td><input type="checkbox" name="chk_ColNivBorrar" value="'+(valor.seccionID)+'" '+(disabledDelete)+'/></td>'+
+              '<td style="text-align:center;"><a href="javascript:appColNivEdit('+(valor.seccionID)+');"><span data-toggle="tooltip" class="badge bg-green">'+(valor.seccion)+'</span></a></td>'+
+              '<td>'+(valor.alias)+'</td>'+
+              '<td style="text-align:center;">'+(valor.capacidad)+'</td>'+
+              '<td></td>'+
+              '</tr>';
+      gradoID = valor.gradoID;
+    });
+    document.querySelector('#grdColNiv').innerHTML = (fila);
+  }else{
+    document.querySelector('#grdColNiv').innerHTML = ('<tr><td colspan="7" style="text-align:center;color:red;">Sin Resultados</td></tr>');
+  }
+  document.querySelector('#grdColNivCount').innerHTML = (data.length);
 }
 
 function appNivelesReset(){
@@ -82,12 +87,12 @@ function appNivelesReset(){
   });
 }
 
-function appNivelesBuscar(e){
+function appNivelesBuscar(e){ //falta corregir
   let code = (e.keyCode ? e.keyCode : e.which);
-  if(code == 13) { appNivelesGrid(); }
+  if(code == 13) { appNivelesGrid('ALL'); }
 }
 
-function appNivelNuevo(){
+function appNivelNuevo(){ //falta corregir
   document.querySelector("#btnInsert").style.display = (menu.master.submenu.niveles.cmdInsert==1)?('inline'):('none');
   document.querySelector("#btnUpdate").style.display = 'none';
   appFetch({ TipoQuery:'startNivel' },rutaSQL).then(resp => {
@@ -105,7 +110,7 @@ function appNivelNuevo(){
   });
 }
 
-function appNivelView(productoID){
+function appNivelView(nivelID){ //falta corregir
   document.querySelector("#btnUpdate").style.display = (menu.master.submenu.niveles.cmdUpdate==1)?('inline'):('none');
   document.querySelector("#btnInsert").style.display = 'none';
   $(".form-group").removeClass("has-error");
@@ -129,7 +134,22 @@ function appNivelView(productoID){
   });
 }
 
-function appNivelInsert(){
+function appNivelSend(){
+  let arr = Array.from(document.querySelectorAll('[name="chk_Send"]:checked')).map(function(obj){return obj.attributes[2].nodeValue});
+  if(arr.length>0){
+    if(confirm("¿Esta seguro de continuar?")) {
+      appFetch({ TipoQuery:'sndNiveles', arr:arr },rutaSQL).then(resp => {
+        if (resp.error == false) { //sin errores
+          appNivelesGrid('ALL');
+        }
+      });
+    }
+  } else {
+    alert("NO eligio agregar ninguna seccion al colegio actual");
+  }
+}
+
+function appNivelInsert(){ //falta corregir
   let datos = modGetDataToDataBase();
   if(datos!=""){
     datos.TipoQuery = 'insNivel';
@@ -141,7 +161,7 @@ function appNivelInsert(){
   }
 }
 
-function appNivelUpdate(){
+function appNivelUpdate(){ //falta corregir
   let datos = modGetDataToDataBase();
   if(datos!=""){
     datos.TipoQuery = 'updNivel';
@@ -153,23 +173,7 @@ function appNivelUpdate(){
   }
 }
 
-function appNivelesBorrar(){
-  //let arr = $('[name="chk_Borrar"]:checked').map(function(){return this.value}).get();
-  let arr = Array.from(document.querySelectorAll('[name="chk_Borrar"]:checked')).map(function(obj){return obj.attributes[2].nodeValue});
-  if(arr.length>0){
-    if(confirm("¿Esta seguro de continuar?")) {
-      appFetch({ TipoQuery:'delNiveles', arr:arr },rutaSQL).then(resp => {
-        if (resp.error == false) { //sin errores
-          appNivelCancel();
-        }
-      });
-    }
-  } else {
-    alert("NO eligio borrar ninguno");
-  }
-}
-
-function modGetDataToDataBase(){
+function modGetDataToDataBase(){ //falta corregir
   let rpta = "";
   let esError = false;
 
@@ -188,7 +192,7 @@ function modGetDataToDataBase(){
   return rpta;
 }
 
-function appNivelCancel(){
+function appNivelCancel(){ //falta corregir
   appNivelesGrid();
   document.querySelector('#grid').style.display = 'block';
   document.querySelector('#edit').style.display = 'none';
@@ -196,4 +200,45 @@ function appNivelCancel(){
 
 function appChangeNivel(){
   appNivelesGrid('ALL'); 
+}
+
+function appColNivBorrar(){
+  let arr = Array.from(document.querySelectorAll('[name="chk_ColNivBorrar"]:checked')).map(function(obj){return obj.attributes[2].nodeValue});
+  if(arr.length>0){
+    if(confirm("¿Esta seguro de continuar?")) {
+      appFetch({ TipoQuery:'delColNiv', arr:arr },rutaSQL).then(resp => {
+        if (resp.error == false) { //sin errores
+          appNivelesGrid('ALL');
+        }
+      });
+    }
+  } else {
+    alert("NO eligio borrar ninguno");
+  }
+}
+
+function appColNivEdit(nivelID){
+  let datos = { 
+    TipoQuery : 'editColNiv',
+    nivelID : nivelID,
+  };
+  appFetch(datos,rutaSQL).then(resp => {
+    document.querySelector("#hid_colnivnivelID").value = resp.seccionID;
+    document.querySelector("#txt_modColNivNombre").value = resp.nivel + " - " + resp.grado + " - " + resp.seccion;
+    document.querySelector("#txt_modColNivAlias").value = resp.alias;
+    document.querySelector("#txt_modColNivCapacidad").value = resp.capacidad;
+    $("#modalColNiv").modal("show");
+  }); 
+}
+
+function appColNivUpdate(){
+  let datos = {
+    TipoQuery : "updColNiv",
+    nivelID : document.querySelector("#hid_colnivnivelID").value,
+    alias : document.querySelector("#txt_modColNivAlias").value,
+    capacidad : document.querySelector("#txt_modColNivCapacidad").value
+  }
+  appFetch(datos,rutaSQL).then(resp => {
+    // appNivelCancel();
+  });
 }

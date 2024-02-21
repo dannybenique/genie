@@ -15,9 +15,14 @@
         case "selNiveles":
           switch ($data->tipo){
             case "ALL":
+              $params = [
+                ":nivelID" => $data->nivelID,
+                ":colegioID" => $web->colegioID
+              ];
+              //niveles
               $niveles = array();
-              $sql = "select * from vw_niveles where id_nivel=".$data->nivelID." order by id_nivel,id_grado,seccion;";
-              $qry = $db->query_all($sql);
+              $sql = "select * from vw_niveles where id_nivel=:nivelID and id_seccion not in(select id_nivel from app_colniv where id_colegio=:colegioID) order by id_nivel,id_grado,seccion;";
+              $qry = $db->query_all($sql,$params);
               if ($qry) {
                 foreach($qry as $rs){
                   $niveles[] = array(
@@ -30,13 +35,9 @@
                   );
                 }
               }
-              
+              //niveles por colegio
               $colniv = array();
               $sql = "select n.*,cn.alias,cn.capacidad from vw_niveles n join app_colniv cn on (cn.id_nivel=n.id_seccion) where id_colegio=:colegioID and n.id_nivel=:nivelID order by id_nivel,id_grado,seccion;";
-              $params = [
-                ":colegioID" => $web->colegioID,
-                ":nivelID" => $data->nivelID
-              ];
               $qry = $db->query_all($sql,$params);
               if ($qry) {
                 foreach($qry as $rs){
@@ -58,7 +59,7 @@
           }
           echo json_encode($rpta);
           break;
-        case "editNivel":
+        case "editNivel": //corregir
           //cargar datos de la persona
           $qry = $db->query_all("select * from app_productos where id=".$data->productoID);
           if ($qry) {
@@ -74,7 +75,7 @@
           //respuesta
           echo json_encode($rpta);
           break;
-        case "insNivel":
+        case "insNivel": //corregir
           //obteniendo nuevo ID
           $qry = $db->query_all("select COALESCE(max(id)+1,1) as maxi from app_productos;");
           $id = reset($qry)["maxi"];
@@ -97,7 +98,7 @@
           $rpta = array("error" => false,"ingresados" => 1);
           echo json_encode($rpta);
           break;
-        case "updNivel":
+        case "updNivel": //corregir
           $sql = "update app_productos set nombre=:nombre,abrevia=:abrevia,sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id=:id";
           $params = [
             ":id"=>$data->ID,
@@ -113,13 +114,64 @@
           $rpta = array("error" => false,"actualizados" => 1, "sql" => $sql);
           echo json_encode($rpta);
           break;
-        case "delNiveles":
+        case "sndNiveles":
           for($i=0; $i<count($data->arr); $i++){
-            $sql = "update app_productos set estado=0,sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id=:id";
+            $sql = "insert into app_colniv values(:colegioID,:nivelID,'',1);";
             $params = [
-              ":id"=>$data->arr[$i],
-              ":sysIP"=>$fn->getClientIP(),
-              ":userID"=>$_SESSION['usr_ID']
+              ":nivelID"=>$data->arr[$i],
+              ":colegioID"=>$web->colegioID
+            ];
+            $qry = $db->query_all($sql,$params);
+            $rs = ($qry) ? (reset($qry)) : (null);
+          }
+
+          //respuesta
+          $rpta = array("error" => false,"borrados" => count($data->arr));
+          echo json_encode($rpta);
+          break;
+        case "editColNiv":
+          $sql = "select * from vw_niveles n join app_colniv c on c.id_nivel=n.id_seccion where id_seccion=:nivelID and id_colegio=:colegioID;";
+          $params = [
+            ":nivelID"=>$data->nivelID,
+            ":colegioID"=>$web->colegioID
+          ];
+          $qry = $db->query_all($sql,$params);
+          if ($qry) {
+            $rs = reset($qry);
+            $rpta = array(
+              "seccionID" => $rs["id_seccion"],
+              "nivel" => $rs["nivel"],
+              "grado" => ($rs["grado"]),
+              "seccion" => ($rs["seccion"]),
+              "alias" => ($rs["alias"]),
+              "capacidad" => ($rs["capacidad"])
+            );
+          }
+
+          //respuesta
+          echo json_encode($rpta);
+          break;
+        case "updColNiv":
+          $sql = "update app_colniv set alias=:alias,capacidad=:capacidad where id_nivel=:nivelID and id_colegio=:colegioID";
+          $params = [
+            ":alias"=>$data->alias,
+            ":capacidad"=>$data->capacidad,
+            ":nivelID"=>$data->nivelID,
+            ":colegioID"=>$web->colegioID
+          ];
+          $qry = $db->query_all($sql,$params);
+          $rs = ($qry) ? (reset($qry)) : (null);
+
+          //respuesta
+          $rpta = array("error" => false,"actualizado" => 1);
+          echo json_encode($rpta);
+          break;
+        case "delColNiv":
+          for($i=0; $i<count($data->arr); $i++){
+            $sql = "delete from app_colniv where id_nivel=:nivelID and id_colegio=:colegioID";
+            $params = [
+              ":nivelID"=>$data->arr[$i],
+              ":colegioID"=>$web->colegioID
             ];
             $qry = $db->query_all($sql,$params);
             $rs = ($qry) ? (reset($qry)) : (null);
