@@ -1,13 +1,12 @@
 const rutaSQL = "pages/master/niveles/sql.php";
 var menu = "";
+var strLoader = '<tr><td colspan="7"><div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></td></tr>';
 
 //=========================funciones para Personas============================
-function appNivelesGrid(tipo){
-  let strLoader = '<tr><td colspan="7"><div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></td></tr>';
+function appNivelesGrid(){
   let datos = { 
-    TipoQuery : 'selNiveles',
-    nivelID : document.querySelector('#cboNiveles').value,
-    tipo : tipo
+    TipoQuery : 'nivel_select',
+    nivelID : document.querySelector('#cboNiveles').value
   };
 
   //preloader
@@ -17,12 +16,8 @@ function appNivelesGrid(tipo){
   //respuesta
   appFetch(datos,rutaSQL).then(resp => {
     document.querySelector("#chk_All").disabled = (menu.master.submenu.niveles.cmdDelete===1) ? false : true;
-    switch (tipo){
-      case 'ALL':
-        LlenarGridNiveles(resp.niveles); //niveles
-        LlenarGridColNiv(resp.colniv); //colniv
-        break;
-    }
+    LlenarGridNiveles(resp.niveles); //niveles
+    LlenarGridColNiv(resp.colniv); //colniv
   });
 }
 
@@ -79,23 +74,30 @@ function appNivelesReset(){
     menu = JSON.parse(resp.menu);
     document.querySelector("#btn_DEL").style.display = (menu.master.submenu.niveles.cmdDelete==1)?('inline'):('none');
     document.querySelector("#btn_NEW").style.display = (menu.master.submenu.niveles.cmdInsert==1)?('inline'):('none');
-    let datos = { TipoQuery:'startNivel' }
+    let datos = { TipoQuery:'nivel_start' }
     appFetch(datos,rutaSQL).then(resp => {
       appLlenarDataEnComboBox(resp.comboNiveles,"#cboNiveles",0);
-      appNivelesGrid('ALL');
+      appNivelesGrid();
     })
   });
 }
 
-function appNivelesBuscar(e){ //falta corregir
-  let code = (e.keyCode ? e.keyCode : e.which);
-  if(code == 13) { appNivelesGrid('ALL'); }
+function appNivelesRefresh(){
+  let datos = {
+    TipoQuery : "nivel_refresh",
+    nivelID : document.querySelector('#cboNiveles').value
+  }
+  //preloader
+  document.querySelector('#grdDatos').innerHTML = (strLoader);
+  appFetch(datos,rutaSQL).then(resp => {
+    LlenarGridNiveles(resp.niveles); //niveles
+  });
 }
 
 function appNivelNuevo(){ //falta corregir
   document.querySelector("#btnInsert").style.display = (menu.master.submenu.niveles.cmdInsert==1)?('inline'):('none');
   document.querySelector("#btnUpdate").style.display = 'none';
-  appFetch({ TipoQuery:'startNivel' },rutaSQL).then(resp => {
+  appFetch({ TipoQuery:'nivel_start' },rutaSQL).then(resp => {
     try{
       $(".form-group").removeClass("has-error");
       document.querySelector("#hid_productoID").value = ("0");
@@ -110,45 +112,6 @@ function appNivelNuevo(){ //falta corregir
   });
 }
 
-function appNivelView(nivelID){ //falta corregir
-  document.querySelector("#btnUpdate").style.display = (menu.master.submenu.niveles.cmdUpdate==1)?('inline'):('none');
-  document.querySelector("#btnInsert").style.display = 'none';
-  $(".form-group").removeClass("has-error");
-
-  let datos = {
-    TipoQuery : 'editProducto',
-    productoID : productoID
-  }
-
-  appFetch(datos,rutaSQL).then(resp => {
-    try{
-      document.querySelector("#hid_productoID").value = resp.ID;
-      document.querySelector("#txt_Codigo").value = (resp.codigo);
-      document.querySelector("#txt_Abrev").value = (resp.abrev);
-      document.querySelector("#txt_Nombre").value = (resp.nombre);
-      document.querySelector('#grid').style.display = 'none';
-      document.querySelector('#edit').style.display = 'block';
-    } catch(err){
-      console.log(err);
-    }
-  });
-}
-
-function appNivelSend(){
-  let arr = Array.from(document.querySelectorAll('[name="chk_Send"]:checked')).map(function(obj){return obj.attributes[2].nodeValue});
-  if(arr.length>0){
-    if(confirm("¿Esta seguro de continuar?")) {
-      appFetch({ TipoQuery:'sndNiveles', arr:arr },rutaSQL).then(resp => {
-        if (resp.error == false) { //sin errores
-          appNivelesGrid('ALL');
-        }
-      });
-    }
-  } else {
-    alert("NO eligio agregar ninguna seccion al colegio actual");
-  }
-}
-
 function appNivelInsert(){ //falta corregir
   let datos = modGetDataToDataBase();
   if(datos!=""){
@@ -161,15 +124,18 @@ function appNivelInsert(){ //falta corregir
   }
 }
 
-function appNivelUpdate(){ //falta corregir
-  let datos = modGetDataToDataBase();
-  if(datos!=""){
-    datos.TipoQuery = 'updNivel';
-    appFetch(datos,rutaSQL).then(resp => {
-      appNivelCancel();
-    });
+function appNivelSend(){
+  let arr = Array.from(document.querySelectorAll('[name="chk_Send"]:checked')).map(function(obj){return obj.attributes[2].nodeValue});
+  if(arr.length>0){
+    if(confirm("¿Esta seguro de continuar?")) {
+      appFetch({ TipoQuery:'nivel_send', arr:arr },rutaSQL).then(resp => {
+        if (resp.error == false) { //sin errores
+          appNivelesGrid();
+        }
+      });
+    }
   } else {
-    alert("!!!Faltan Datos!!!");
+    alert("NO eligio agregar ninguna seccion al colegio actual");
   }
 }
 
@@ -192,23 +158,13 @@ function modGetDataToDataBase(){ //falta corregir
   return rpta;
 }
 
-function appNivelCancel(){ //falta corregir
-  appNivelesGrid();
-  document.querySelector('#grid').style.display = 'block';
-  document.querySelector('#edit').style.display = 'none';
-}
-
-function appChangeNivel(){
-  appNivelesGrid('ALL'); 
-}
-
 function appColNivBorrar(){
   let arr = Array.from(document.querySelectorAll('[name="chk_ColNivBorrar"]:checked')).map(function(obj){return obj.attributes[2].nodeValue});
   if(arr.length>0){
     if(confirm("¿Esta seguro de continuar?")) {
-      appFetch({ TipoQuery:'delColNiv', arr:arr },rutaSQL).then(resp => {
+      appFetch({ TipoQuery:'colniv_delete', arr:arr },rutaSQL).then(resp => {
         if (resp.error == false) { //sin errores
-          appNivelesGrid('ALL');
+          appNivelesGrid();
         }
       });
     }
@@ -219,7 +175,7 @@ function appColNivBorrar(){
 
 function appColNivEdit(nivelID){
   let datos = { 
-    TipoQuery : 'editColNiv',
+    TipoQuery : 'colniv_edit',
     nivelID : nivelID,
   };
   appFetch(datos,rutaSQL).then(resp => {
@@ -233,12 +189,29 @@ function appColNivEdit(nivelID){
 
 function appColNivUpdate(){
   let datos = {
-    TipoQuery : "updColNiv",
-    nivelID : document.querySelector("#hid_colnivnivelID").value,
+    TipoQuery : "colniv_update",
+    nivelID : document.querySelector('#cboNiveles').value,
+    seccionID : document.querySelector("#hid_colnivnivelID").value,
     alias : document.querySelector("#txt_modColNivAlias").value,
     capacidad : document.querySelector("#txt_modColNivCapacidad").value
   }
+  //preloader
+  document.querySelector('#grdColNiv').innerHTML = (strLoader);
+  
   appFetch(datos,rutaSQL).then(resp => {
-    // appNivelCancel();
+    $("#modalColNiv").modal("hide");
+    LlenarGridColNiv(resp.colniv); //colniv
+  });
+}
+
+function appColNivRefresh(){
+  let datos = {
+    TipoQuery : "colniv_refresh",
+    nivelID : document.querySelector('#cboNiveles').value
+  }
+  //preloader
+  document.querySelector('#grdColNiv').innerHTML = (strLoader);
+  appFetch(datos,rutaSQL).then(resp => {
+    LlenarGridColNiv(resp.colniv); //colniv
   });
 }

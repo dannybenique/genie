@@ -24,12 +24,12 @@
               <div class="input-group" style="width:110px;">
                 <span class="input-group-addon" style="background:#ddd;"><b>Niveles</b></span>  
                 <span class="input-group-btn">
-                  <select id="cboNiveles" class="btn btn-default btn-sm" style="height:30px;text-align:left;" onchange="javascript:appChangeNivel();"></select>
+                  <select id="cboNiveles" class="btn btn-default btn-sm" style="height:30px;text-align:left;" onchange="javascript:appNivelesGrid();"></select>
                 </span>
               </div>
             </div>
             <button type="button" id="btn_SND" class="btn btn-default btn-sm" onclick="javascript:appNivelSend();"><i class="fa fa-send"></i></button>
-            <button type="button" id="btn_RST" class="btn btn-default btn-sm" onclick="javascript:appNivelesReset();"><i class="fa fa-refresh"></i></button>
+            <button type="button" id="btn_RST" class="btn btn-default btn-sm" onclick="javascript:appNivelesRefresh();"><i class="fa fa-refresh"></i></button>
             <span id="grdCount" style="display:inline-block;margin-left:5px;font-size:20px;font-weight:600;"></span>
           </div>
           <div class="box-body table-responsive no-padding">
@@ -56,7 +56,7 @@
             <div class="btn-group">
               <button type="button" id="btn_DEL" class="btn btn-default btn-sm" onclick="javascript:appColNivBorrar();"><i class="fa fa-trash"></i></button>
             </div>
-            <button type="button" id="btn_RST" class="btn btn-default btn-sm" onclick="javascript:appColNivReset();"><i class="fa fa-refresh"></i></button>
+            <button type="button" id="btn_RST" class="btn btn-default btn-sm" onclick="javascript:appColNivRefresh();"><i class="fa fa-refresh"></i></button>
             <span id="grdColNivCount" style="display:inline-block;margin-left:5px;font-size:20px;font-weight:600;"></span>
           </div>
           <div class="box-body table-responsive no-padding">
@@ -77,22 +77,6 @@
           </div>
         </div>
       </div>
-    </div>
-  </div>
-  <div class="row" id="edit" style="display:none;">
-    <div class="col-md-6">
-      <form class="form-horizontal" autocomplete="off">
-        <div class="box box-primary">
-          <div class="box-body">
-            
-          </div>
-          <div class="box-body">
-            <button type="button" class="btn btn-default" onclick="javascript:appNivelCancel();"><i class="fa fa-angle-double-left"></i> Regresar</button>
-            <button type="button" id="btnInsert" class="btn btn-primary pull-right" onclick="javascript:appNivelInsert();"><i class="fa fa-save"></i> Guardar</button>
-            <button type="button" id="btnUpdate" class="btn btn-info pull-right" onclick="javascript:appNivelUpdate();"><i class="fa fa-save"></i> Actualizar</button>
-          </div>
-        </div>
-      </form>
     </div>
   </div>
   <div class="modal fade" id="modalColNiv" role="dialog">
