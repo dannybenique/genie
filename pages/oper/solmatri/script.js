@@ -199,7 +199,7 @@ function appSolMatriClear(txtSocio){
   document.querySelector("#btnInsert").style.display = 'inline';
   
   appFetch(datos,rutaSQL).then(resp => {
-    appLlenarDataEnComboBox(resp.comboNiveles,"#cbo_SolMatriNiveles",2); //seteado a primaria
+    appLlenarDataEnComboBox(resp.comboNiveles,"#cbo_SolMatriNiveles",0); //seteado a primaria
     appLlenarDataEnComboBox(resp.comboGrados,"#cbo_SolMatriGrados",0); //prmer grado
     appLlenarDataEnComboBox(resp.comboSecciones,"#cbo_SolMatriSecciones",0); //seccion A
     
@@ -276,9 +276,15 @@ function comboGrados(){
     tipoID  : 3, //grados
     padreID : document.querySelector("#cbo_SolMatriNiveles").value
   }
+  //disabled
+  document.querySelector("#cbo_SolMatriGrados").disabled = true;
+  document.querySelector("#cbo_SolMatriSecciones").disabled = true;
+  //fetch
   appFetch(datos,rutaSQL).then(resp => {
     appLlenarDataEnComboBox(resp.grados,"#cbo_SolMatriGrados",0); //grados
     appLlenarDataEnComboBox(resp.secciones,"#cbo_SolMatriSecciones",0); //secciones
+    document.querySelector("#cbo_SolMatriGrados").disabled = false;
+  document.querySelector("#cbo_SolMatriSecciones").disabled = false;
   });
 }
 
@@ -288,8 +294,13 @@ function comboSecciones(){
     tipoID  : 4, //secciones
     padreID : document.querySelector("#cbo_SolMatriGrados").value
   }
+  
+  //disabled
+  document.querySelector("#cbo_SolMatriSecciones").disabled = true;
+  //fetch
   appFetch(datos,rutaSQL).then(resp => {
     appLlenarDataEnComboBox(resp.secciones,"#cbo_SolMatriSecciones",0); //secciones
+    document.querySelector("#cbo_SolMatriSecciones").disabled = false;
   });
 }
 

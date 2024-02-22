@@ -90,11 +90,16 @@
           echo json_encode($rpta);
           break;
         case "newSolMatri":
+          $niveles = $fn->getComboBox("select distinct n.id_nivel as id,n.nivel as nombre from vw_niveles n join app_colniv c on n.id_seccion=c.id_nivel order by id;");
+          $nivelID = $niveles[0]["ID"];
+          $grados = $fn->getComboBox("select distinct n.id_grado as id,n.grado as nombre from vw_niveles n join app_colniv c on n.id_seccion=c.id_nivel where n.id_nivel=".$nivelID." order by id;");
+          $gradoID = $grados[0]["ID"];
+          $secciones = $fn->getComboBox("select distinct n.id_seccion as id,concat(n.seccion,case when trim(c.alias)='' then '' else concat(' - ',trim(c.alias)) end,' - ',c.capacidad) as nombre from vw_niveles n join app_colniv c on n.id_seccion=c.id_nivel where n.id_grado=".$gradoID." order by nombre;");
           //respuesta
           $rpta = array(
-            "comboNiveles" => ($fn->getComboBox("select id,nombre from app_niveles where id_padre is null order by nombre;")),
-            "comboGrados" => ($fn->getComboBox("select id,nombre from app_niveles where id_padre=2 order by abrevia;")),
-            "comboSecciones" => ($fn->getComboBox("select id,nombre from app_niveles where id_padre=6 order by abrevia;")),
+            "comboNiveles" => $niveles,
+            "comboGrados" => $grados,
+            "comboSecciones" => $secciones,
             "fecha" => $fn->getFechaActualDB(),
             "rolUser" => $_SESSION['usr_data']['rolID'],
             "rolROOT" => 101
@@ -214,12 +219,13 @@
         case "comboNivel":
           switch($data->tipoID){
             case 3: //actualiza grados
-              $grados = $fn->getComboBox("select id,nombre from app_niveles where id_padre=".$data->padreID." order by abrevia;");
-              $secciones = $fn->getComboBox("select id,nombre from app_niveles where id_padre=".$grados[0]["ID"]." order by abrevia;");
+              $grados = $fn->getComboBox("select distinct n.id_grado as id,n.grado as nombre from vw_niveles n join app_colniv c on n.id_seccion=c.id_nivel where n.id_nivel=".$data->padreID." order by id;");
+              $gradoID = $grados[0]["ID"];
+              $secciones = $fn->getComboBox("select distinct n.id_seccion as id,concat(n.seccion,case when trim(c.alias)='' then '' else concat(' - ',trim(c.alias)) end,' - ',c.capacidad) as nombre from vw_niveles n join app_colniv c on n.id_seccion=c.id_nivel where n.id_grado=".$gradoID." order by nombre;");
               $rpta = array( "grados" => $grados, "secciones" => $secciones );
               break;
             case 4: //actualiza secciones
-              $secciones = $fn->getComboBox("select id,nombre from app_niveles where id_padre=".$data->padreID." order by abrevia;");
+              $secciones = $fn->getComboBox("select distinct n.id_seccion as id,concat(n.seccion,case when trim(c.alias)='' then '' else concat(' - ',trim(c.alias)) end,' - ',c.capacidad) as nombre from vw_niveles n join app_colniv c on n.id_seccion=c.id_nivel where n.id_grado=".$data->padreID." order by nombre;");
               $rpta = array( "secciones" => $secciones );
               break;
           }
