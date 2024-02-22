@@ -168,9 +168,11 @@ function appSolMatriSetData(data){
   $('#datosSolMatri').addClass('active');
   
   //pestaña de SolMatri
+  data.comboYYYY.map(function(valor){ valor.nombre=valor.ID; return valor; });
   appLlenarDataEnComboBox(data.comboNiveles,"#cbo_SolMatriNiveles",data.nivelID); //seteado a primaria
   appLlenarDataEnComboBox(data.comboGrados,"#cbo_SolMatriGrados",data.gradoID); //prmer grado
   appLlenarDataEnComboBox(data.comboSecciones,"#cbo_SolMatriSecciones",data.seccionID); //seccion A
+  appLlenarDataEnComboBox(data.comboYYYY,"#cbo_SolMatriYYYY",data.yyyy); //año
   document.querySelector("#hid_SolMatriID").value = (data.ID);
   document.querySelector("#txt_SolMatriAlumno").value = (data.persona);
   document.querySelector("#txt_SolMatriFechaSolicita").disabled = (data.rolUser==data.rolROOT) ? (false):(true);
@@ -199,9 +201,11 @@ function appSolMatriClear(txtSocio){
   document.querySelector("#btnInsert").style.display = 'inline';
   
   appFetch(datos,rutaSQL).then(resp => {
+    resp.comboYYYY.map(function(valor){ valor.nombre=valor.ID; return valor; });
     appLlenarDataEnComboBox(resp.comboNiveles,"#cbo_SolMatriNiveles",0); //seteado a primaria
     appLlenarDataEnComboBox(resp.comboGrados,"#cbo_SolMatriGrados",0); //prmer grado
     appLlenarDataEnComboBox(resp.comboSecciones,"#cbo_SolMatriSecciones",0); //seccion A
+    appLlenarDataEnComboBox(resp.comboYYYY,"#cbo_SolMatriYYYY",0); //año
     
     document.querySelector("#hid_SolMatriID").value = (0);
     document.querySelector("#txt_SolMatriAlumno").value = (txtSocio);

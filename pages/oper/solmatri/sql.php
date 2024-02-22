@@ -95,11 +95,14 @@
           $grados = $fn->getComboBox("select distinct n.id_grado as id,n.grado as nombre from vw_niveles n join app_colniv c on n.id_seccion=c.id_nivel where n.id_nivel=".$nivelID." order by id;");
           $gradoID = $grados[0]["ID"];
           $secciones = $fn->getComboBox("select distinct n.id_seccion as id,concat(n.seccion,case when trim(c.alias)='' then '' else concat(' - ',trim(c.alias)) end,' - ',c.capacidad) as nombre from vw_niveles n join app_colniv c on n.id_seccion=c.id_nivel where n.id_grado=".$gradoID." order by nombre;");
+          $yyyy = $fn->getComboBox("select generate_series(extract(year from current_date)-1,extract(year from current_date)+1) as id,1 as nombre;");
+          
           //respuesta
           $rpta = array(
             "comboNiveles" => $niveles,
             "comboGrados" => $grados,
             "comboSecciones" => $secciones,
+            "comboYYYY" => $yyyy,
             "fecha" => $fn->getFechaActualDB(),
             "rolUser" => $_SESSION['usr_data']['rolID'],
             "rolROOT" => 101
@@ -116,6 +119,7 @@
             $tabla = array(
               "ID" => $rs["id"],
               "codigo" => $rs["codigo"],
+              "yyyy" => $rs["yyyy"],
               "alumnoID" => $alumnoID,
               "colegioID" => $rs["id_colegio"],
               "nivelID" => $rs["id_nivel"],
@@ -127,9 +131,10 @@
               "rolUser" => $_SESSION['usr_data']['rolID'],
               "rolROOT" => 101,
               "persona" => "",
-              "comboNiveles" => ($fn->getComboBox("select id,nombre from app_niveles where id_padre is null order by nombre;")),
-              "comboGrados" => ($fn->getComboBox("select id,nombre from app_niveles where id_padre=".$rs["id_nivel"]." order by abrevia;")),
-              "comboSecciones" => ($fn->getComboBox("select id,nombre from app_niveles where id_padre=".$rs["id_grado"]." order by abrevia;"))
+              "comboYYYY" => ($fn->getComboBox("select generate_series(extract(year from current_date)-1,extract(year from current_date)+1) as id,1 as nombre;")),
+              "comboNiveles" => ($fn->getComboBox("select distinct n.id_nivel as id,n.nivel as nombre from vw_niveles n join app_colniv c on n.id_seccion=c.id_nivel order by id;")),
+              "comboGrados" => ($fn->getComboBox("select distinct n.id_grado as id,n.grado as nombre from vw_niveles n join app_colniv c on n.id_seccion=c.id_nivel where n.id_nivel=".$rs["id_nivel"]." order by id;")),
+              "comboSecciones" => ($fn->getComboBox("select distinct n.id_seccion as id,concat(n.seccion,case when trim(c.alias)='' then '' else concat(' - ',trim(c.alias)) end,' - ',c.capacidad) as nombre from vw_niveles n join app_colniv c on n.id_seccion=c.id_nivel where n.id_grado=".$rs["id_grado"]." order by nombre;"))
             );
           }
           
@@ -233,7 +238,7 @@
           break;
       }
       $db->close();
-    } else{
+    } else {
       $resp = array("error"=>true,"data"=>$tabla,"mensaje"=>"ninguna variable en POST");
       echo json_encode($resp);
     }

@@ -80,13 +80,21 @@
                         <input id="txt_SolMatriFechaSolicita" type="text" class="form-control" style="width:105px;" disabled="disabled" />
                       </div>
                     </div>
-                    <div class="form-group" style="margin-bottom:15px;">
+                    <div class="form-group" style="margin-bottom:3px;">
                       <div class="input-group">
                       <input type="hidden" id="hid_SolMatriID" value=""/>
                         <span class="input-group-addon" style="width:100px;background:#eeeeee;"><b>Codigo Matr.</b></span>
                         <input id="txt_SolMatriCodigo" type="text" class="form-control" placeholder="Codigo Matricula..." disabled="disabled" style="width:150px;"/>
                       </div>
                     </div>
+                    <div class="form-group" style="margin-bottom:15px;">
+                      <div class="input-group">
+                      <input type="hidden" id="hid_SolMatriID" value=""/>
+                        <span class="input-group-addon" style="width:100px;background:#eeeeee;"><b>Año Matr.</b></span>
+                        <select id="cbo_SolMatriYYYY" class="form-control selectpicker"></select>
+                      </div>
+                    </div>
+
                     <div class="form-group" style="margin-bottom:3px;">
                       <div class="input-group">
                         <span class="input-group-addon" style="width:100px;background:#eeeeee;"><b>Nivel</b></span>
