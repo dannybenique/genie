@@ -200,17 +200,21 @@
         case "VerifySolMatri":
           $tablaPers = ""; //almacena los datos de la persona
           $persona = false; //indica que existe en personas
-          $activo = false; //indica que encontro en tabla de prestamos
+          $activo = false; //indica que encontro en tabla de matriculas
           
           //verificar en Personas
-          $sql = "select p.id from personas p join app_alumnos a on  p.id=a.id where (a.estado=1) and (a.id_colegio=:colegioID) and (p.nro_dui=:nrodni);";
+          $sql = "select p.id from personas p join app_alumnos a on p.id=a.id where (a.estado=1) and (a.id_colegio=:colegioID) and (p.nro_dui=:nrodni);";
           $params = [":nrodni"=>$data->nroDNI,":colegioID"=>$web->colegioID];
           $qry = $db->query_all($sql,$params);
           if($qry){
             $rs = reset($qry);
             $tablaPers = $fn->getViewPersona($rs["id"]);
             $persona = true;
-            $activo = true;
+
+            //verificar en matriculas
+            // $sql = "select id_alumno from app_matriculas where yyyy=extract(year from current_date) and id_colegio=".$web->colegioID." and id_alumno=".$rs["id"].";";
+            // $qryAlumno = $db->query_all($sql);
+            // $activo = ($qryAlumno) ? true : false;
           }
 
           //respuesta

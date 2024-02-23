@@ -102,11 +102,10 @@
           break;
         case "delPagos":
           for($i=0; $i<count($data->arr); $i++){
-            $sql = "update bn_productos set estado=0,sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id=:id";
+            $sql = "delete from app_colprod where id_producto=:id and id_colegio=:colegioID";
             $params = [
               ":id"=>$data->arr[$i],
-              ":sysIP"=>$fn->getClientIP(),
-              ":userID"=>$_SESSION['usr_ID']
+              ":colegioID"=>$web->colegioID
             ];
             $qry = $db->query_all($sql,$params);
             $rs = ($qry) ? (reset($qry)) : (null);

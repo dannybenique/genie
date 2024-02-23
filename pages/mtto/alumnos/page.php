@@ -39,8 +39,8 @@
               <thead>
                 <tr>
                   <th style="width:25px;"><input type="checkbox" id="chk_All" onclick="toggleAll(this,'chk_Borrar');" /></th>
-                  <th style="width:100px;">Codigo</th>
-                  <th style="width:90px;text-align:center;">Fecha</th>
+                  <th style="width:80px;">Codigo</th>
+                  <th style="width:90px;text-align:center;" title="Fecha de Ingreso">Ingreso</th>
                   <th style="width:110px;" title="Documento Unico de Identidad = DNI">DNI</th>
                   <th style="">Alumnos <i class="fa fa-sort"></i></th>
                   <th style="">Direccion</th>

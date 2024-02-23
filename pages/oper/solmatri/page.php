@@ -248,9 +248,7 @@
               </div>
             </div>
           </div>
-          <div class="modal-footer" style="background:#f9f9f9;padding:8px;">
-            <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><i class="fa fa-close"></i> Cerrar</button>
-            <button type="button" class="btn btn-primary" onclick="javascript:modaprueba_BotonAprobar();"><i class="fa fa-thumbs-up"></i> Aprobar Solicitud</button>
+          <div id="div_modapruebaFooter" class="modal-footer" style="background:#f9f9f9;padding:8px;">
           </div>
         </form>
       </div>

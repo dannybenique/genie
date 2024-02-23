@@ -83,7 +83,10 @@ function appSolMatriBotonUpdate(){
 }
 
 function appSolMatriBotonNuevo(){
-  Persona.openBuscar('VerifySolMatri',rutaSQL,false,true,true);
+  const addNewPers = false; //se permite agregar nueva persona si no existe
+  const addNewLista = true; //se permite agregar nuevos a la lista 
+  const addRepLista = false; //se permite agregar repetidos a la lista
+  Persona.openBuscar('VerifySolMatri',rutaSQL,addNewPers,addNewLista,addRepLista);
   $('#btn_modPersAddToForm').off('click');
   $('#btn_modPersAddToForm').on('click',handlerSolMatriAddToForm_Click);
 }
@@ -131,6 +134,10 @@ function appSolMatriAprueba(matriculaID){
     document.querySelector("#lbl_modapruebaGrado").innerHTML = (resp.grado);
     document.querySelector("#lbl_modapruebaSeccion").innerHTML = (resp.seccion);
     document.querySelector("#lbl_modapruebaObservac").innerHTML = (resp.observac);
+    
+    //botones del footer del modal
+    document.querySelector("#div_modapruebaFooter").innerHTML = '<button type="button" class="btn btn-default pull-left" data-dismiss="modal"><i class="fa fa-close"></i> Cerrar</button>'+
+      '<button type="button" class="btn btn-primary" onclick="javascript:modaprueba_BotonAprobar();"><i class="fa fa-thumbs-up"></i> Aprobar Solicitud</button>';
   });
 }
 
@@ -205,7 +212,7 @@ function appSolMatriClear(txtSocio){
     appLlenarDataEnComboBox(resp.comboNiveles,"#cbo_SolMatriNiveles",0); //seteado a primaria
     appLlenarDataEnComboBox(resp.comboGrados,"#cbo_SolMatriGrados",0); //prmer grado
     appLlenarDataEnComboBox(resp.comboSecciones,"#cbo_SolMatriSecciones",0); //seccion A
-    appLlenarDataEnComboBox(resp.comboYYYY,"#cbo_SolMatriYYYY",0); //año
+    appLlenarDataEnComboBox(resp.comboYYYY,"#cbo_SolMatriYYYY",moment(resp.fecha).format("YYYY")); //año
     
     document.querySelector("#hid_SolMatriID").value = (0);
     document.querySelector("#txt_SolMatriAlumno").value = (txtSocio);

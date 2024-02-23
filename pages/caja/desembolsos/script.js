@@ -64,26 +64,36 @@ function appDesembBotonCancel(){
 }
 
 function appDesembBotonDesembolsar(){
-  if(confirm("¿Esta seguro de continuar?")) {
-    let datos = {
-      TipoQuery : 'ejecutarDesembolso',
-      matriculaID : objDesemb.matriculaID,
-      pagos : objPagos,
-      total : totPagos,
-      fecha : appConvertToFecha(document.querySelector("#txt_DesembFecha").value)
+  if(totPagos>0){
+    if(confirm("El importe total a pagar en esta matricula sera de "+appFormatMoney(totPagos,2)+" ¿Desea continuar?")){
+      fn_EjecutarDesembolso();
     }
-    console.log(datos);
-    appFetch(datos,rutaSQL).then(resp => {
-      if (!resp.error) { 
-        if(confirm("¿Desea Imprimir el desembolso?")){
-          $("#modalPrint").modal("show");
-          let urlServer = appUrlServer()+"pages/caja/desembolsos/rpt.voucher.php?movimID="+resp.movimID;
-          $("#contenedorFrame").html('<object id="objPDF" type="text/html" data="'+urlServer+'" width="100%" height="500px"></object>');
-        }
-        appDesembBotonCancel(); 
-      }
-    });
+  } else {
+    if(confirm("El importe total a pagar es CERO 0.00 ¿Desea continuar?")){
+      fn_EjecutarDesembolso();
+    }
   }
+}
+
+function fn_EjecutarDesembolso(){
+  let datos = {
+    TipoQuery : 'ejecutarDesembolso',
+    matriculaID : objDesemb.matriculaID,
+    pagos : objPagos,
+    total : totPagos,
+    fecha : appConvertToFecha(document.querySelector("#txt_DesembFecha").value)
+  }
+  // console.log(datos);
+  appFetch(datos,rutaSQL).then(resp => {
+    if (!resp.error) { 
+      if(confirm("¿Desea Imprimir el desembolso?")){
+        $("#modalPrint").modal("show");
+        let urlServer = appUrlServer()+"pages/caja/desembolsos/rpt.voucher.php?movimID="+resp.movimID;
+        $("#contenedorFrame").html('<object id="objPDF" type="text/html" data="'+urlServer+'" width="100%" height="500px"></object>');
+      }
+      appDesembBotonCancel(); 
+    }
+  });
 }
 
 function appDesembBotonBorrar(){
