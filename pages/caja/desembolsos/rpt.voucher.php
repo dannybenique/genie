@@ -91,7 +91,7 @@
               </tr>
               '.$detalle.'
             </tbody>
-          </table>
+          </table><br>
           <span style="font-size:7px;">SON:... '.$mov_importeletras.' SOLES</span>
         </div>
       </div>

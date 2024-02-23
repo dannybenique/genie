@@ -65,7 +65,7 @@
               Seccion: <a id="lbl_DesembSeccion"></a><br><br>
               Alumno: <a id="lbl_DesembAlumno"></a><br>
               DNI: <a id="lbl_DesembAlumnoDNI"></a><br><br>
-              Importe: <a id="lbl_DesembImporte"></a>
+              Total a Pagar: <a id="lbl_DesembPagoTotal"></a>
             </p>
             <hr/>
             <button id="btnCancel" type="button" class="btn btn-default" onclick="javascript:appDesembBotonCancel();"><i class="fa fa-angle-double-left"></i> Regresar</button>

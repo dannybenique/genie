@@ -33,8 +33,8 @@
                 "nivel" => $rs["nivel"],
                 "grado" => $rs["grado"],
                 "seccion" => $rs["seccion"],
-                "saldo" => $rs["saldo"],
-                "nro_cuotas" => $rs["nro_cuotas"]*1
+                "saldo" => $rs["saldo"]*1,
+                "nro_cuotas" => $rs["nro_cuotas"]
               );
             }
           }
@@ -43,7 +43,7 @@
           $rpta = array("tabla"=>$tabla,"cuenta"=>$rsCount["cuenta"]);
           echo json_encode($rpta);
           break;
-        case "viewCredito":
+        case "viewCredito": //visualiza el credito de la matricula
           //cabecera
           $prestamo = 0;
           $qry = $db->query_all("select * from vw_prestamos_ext where id=:id",[":id"=>$data->prestamoID]);

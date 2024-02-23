@@ -20,7 +20,7 @@ function appMatriculasGrid(){
                 '<td>'+(moment(valor.fecha).format("DD/MM/YYYY"))+'</td>'+
                 '<td>'+(valor.nro_dui)+'</td>'+
                 '<td>'+(valor.alumno)+'</td>'+
-                '<td><a href="javascript:appMatriculasView('+(valor.ID)+');" title="'+(valor.ID)+'">'+(valor.nivel)+' &raquo; '+(valor.grado)+' &raquo; '+(valor.seccion)+'%</a></td>'+
+                '<td><a href="javascript:appMatriculasView('+(valor.ID)+');" title="'+(valor.ID)+'">'+(valor.codigo)+' &raquo; '+(valor.nivel)+' &raquo; '+(valor.grado)+' &raquo; '+(valor.seccion)+'</a></td>'+
                 '<td style="text-align:right;">'+appFormatMoney(valor.saldo,2)+'</td>'+
                 '<td style="text-align:center;">'+(valor.nro_cuotas)+'</td>'+
                 '</tr>';
@@ -48,7 +48,7 @@ function appMatriculasBuscar(e){
 }
 
 function appMatriculasRefresh(){
-  let prestamoID = document.querySelector('#hid_crediID').value;
+  let prestamoID = document.querySelector('#hid_matriID').value;
   appMatriculasView(prestamoID);
 }
 
@@ -74,23 +74,19 @@ function appMatriculasView(prestamoID){
 }
 
 function appCabeceraSetData(data){
-  document.querySelector('#hid_crediID').value = (data.ID);
-  document.querySelector('#lbl_crediSocio').innerHTML = (data.socio);
-  document.querySelector('#lbl_crediTipoDUI').innerHTML = (data.dui);
-  document.querySelector('#lbl_crediNroDUI').innerHTML = (data.nro_dui);
-  document.querySelector('#lbl_crediID').innerHTML = (data.ID);
-  document.querySelector('#lbl_crediFecha').innerHTML = (moment(data.fecha_otorga).format("DD/MM/YYYY"));
-  document.querySelector('#lbl_crediProducto').innerHTML = (data.producto);
-  document.querySelector('#lbl_crediCodigo').innerHTML = (data.codigo);
-  document.querySelector('#lbl_crediCodigo').title = (data.ID);
-  document.querySelector('#lbl_crediTasaCred').innerHTML = (appFormatMoney(data.tasa,2)+'% <span style="font-size:10px;">(TEA)</span>');
-  document.querySelector('#lbl_crediTasaMora').innerHTML = (appFormatMoney(data.mora,2)+'% <span style="font-size:10px;">(TEA)</span>');
-  document.querySelector('#lbl_crediMoneda').innerHTML = (data.moneda+' <span style="font-size:10px;">('+data.mon_abrevia+')</span>');
-  document.querySelector('#lbl_crediAgencia').innerHTML = (data.agencia);
-  document.querySelector('#lbl_crediPromotor').innerHTML = (data.promotor);
-  document.querySelector('#lbl_crediAnalista').innerHTML = (data.analista);
-  document.querySelector('#lbl_crediImporte').innerHTML = (appFormatMoney(data.importe,2));
-  document.querySelector('#lbl_crediSaldo').innerHTML = (appFormatMoney(data.saldo,2));
+  document.querySelector('#hid_matriID').value = (data.ID);
+  document.querySelector('#lbl_matriSocio').innerHTML = (data.socio);
+  document.querySelector('#lbl_matriNroDUI').innerHTML = (data.nro_dui);
+  document.querySelector('#lbl_matriCodigo').title = ("ID: "+data.ID);
+  document.querySelector('#lbl_matriCodigo').innerHTML = (data.codigo);
+  document.querySelector('#lbl_matriFechaMatricula').innerHTML = (moment(data.fecha_otorga).format("DD/MM/YYYY"));
+  document.querySelector('#lbl_matriFechaAprueba').innerHTML = (data.producto);
+  document.querySelector('#lbl_matriFechaSolicitud').innerHTML = (data.producto);
+  document.querySelector('#lbl_matriNivel').innerHTML = (appFormatMoney(data.tasa,2));
+  document.querySelector('#lbl_matriGrado').innerHTML = (appFormatMoney(data.mora,2));
+  document.querySelector('#lbl_matriSeccion').innerHTML = (appFormatMoney(data.mora,2));
+  document.querySelector('#lbl_matriImporte').innerHTML = (appFormatMoney(data.importe,2));
+  document.querySelector('#lbl_matriSaldo').innerHTML = (appFormatMoney(data.saldo,2));
 }
 
 function appDetalleSetData(data){

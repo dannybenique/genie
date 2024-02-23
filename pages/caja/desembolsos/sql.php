@@ -126,8 +126,7 @@
           for($i=0; $i<count($data->arr); $i++){
             $id = $data->arr[$i];
             $params = [":id"=>$id,":sysIP"=>$clientIP,":userID"=>$userID];
-            $qry = $db->query_all("update bn_saldos set estado=3,sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id=:id",$params);
-            $qry = $db->query_all("update bn_prestamos set id_aprueba=null,fecha_aprueba=null where id_saldo=".$id);
+            $qry = $db->query_all("update app_matriculas set estado=3,id_useraprueba=null,fecha_aprueba=null,sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id=:id",$params);
             $rs = reset($qry);
           }
           //respuesta
@@ -190,10 +189,11 @@
           }
 
           //matriculas
-          $sql = "update app_matriculas set fecha_matricula=:fecha,estado=:estado,sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id=:id";
+          $sql = "update app_matriculas set fecha_matricula=:fecha,importe=:importe,estado=:estado,sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id=:id";
           $params = [
             ":id" => $matriculaID,
             ":fecha" => $data->fecha,
+            ":importe" => $data->importe,
             ":estado" => 1,
             ":sysIP"=>$clientIP,
             ":userID"=>$userID

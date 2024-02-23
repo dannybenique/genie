@@ -46,7 +46,7 @@
 
         //niveles por colegio
         $colniv = array();
-        $sql = "select n.*,cn.alias,cn.capacidad from vw_niveles n join app_colniv cn on (cn.id_nivel=n.id_seccion) where id_colegio=:colegioID and n.id_nivel=:nivelID order by id_nivel,id_grado,seccion;";
+        $sql = "select * from vw_colniv where id_colegio=:colegioID and id_nivel=:nivelID order by id_nivel,id_grado,seccion;";
         $qry = $db->query_all($sql,$params);
         if ($qry) {
           foreach($qry as $rs){
@@ -122,7 +122,7 @@
           echo json_encode($rpta);
           break;
         case "colniv_edit":
-          $sql = "select * from vw_niveles n join app_colniv c on c.id_nivel=n.id_seccion where id_seccion=:seccionID and id_colegio=:colegioID;";
+          $sql = "select * from vw_colniv where id_seccion=:seccionID and id_colegio=:colegioID;";
           $params = [
             ":seccionID"=>$data->nivelID,
             ":colegioID"=>$web->colegioID

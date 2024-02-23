@@ -2,7 +2,7 @@ const rutaSQL = "pages/caja/desembolsos/sql.php";
 var menu = "";
 var objDesemb = null;
 var objPagos = null;
-var totPagos = 0;
+var objTotales = null;
 
 //=========================funciones para Personas============================
 function appDesembGrid(){
@@ -41,7 +41,8 @@ function appDesembReset(){
   appFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php").then(resp => {
     objDesemb = null;
     objPagos = null;
-    totPagos = 0;
+    objTotales = { PagosActual:0, ImporteMatricula:0 }
+
     menu = JSON.parse(resp.menu);
     document.querySelector("#btn_DEL").style.display = (menu.caja.submenu.desembolsos.cmdDelete==1)?('inline'):('none');
 
@@ -64,8 +65,8 @@ function appDesembBotonCancel(){
 }
 
 function appDesembBotonDesembolsar(){
-  if(totPagos>0){
-    if(confirm("El importe total a pagar en esta matricula sera de "+appFormatMoney(totPagos,2)+" ¿Desea continuar?")){
+  if(objTotales.PagosActual>0){
+    if(confirm("El importe total a pagar en esta matricula sera de "+appFormatMoney(objTotales.PagosActual,2)+" ¿Desea continuar?")){
       fn_EjecutarDesembolso();
     }
   } else {
@@ -80,7 +81,8 @@ function fn_EjecutarDesembolso(){
     TipoQuery : 'ejecutarDesembolso',
     matriculaID : objDesemb.matriculaID,
     pagos : objPagos,
-    total : totPagos,
+    total : objTotales.PagosActual,
+    importe : objTotales.ImporteMatricula,
     fecha : appConvertToFecha(document.querySelector("#txt_DesembFecha").value)
   }
   // console.log(datos);
@@ -147,7 +149,7 @@ function appDesembSetData(data){
   document.querySelector("#lbl_DesembNivel").innerHTML = (data.nivel);
   document.querySelector("#lbl_DesembGrado").innerHTML = (data.grado);
   document.querySelector("#lbl_DesembSeccion").innerHTML = (data.seccion);
-  document.querySelector("#lbl_DesembImporte").innerHTML = "0.00";
+  document.querySelector("#lbl_DesembPagoTotal").innerHTML = "0.00";
 
   //pestaña matricula
   document.querySelector("#txt_DesembFecha").disabled = (data.rolUser==data.rolROOT) ? (false):(true);
@@ -163,7 +165,8 @@ function appPagosSetData(data){
   if(data.length>0){
     let fila = "";
     data.forEach((valor,key)=>{
-      totPagos += (valor.obliga==1) ? (valor.importe):(0);
+      objTotales.ImporteMatricula += valor.importe;
+      objTotales.PagosActual += (valor.obliga==1) ? (valor.importe):(0);
       fila += '<tr>'+
               '<td><input type="checkbox" name="chk_BorrarPagos" value="'+(valor.productoID)+'" '+((valor.obliga) ? ("checked disabled"):(""))+' onclick="javascript:appPagosCheck(this);"/></td>'+
               '<td>'+(valor.abrevia)+'</td>'+
@@ -174,10 +177,10 @@ function appPagosSetData(data){
     });
     fila += '<tfoot><tr>'+
             '<td colspan="3" style="text-align:center;"><b>TOTAL A PAGAR</b></td>'+
-            '<td colspan="2" style="text-align:right;border-bottom-style:double;"><span id="lbl_DesembTotal">'+appFormatMoney(totPagos,2)+'</span></td>'+
+            '<td colspan="2" style="text-align:right;border-bottom-style:double;"><span id="lbl_DesembTotal">'+appFormatMoney(objTotales.PagosActual,2)+'</span></td>'+
             '</tr></tfoot>';
     document.querySelector('#grdPagos').innerHTML = fila;
-    document.querySelector('#lbl_DesembImporte').innerHTML = appFormatMoney(totPagos,2);
+    document.querySelector('#lbl_DesembPagoTotal').innerHTML = appFormatMoney(objTotales.PagosActual,2);
   } else {
     document.querySelector('#grdPagos').innerHTML = '<tr><td colspan="5" style="text-align:center;color:red;">Sin Resultados</td></tr>';
   }
@@ -221,10 +224,10 @@ function appPersonaSetData(data){
 function appPagosCheck(e){
   let idx = objPagos.findIndex(elemento => elemento.productoID === Number(e.value));
   
-  if(e.checked){ totPagos += objPagos[idx]["importe"]; } 
-  else { totPagos -= objPagos[idx]["importe"]; }
+  if(e.checked){ objTotales.PagosActual += objPagos[idx]["importe"]; } 
+  else { objTotales.PagosActual -= objPagos[idx]["importe"]; }
   objPagos[idx]["obliga"] = (e.checked) ? (1):(0);
 
-  document.querySelector('#lbl_DesembImporte').innerHTML = appFormatMoney(totPagos,2);
-  document.querySelector('#lbl_DesembTotal').innerHTML = appFormatMoney(totPagos,2);
+  document.querySelector('#lbl_DesembPagoTotal').innerHTML = appFormatMoney(objTotales.PagosActual,2);
+  document.querySelector('#lbl_DesembTotal').innerHTML = appFormatMoney(objTotales.PagosActual,2);
 }

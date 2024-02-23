@@ -30,12 +30,12 @@
             <table class="table table-hover" id="grd">
               <thead>
                 <tr>
-                  <th style="width:90px;">Fecha</th>
+                  <th style="width:90px;" title="Fecha de Matricula">Fecha</th>
                   <th style="width:110px;" title="Documento Unico de Identidad = DNI">DNI</th>
                   <th style="">Alumno <i class="fa fa-sort"></i></th>
-                  <th style="" title="Matricula">Matricula</th>
+                  <th style="" title="Codigo Matricula &raquo; Nivel &raquo; Grado &raquo; Seccion">Matricula</th>
                   <th style="width:90px;text-align:right;">Saldo</th>
-                  <th style="width:50px;text-align:center;" title="Nro de Cuotas">Cuo</th>
+                  <th style="width:50px;text-align:center;" title="Nro Total de Cuotas">Cuo</th>
                 </tr>
               </thead>
               <tbody id="grdDatos"></tbody>
@@ -45,30 +45,27 @@
       </div>
     </div>
   </div>
-  <div class="row" id="edit" style="display:none;">
+  <div class="row" id="edit" style="display:inherit;">
     <form class="form-horizontal" id="frmPersona" autocomplete="off">
-      <div class="col-md-3">
+      <div class="col-md-5">
         <div class="box box-primary">
           <div class="box-header with-border">
-            <h3 class="box-title" style="font-family:flexoregular;"><b>Cabecera</b></h3>
+            <h3 class="box-title" style="font-family:flexoregular;"><b>Matricula</b></h3>
           </div>
           <div class="box-body">
             <div class="box-body">
-              <input type="hidden" id="hid_crediID" value="">
-              Socio: <a id="lbl_crediSocio"></a><br/>
-              <span id="lbl_crediTipoDUI"></span>: <a id="lbl_crediNroDUI"></a><br/><br/>
-              ID: <a id="lbl_crediID"></a><br/>
-              Desembolso: <a id="lbl_crediFecha"></a><br/>
-              Producto: <a id="lbl_crediProducto"></a><br/>
-              Codigo: <a id="lbl_crediCodigo"></a><br/>
-              Tasa Credito: <a id="lbl_crediTasaCred"></a><br/>
-              Tasa Mora: <a id="lbl_crediTasaMora"></a><br/>
-              Moneda: <a id="lbl_crediMoneda"></a><br/><br/>
-              Agencia: <a id="lbl_crediAgencia"></a><br/>
-              Promotor: <a id="lbl_crediPromotor"></a><br/>
-              Analista: <a id="lbl_crediAnalista"></a><br/><br/>
-              Importe: <b><a id="lbl_crediImporte"></a></b><br/>
-              Saldo: <b><a id="lbl_crediSaldo"></a></b><br/><br/>
+              <input type="hidden" id="hid_matriID" value="">
+              Alumno: <a id="lbl_matriAlumno"></a><br/>
+              DNI: <a id="lbl_matriNroDUI"></a><br/><br/>
+              Codigo: <a id="lbl_matriCodigo"></a><br/>
+              Ejecucion: <a id="lbl_matriFechaMatricula"></a><br/>
+              Aprobacion: <a id="lbl_matriFechaAprueba"></a><br/>
+              Solicitud: <a id="lbl_matriFechaSolicitud"></a><br/><br/>
+              Nivel: <a id="lbl_matriNivel"></a><br/>
+              Grado: <a id="lbl_matriGrado"></a><br/>
+              Seccion: <a id="lbl_matriSeccion"></a><br/><br/>
+              Importe: <b><a id="lbl_matriImporte"></a></b><br/>
+              Saldo: <b><a id="lbl_matriSaldo"></a></b><br/><br/>
             </div>
             <div class="btn-group pull-left">
               <button id="btnCancel" type="button" class="btn btn-default" onclick="javascript:appMatriculasBotonCancel();"><i class="fa fa-angle-double-left"></i> Regresar</button>
@@ -92,7 +89,7 @@
           </div>
         </div>
       </div>
-      <div class="col-md-9">
+      <div class="col-md-7">
         <div class="box box-primary">
           <div class="box-body box-profile">
             <div class="box-body table-responsive no-padding">
