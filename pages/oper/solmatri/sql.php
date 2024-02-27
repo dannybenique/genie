@@ -30,6 +30,7 @@
                 "nro_dui"=> str_replace($buscar, '<span style="background:yellow;">'.$buscar.'</span>', $rs["nro_dui"]),
                 "alumno" => str_ireplace($buscar, '<span style="background:yellow;">'.$buscar.'</span>', $rs["alumno"]),
                 "codigo" => $rs["codigo"],
+                "yyyy" => $rs["yyyy"],
                 "nivel" => $rs["nivel"],
                 "grado" => $rs["grado"],
                 "seccion" => $rs["seccion"]
@@ -41,7 +42,7 @@
           break;
         case "execSolMatri":
           //inicialmente el estado debe ser 3 en la matricula
-          $sql = "select sp_matriculas (:TipoExec,:id,:colegioID,:alumnoID,:seccionID,:userSolicitaID,:userApruebaID,:fechaSolicita,:fechaAprueba,:fechaMatricula,:estado,:sysIP,:userID,:observac) as nro;";
+          $sql = "select sp_matriculas (:TipoExec,:id,:colegioID,:alumnoID,:seccionID,:userSolicitaID,:userApruebaID,:fechaSolicita,:fechaAprueba,:fechaMatricula,:yyyy,:estado,:sysIP,:userID,:observac) as nro;";
           $params = [
             ":TipoExec"=>$data->TipoExec,
             ":id"=>$data->ID,
@@ -53,6 +54,7 @@
             ":fechaSolicita"=>$data->fecha_solicita,
             ":fechaAprueba"=>null,
             ":fechaMatricula"=>null,
+            ":yyyy"=>$data->yyyy,
             ":estado"=>3,
             ":sysIP"=>$fn->getClientIP(),
             ":userID"=>$_SESSION['usr_ID'],
@@ -90,19 +92,22 @@
           echo json_encode($rpta);
           break;
         case "newSolMatri":
+          //obtenemos configuracion del colegio
+          $config = json_decode($fn->getConfigColegio($web->colegioID));
+          
+          //otros datos combobox
           $niveles = $fn->getComboBox("select distinct id_nivel as id,nivel as nombre from vw_colniv order by id_nivel;");
           $nivelID = $niveles[0]["ID"];
           $grados = $fn->getComboBox("select distinct id_grado as id,grado as nombre from vw_colniv where id_nivel=".$nivelID." order by id_grado;");
           $gradoID = $grados[0]["ID"];
           $secciones = $fn->getComboBox("select distinct id_seccion as id,concat(seccion,case when trim(alias)='' then '' else concat(' - ',trim(alias)) end,' - ',capacidad) as nombre from vw_colniv where id_grado=".$gradoID." order by nombre;");
-          $yyyy = $fn->getComboBox("select generate_series(extract(year from current_date)-1,extract(year from current_date)+1) as id,1 as nombre;");
           
           //respuesta
           $rpta = array(
             "comboNiveles" => $niveles,
             "comboGrados" => $grados,
             "comboSecciones" => $secciones,
-            "comboYYYY" => $yyyy,
+            "yyyy" => $config->YearCurrentMatricula,
             "fecha" => $fn->getFechaActualDB(),
             "rolUser" => $_SESSION['usr_data']['rolID'],
             "rolROOT" => 101
@@ -131,7 +136,6 @@
               "rolUser" => $_SESSION['usr_data']['rolID'],
               "rolROOT" => 101,
               "persona" => "",
-              "comboYYYY" => ($fn->getComboBox("select generate_series(extract(year from current_date)-1,extract(year from current_date)+1) as id,1 as nombre;")),
               "comboNiveles" => ($fn->getComboBox("select distinct id_nivel as id,nivel as nombre from vw_colniv order by id_nivel;")),
               "comboGrados" => ($fn->getComboBox("select distinct id_grado as id,grado as nombre from vw_colniv where id_nivel=".$rs["id_nivel"]." order by id_grado;")),
               "comboSecciones" => ($fn->getComboBox("select distinct id_seccion as id,concat(seccion,case when trim(alias)='' then '' else concat(' - ',trim(alias)) end) as nombre from vw_colniv where id_grado=".$rs["id_grado"]." order by nombre;"))
@@ -149,6 +153,7 @@
             $tabla = array(
               "ID" => $rs["id"],
               "codigo" => $rs["codigo"],
+              "yyyy" => $rs["yyyy"],
               "alumno" => $rs["alumno"],
               "nro_dui" => $rs["nro_dui"],
               "fecha_solicita" => $rs["fecha_solicita"],
@@ -168,7 +173,7 @@
           break;
         case "aprobarSolMatri":
           //inicialmente el estado debe ser 3 en bn_saldos
-          $sql = "select sp_matriculas (:TipoExec,:id,:colegioID,:alumnoID,:seccionID,:userSolicitaID,:userApruebaID,:fechaSolicita,:fechaAprueba,:fechaMatricula,:estado,:sysIP,:userID,:observac) as nro;";
+          $sql = "select sp_matriculas (:TipoExec,:id,:colegioID,:alumnoID,:seccionID,:userSolicitaID,:userApruebaID,:fechaSolicita,:fechaAprueba,:fechaMatricula,:yyyy,:estado,:sysIP,:userID,:observac) as nro;";
           $params = [
             ":TipoExec"=>$data->TipoExec,
             ":id"=>$data->ID,
@@ -180,6 +185,7 @@
             ":fechaSolicita"=>null,
             ":fechaAprueba"=>$data->fecha_aprueba,
             ":fechaMatricula"=>null,
+            ":yyyy"=>null,
             ":estado"=>2,
             ":sysIP"=>$fn->getClientIP(),
             ":userID"=>$_SESSION['usr_ID'],
@@ -211,10 +217,12 @@
             $tablaPers = $fn->getViewPersona($rs["id"]);
             $persona = true;
 
+            //obtenemos configuracion del colegio
+            $config = json_decode($fn->getConfigColegio($web->colegioID));
             //verificar en matriculas
-            // $sql = "select id_alumno from app_matriculas where yyyy=extract(year from current_date) and id_colegio=".$web->colegioID." and id_alumno=".$rs["id"].";";
-            // $qryAlumno = $db->query_all($sql);
-            // $activo = ($qryAlumno) ? true : false;
+            $sql = "select id_alumno from app_matriculas where yyyy=".$config->YearCurrentMatricula." and id_colegio=".$web->colegioID." and id_alumno=".$rs["id"].";";
+            $qryAlumno = $db->query_all($sql);
+            $activo = ($qryAlumno) ? true : false;
           }
 
           //respuesta

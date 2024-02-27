@@ -23,6 +23,7 @@ function appSolMatriGrid(){
                 '<td>'+(moment(valor.fecha_solicita).format("DD/MM/YYYY"))+'</td>'+
                 '<td>'+(valor.nro_dui)+'</td>'+
                 '<td>'+(valor.alumno)+'</td>'+
+                '<td style="text-align:center;">'+(valor.yyyy)+'</td>'+
                 '<td>'+(valor.nivel)+' &raquo; '+(valor.grado)+' &raquo; '+(valor.seccion)+'</td>'+
                 '</tr>';
       });
@@ -130,6 +131,7 @@ function appSolMatriAprueba(matriculaID){
     document.querySelector("#lbl_modapruebaDNI").innerHTML = (resp.nro_dui);
     document.querySelector("#lbl_modapruebaFechaSolMatri").innerHTML = (moment(resp.fecha_solicita).format("DD/MM/YYYY"));
     document.querySelector("#lbl_modapruebaCodigo").innerHTML = (resp.codigo);
+    document.querySelector("#lbl_modapruebaYYYY").innerHTML = (resp.yyyy);
     document.querySelector("#lbl_modapruebaNivel").innerHTML = (resp.nivel);
     document.querySelector("#lbl_modapruebaGrado").innerHTML = (resp.grado);
     document.querySelector("#lbl_modapruebaSeccion").innerHTML = (resp.seccion);
@@ -175,20 +177,16 @@ function appSolMatriSetData(data){
   $('#datosSolMatri').addClass('active');
   
   //pestaña de SolMatri
-  data.comboYYYY.map(function(valor){ valor.nombre=valor.ID; return valor; });
   appLlenarDataEnComboBox(data.comboNiveles,"#cbo_SolMatriNiveles",data.nivelID); //seteado a primaria
   appLlenarDataEnComboBox(data.comboGrados,"#cbo_SolMatriGrados",data.gradoID); //prmer grado
   appLlenarDataEnComboBox(data.comboSecciones,"#cbo_SolMatriSecciones",data.seccionID); //seccion A
-  appLlenarDataEnComboBox(data.comboYYYY,"#cbo_SolMatriYYYY",data.yyyy); //año
   document.querySelector("#hid_SolMatriID").value = (data.ID);
   document.querySelector("#txt_SolMatriAlumno").value = (data.persona);
   document.querySelector("#txt_SolMatriFechaSolicita").disabled = (data.rolUser==data.rolROOT) ? (false):(true);
   document.querySelector("#txt_SolMatriCodigo").value = (data.codigo);
+  document.querySelector("#txt_SolMatriYYYY").value = (data.yyyy); //año de matricula
   document.querySelector("#txt_SolMatriObservac").value = (data.observac);
   $("#txt_SolMatriFechaSolicita").datepicker("setDate",moment(data.fecha_solicita).format("DD/MM/YYYY"));
-  
-  document.querySelector("#btnUpdate").style.display = 'none';
-  document.querySelector("#btnInsert").style.display = 'inline';
 }
 
 function appSolMatriClear(txtSocio){
@@ -208,16 +206,15 @@ function appSolMatriClear(txtSocio){
   document.querySelector("#btnInsert").style.display = 'inline';
   
   appFetch(datos,rutaSQL).then(resp => {
-    resp.comboYYYY.map(function(valor){ valor.nombre=valor.ID; return valor; });
     appLlenarDataEnComboBox(resp.comboNiveles,"#cbo_SolMatriNiveles",0); //seteado a primaria
     appLlenarDataEnComboBox(resp.comboGrados,"#cbo_SolMatriGrados",0); //prmer grado
     appLlenarDataEnComboBox(resp.comboSecciones,"#cbo_SolMatriSecciones",0); //seccion A
-    appLlenarDataEnComboBox(resp.comboYYYY,"#cbo_SolMatriYYYY",moment(resp.fecha).format("YYYY")); //año
     
     document.querySelector("#hid_SolMatriID").value = (0);
     document.querySelector("#txt_SolMatriAlumno").value = (txtSocio);
     document.querySelector("#txt_SolMatriFechaSolicita").disabled = (resp.rolUser==resp.rolROOT) ? (false):(true);
     document.querySelector("#txt_SolMatriCodigo").value = ("");
+    document.querySelector("#txt_SolMatriYYYY").value = (resp.yyyy); //año de matricula
     document.querySelector("#txt_SolMatriObservac").value = ("");
 
     $("#txt_SolMatriFechaSolicita").datepicker("setDate",moment(resp.fecha).format("DD/MM/YYYY"));
@@ -238,6 +235,7 @@ function appSolMatriGetDatosToDatabase(){
     ID : document.querySelector('#hid_SolMatriID').value,
     alumnoID : document.querySelector("#hid_PersID").value,
     seccionID : document.querySelector("#cbo_SolMatriSecciones").value,
+    yyyy : document.querySelector("#txt_SolMatriYYYY").value,
     fecha_solicita : appConvertToFecha(document.querySelector("#txt_SolMatriFechaSolicita").value),
     observac : document.querySelector("#txt_SolMatriObservac").value
   }

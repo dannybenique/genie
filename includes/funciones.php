@@ -39,6 +39,13 @@
       $rs = reset($qry);
       return $rs["fecha"];
     }
+    public function getConfigColegio($colegioID){
+      $db = $GLOBALS["db"];
+      //obtener fecha actual de operacion
+      $qry = $db->query_all("select config from app_colegios where id=".$colegioID);
+      $rs = reset($qry);
+      return $rs["config"];
+    }
     
     //funciones para persona
     public function getAllPersonas($buscar,$pos){

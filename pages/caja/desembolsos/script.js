@@ -26,6 +26,7 @@ function appDesembGrid(){
                 '<td>'+(moment(valor.fecha_aprueba).format("DD/MM/YYYY"))+'</td>'+
                 '<td>'+(valor.nro_dui)+'</td>'+
                 '<td>'+(valor.alumno)+'</td>'+
+                '<td style="text-align:center;">'+(valor.yyyy)+'</td>'+
                 '<td>'+(valor.nivel)+' &raquo; '+(valor.grado)+' &raquo; '+(valor.seccion)+'</td>'+
                 '</tr>';
       });
@@ -146,6 +147,8 @@ function appDesembSetData(data){
   document.querySelector('#lbl_DesembAlumno').innerHTML = (data.alumno);
   document.querySelector('#lbl_DesembAlumnoDNI').innerHTML = (data.nro_dui);
   document.querySelector("#lbl_DesembCodigo").innerHTML = (data.codigo);
+  document.querySelector("#lbl_DesembCodigo").title = (data.ID);
+  document.querySelector("#lbl_DesembYYYY").innerHTML = (data.yyyy);
   document.querySelector("#lbl_DesembNivel").innerHTML = (data.nivel);
   document.querySelector("#lbl_DesembGrado").innerHTML = (data.grado);
   document.querySelector("#lbl_DesembSeccion").innerHTML = (data.seccion);
@@ -161,6 +164,7 @@ function appDesembSetData(data){
 }
 
 function appPagosSetData(data){
+  objTotales = { PagosActual:0, ImporteMatricula:0 }
   objPagos = data;
   if(data.length>0){
     let fila = "";

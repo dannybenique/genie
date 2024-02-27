@@ -43,6 +43,7 @@
                   <th style="width:85px;text-align:center;" title="Fecha de Solicitud">Solicitud</th>
                   <th style="width:95px;" title="Documento Unico de Identidad = DNI, RUC">DNI</th>
                   <th style="">Alumno <i class="fa fa-sort"></i></th>
+                  <th style="width:70px;text-align:center;" title="Año de matricula">Matr.</th>
                   <th style="" title="Grado y Seccion">Grado</th>
                 </tr>
               </thead>
@@ -91,7 +92,7 @@
                       <div class="input-group">
                       <input type="hidden" id="hid_SolMatriID" value=""/>
                         <span class="input-group-addon" style="width:100px;background:#eeeeee;"><b>Año Matr.</b></span>
-                        <select id="cbo_SolMatriYYYY" class="form-control selectpicker"></select>
+                        <input id="txt_SolMatriYYYY" type="text" class="form-control" placeholder="Año de Matricula..." disabled="disabled" style="width:80px;"/>
                       </div>
                     </div>
 
@@ -234,6 +235,7 @@
                   <p class="text-muted">
                     Fecha Solicitud: <a id="lbl_modapruebaFechaSolMatri"></a><br>
                     Codigo: <a id="lbl_modapruebaCodigo"></a><br>
+                    Año Matr.: <a id="lbl_modapruebaYYYY"></a><br><br>
                     Nivel: <a id="lbl_modapruebaNivel"></a><br>
                     Grado: <a id="lbl_modapruebaGrado"></a><br>
                     Seccion: <a id="lbl_modapruebaSeccion"></a>

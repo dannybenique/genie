@@ -58,6 +58,7 @@
                 "nro_dui"=> str_replace($buscar, '<span style="background:yellow;">'.$buscar.'</span>', $rs["nro_dui"]),
                 "alumno" => str_ireplace($buscar, '<span style="background:yellow;">'.$buscar.'</span>', $rs["alumno"]),
                 "codigo" => $rs["codigo"],
+                "yyyy" => $rs["yyyy"],
                 "nivel" => $rs["nivel"],
                 "grado" => $rs["grado"],
                 "seccion" => $rs["seccion"]
@@ -80,6 +81,7 @@
             $matricula = array(
               "ID" => $rs["id"],
               "codigo" => $rs["codigo"],
+              "yyyy" => $rs["yyyy"],
               "alumnoID" => $rs["id_alumno"],
               "alumno" => $rs["alumno"],
               "nro_dui" => $rs["nro_dui"],

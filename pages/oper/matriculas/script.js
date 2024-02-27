@@ -8,7 +8,7 @@ function appMatriculasGrid(){
   document.querySelector('#grdDatos').innerHTML = ('<tr><td colspan="10"><div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></td></tr>');
   let txtBuscar = document.querySelector("#txtBuscar").value;
   let datos = {
-    TipoQuery: 'selMatriculas',
+    TipoQuery: 'matricula_Select',
     buscar: txtBuscar
   };
 
@@ -20,7 +20,9 @@ function appMatriculasGrid(){
                 '<td>'+(moment(valor.fecha).format("DD/MM/YYYY"))+'</td>'+
                 '<td>'+(valor.nro_dui)+'</td>'+
                 '<td>'+(valor.alumno)+'</td>'+
+                '<td style="text-align:center;">'+(valor.yyyy)+'</td>'+
                 '<td><a href="javascript:appMatriculasView('+(valor.ID)+');" title="'+(valor.ID)+'">'+(valor.codigo)+' &raquo; '+(valor.nivel)+' &raquo; '+(valor.grado)+' &raquo; '+(valor.seccion)+'</a></td>'+
+                '<td style="text-align:right;">'+appFormatMoney(valor.importe,2)+'</td>'+
                 '<td style="text-align:right;">'+appFormatMoney(valor.saldo,2)+'</td>'+
                 '<td style="text-align:center;">'+(valor.nro_cuotas)+'</td>'+
                 '</tr>';
@@ -48,8 +50,8 @@ function appMatriculasBuscar(e){
 }
 
 function appMatriculasRefresh(){
-  let prestamoID = document.querySelector('#hid_matriID').value;
-  appMatriculasView(prestamoID);
+  document.querySelector("#txtBuscar").value = ("");
+  appMatriculasGrid();
 }
 
 function appMatriculasBotonCancel(){
@@ -58,15 +60,15 @@ function appMatriculasBotonCancel(){
   $('#edit').hide();
 }
 
-function appMatriculasView(prestamoID){
+function appMatriculasView(matriculaID){
   let datos = {
-    TipoQuery : 'viewCredito',
-    prestamoID : prestamoID
+    TipoQuery : 'matricula_View',
+    matriculaID : matriculaID
   };
   
   appFetch(datos,rutaSQL).then(resp => {
     console.log(resp);
-    appCabeceraSetData(resp.prestamo);
+    appCabeceraSetData(resp.cabecera);
     appDetalleSetData(resp.detalle);
     document.querySelector('#grid').style.display = 'none';
     document.querySelector('#edit').style.display = 'block';
@@ -75,13 +77,13 @@ function appMatriculasView(prestamoID){
 
 function appCabeceraSetData(data){
   document.querySelector('#hid_matriID').value = (data.ID);
-  document.querySelector('#lbl_matriSocio').innerHTML = (data.socio);
+  document.querySelector('#lbl_matriAlumno').innerHTML = (data.alumno);
   document.querySelector('#lbl_matriNroDUI').innerHTML = (data.nro_dui);
   document.querySelector('#lbl_matriCodigo').title = ("ID: "+data.ID);
-  document.querySelector('#lbl_matriCodigo').innerHTML = (data.codigo);
   document.querySelector('#lbl_matriFechaMatricula').innerHTML = (moment(data.fecha_otorga).format("DD/MM/YYYY"));
   document.querySelector('#lbl_matriFechaAprueba').innerHTML = (data.producto);
   document.querySelector('#lbl_matriFechaSolicitud').innerHTML = (data.producto);
+  document.querySelector('#lbl_matriYYYY').innerHTML = (data.producto);
   document.querySelector('#lbl_matriNivel').innerHTML = (appFormatMoney(data.tasa,2));
   document.querySelector('#lbl_matriGrado').innerHTML = (appFormatMoney(data.mora,2));
   document.querySelector('#lbl_matriSeccion').innerHTML = (appFormatMoney(data.mora,2));

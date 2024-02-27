@@ -19,7 +19,7 @@
       <div class="box box-primary">
         <div class="box-header no-padding">
           <div class="mailbox-controls">
-            <button type="button" class="btn btn-default btn-sm" onclick="javascript:appMatriculasReset();"><i class="fa fa-refresh"></i></button>
+            <button type="button" class="btn btn-default btn-sm" onclick="javascript:appMatriculasRefresh();"><i class="fa fa-refresh"></i></button>
             <div class="btn-group">
               <input type="text" id="txtBuscar" name="txtBuscar" class="form-control input-sm pull-right" placeholder="DNI, persona..." onkeypress="javascript:appMatriculasBuscar(event);" style="text-transform:uppercase;" autocomplete="off">
               <span class="fa fa-search form-control-feedback"></span>
@@ -33,7 +33,9 @@
                   <th style="width:90px;" title="Fecha de Matricula">Fecha</th>
                   <th style="width:110px;" title="Documento Unico de Identidad = DNI">DNI</th>
                   <th style="">Alumno <i class="fa fa-sort"></i></th>
+                  <th style="width:70px;text-align:center;">Matr.</th>
                   <th style="" title="Codigo Matricula &raquo; Nivel &raquo; Grado &raquo; Seccion">Matricula</th>
+                  <th style="width:90px;text-align:right;">Importe</th>
                   <th style="width:90px;text-align:right;">Saldo</th>
                   <th style="width:50px;text-align:center;" title="Nro Total de Cuotas">Cuo</th>
                 </tr>
@@ -60,7 +62,8 @@
               Codigo: <a id="lbl_matriCodigo"></a><br/>
               Ejecucion: <a id="lbl_matriFechaMatricula"></a><br/>
               Aprobacion: <a id="lbl_matriFechaAprueba"></a><br/>
-              Solicitud: <a id="lbl_matriFechaSolicitud"></a><br/><br/>
+              Solicitud: <a id="lbl_matriFechaSolicitud"></a><br/>
+              Año Matr.: <a id="lbl_matriYYYY"></a><br/><br/>
               Nivel: <a id="lbl_matriNivel"></a><br/>
               Grado: <a id="lbl_matriGrado"></a><br/>
               Seccion: <a id="lbl_matriSeccion"></a><br/><br/>

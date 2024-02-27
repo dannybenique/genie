@@ -145,7 +145,7 @@
     switch ($_GET["page"]) {
       case "profile": $appPage = "pages/global/profile/page.php"; break;
       case "cajaDesembolsos" : $menuCaja = 'active menu-open'; $appPage = "pages/caja/desembolsos/page.php"; break;
-      case "cajaPagos"      : $menuCaja = 'active menu-open'; $appPage = "pages/caja/pagos/page.php"; break;
+      case "cajaPagos"       : $menuCaja = 'active menu-open'; $appPage = "pages/caja/pagos/page.php"; break;
       case "cajaExtornos"    : $menuCaja = 'active menu-open'; $appPage = "pages/caja/extornos/page.php"; break;
       case "cajaBilletaje"   : $menuCaja = 'active menu-open'; $appPage = "pages/caja/billetaje/page.php"; break;
       case "operSolMatri"   : $menuOper = 'active menu-open'; $appPage = "pages/oper/solmatri/page.php"; break;
@@ -154,6 +154,7 @@
       case "mttoAlumnos"   : $menuMtto = 'active menu-open'; $appPage = "pages/mtto/alumnos/page.php"; break;
       case "mttoPadres"    : $menuMtto = 'active menu-open'; $appPage = "pages/mtto/padres/page.php"; break;
       case "mttoEmpleados" : $menuMtto = 'active menu-open'; $appPage = "pages/mtto/empleados/page.php"; break;
+      case "mttoConfig"    : $menuMtto = 'active menu-open'; $appPage = "pages/mtto/config/page.php"; break;
       case "masterPersonas"  : $menuMaster = 'active menu-open'; $appPage = "pages/master/personas/page.php"; break;
       case "masterProductos" : $menuMaster = 'active menu-open'; $appPage = "pages/master/productos/page.php"; break;
       case "masterNiveles"   : $menuMaster = 'active menu-open'; $appPage = "pages/master/niveles/page.php"; break;

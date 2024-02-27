@@ -12,7 +12,7 @@
 
       //****************prestamos****************
       switch ($data->TipoQuery) {
-        case "selMatriculas":
+        case "matricula_Select":
           $whr = "";
           $tabla = array();
           $buscar = strtoupper($data->buscar);
@@ -27,12 +27,14 @@
               $tabla[] = array(
                 "ID" => $rs["id"],
                 "codigo" => $rs["codigo"],
+                "yyyy" => $rs["yyyy"],
                 "fecha" => $rs["fecha_matricula"],
                 "nro_dui"=> str_replace($data->buscar, '<span style="background:yellow;">'.$data->buscar.'</span>', $rs["nro_dui"]),
                 "alumno" => str_ireplace($data->buscar, '<span style="background:yellow;">'.$data->buscar.'</span>', $rs["alumno"]),
                 "nivel" => $rs["nivel"],
                 "grado" => $rs["grado"],
                 "seccion" => $rs["seccion"],
+                "importe" => $rs["importe"]*1,
                 "saldo" => $rs["saldo"]*1,
                 "nro_cuotas" => $rs["nro_cuotas"]
               );
@@ -43,69 +45,49 @@
           $rpta = array("tabla"=>$tabla,"cuenta"=>$rsCount["cuenta"]);
           echo json_encode($rpta);
           break;
-        case "viewCredito": //visualiza el credito de la matricula
+        case "matricula_View": //visualiza el credito de la matricula
           //cabecera
           $prestamo = 0;
-          $qry = $db->query_all("select * from vw_prestamos_ext where id=:id",[":id"=>$data->prestamoID]);
+          $qry = $db->query_all("select * from vw_matriculas_state1 where id=:id",[":id"=>$data->matriculaID]);
           if($qry) {
             $rs = reset($qry);
             
             $cabecera = array(
               "ID" => $rs["id"],
-              "codigo" => $rs["codigo"],
-              "socio" => $rs["socio"],
-              "dui" => $rs["dui"],
+              "alumno" => $rs["alumno"],
               "nro_dui" => $rs["nro_dui"],
-              "agencia" => $rs["agencia"],
-              "promotor" => $rs["promotor"],
-              "analista" => $rs["analista"],
-              "producto" => $rs["producto"],
-              "tiposbs" => $rs["tiposbs"],
-              "destsbs" => $rs["destsbs"],
-              "clasifica" => $rs["clasifica"],
-              "condicion" => $rs["condicion"],
-              "moneda" => $rs["moneda"],
-              "mon_abrevia" => $rs["mon_abrevia"],
+              "codigo" => $rs["codigo"],
+              "fechaMatricula" => $rs["fecha_matricula"],
+              "fechaAprueba" => $rs["fecha_aprueba"],
+              "fechaSolicita" => $rs["fecha_solicita"],
+              "yyyy" => $rs["yyyy"],
+              "nivel" => $rs["nivel"],
+              "grado" => $rs["grado"],
+              "seccion" => $rs["seccion"],
               "importe" => $rs["importe"],
               "saldo" => $rs["saldo"],
-              "tasa" => $rs["tasa_cred"],
-              "mora" => $rs["tasa_mora"],
-              "desgr" => $rs["tasa_desgr"],
-              "nrocuotas" => $rs["nro_cuotas"],
-              "fecha_solicred" => $rs["fecha_solicred"],
-              "fecha_otorga" => $rs["fecha_otorga"],
-              "fecha_pricuota" => $rs["fecha_pricuota"],
-              "tipocred" => $rs["tipocred"],
-              "frecuencia" => $rs["frecuencia"],
-              "observac" => $rs["observac"],
-              "estado" => $rs["estado"]*1
+              "estado" => $rs["estado"]
             );
           }
 
           //detalle
           $detalle = array();
-          $qry = $db->query_all("select *,capital+interes+otros as total,case capital-pg_capital when 0 then atraso else extract(days from (now()-fecha)) end as atraso2,extract(days from now()-fecha)::float*(".$cabecera["mora"]."*0.01/360)*capital as mora from bn_prestamos_det where id_saldo=:id order by numero;",[":id"=>$data->prestamoID]);
+          $sql = "select d.*,p.nombre from app_matriculas_det d join app_productos p on p.id=d.id_producto where d.id_matricula=".$data->matriculaID;
+          $qry = $db->query_all($sql);
           if ($qry) {
             foreach($qry as $rs){
               $detalle[] = array(
-                "numero" => $rs["numero"]*1,
-                "fecha" => $rs["fecha"],
-                "total" => $rs["total"]*1,
-                "capital" => $rs["capital"]*1,
-                "interes" => $rs["interes"]*1,
-                "mora" => ($rs["mora"]>=0)?($rs["mora"]*1):(0),
-                "otros" => $rs["otros"]*1,
-                "pg_capital" => $rs["pg_capital"]*1,
-                "pg_interes" => $rs["pg_interes"]*1,
-                "pg_mora" => $rs["pg_mora"]*1,
-                "pg_otros" => $rs["pg_otros"]*1,
+                "id" => $rs["id"],
+                "item" => $rs["item"],
+                "producto" => $rs["producto"],
+                "importe" => $rs["importe"]*1,
                 "saldo" => $rs["saldo"]*1,
-                "atraso" => $rs["atraso2"]*1
+                "vencimiento" => $rs["vencimiento"]
               );
             }
           }
           //respuesta
-          $rpta = array('prestamo'=>$cabecera, "detalle"=>$detalle);
+          $rpta = array('cabecera'=>$cabecera, "detalle"=>$detalle);
           echo json_encode($rpta);
           break;
       }

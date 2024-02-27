@@ -39,6 +39,7 @@
                   <th style="width:85px;text-align:center;" title="Fecha de Aprobacion">Aprobacion</th>
                   <th style="width:95px;" title="Documento Unico de Identidad = DNI, RUC">DNI</th>
                   <th style="">Alumno <i class="fa fa-sort"></i></th>
+                  <th style="width:70px;text-align:center;" title="Año de Matricula">Matr.</th>
                   <th style="" title="Grado y Seccion">Grado</th>
                 </tr>
               </thead>
@@ -59,7 +60,8 @@
           <div class="box-body">
             <p class="text-muted">
               <input type="hidden" id="hid_DesembID" value=""/>
-              Codigo: <a id="lbl_DesembCodigo"></a><br><br>
+              Codigo: <a id="lbl_DesembCodigo"></a><br>
+              Matr: <a id="lbl_DesembYYYY"></a><br><br>
               Nivel: <a id="lbl_DesembNivel"></a><br>
               Grado: <a id="lbl_DesembGrado"></a><br>
               Seccion: <a id="lbl_DesembSeccion"></a><br><br>
