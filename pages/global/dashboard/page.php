@@ -20,7 +20,7 @@
         <span class="info-box-icon bg-blue"><i class="fa fa-graduation-cap"></i></span>
         <div class="info-box-content">
           <span class="info-box-text">Alumnos</span>
-          <span id="appTotalAlumnos" class="info-box-number" style="font-size:22px;"></span>
+          <span id="appTotalAlumnos" class="info-box-number" style="font-size:28px;text-align:center;margin-top:5px;"></span>
         </div>
       </div>
     </div>
@@ -29,7 +29,7 @@
         <span class="info-box-icon bg-aqua"><i class="fa fa-users"></i></span>
         <div class="info-box-content">
           <span class="info-box-text">Padres</span>
-          <span id="appTotalPadres" class="info-box-number" style="font-size:22px;"></span>
+          <span id="appTotalPadres" class="info-box-number" style="font-size:28px;text-align:center;margin-top:5px;"></span>
         </div>
       </div>
     </div>
@@ -37,25 +37,28 @@
   <div id="dashboard2" class="row">
     <div class="col-md-3 col-sm-6 col-xs-12">
       <div class="info-box">
-        <span class="info-box-icon bg-green"><i class="fa fa-gg-circle"></i></span>
+        <span class="info-box-icon bg-green"><i class="fa fa-bookmark-o"></i></span>
         <div class="info-box-content">
-          <span class="info-box-text">Matriculas</span>
-          <span id="appTotalMatriculas" class="info-box-number" style="font-size:22px;"></span>
+          <span class="info-box-text">Año actual Matr</span>
+          <span id="appConfigYearMatricula" class="info-box-number" style="font-size:28px;text-align:center;margin-top:5px;"></span>
         </div>
       </div>
     </div>
   </div>
   <div class="row">
-    <div class="col-lg-3 col-xs-6">
-      <div class="small-box bg-yellow">
-        <div class="inner">
-          <h3 ><sup style="font-size:20px">&nbsp;</sup></h3>
-          <p>Colegios</p>
+    <div class="col-md-3 col-sm-6 col-xs-12">
+      <div class="info-box bg-aqua">
+        <span class="info-box-icon"><i class="fa fa-gg-circle"></i></span>
+        <div class="info-box-content">
+          <span class="info-box-text">Matriculas</span>
+          <div id="appTotalMatriculas">
+            <span class="info-box-number">0</span>
+            <div class="progress">
+              <div class="progress-bar" style="width: 70%"></div>
+            </div>
+            <span class="progress-description">Año Actual de Matricula</span>
+          </div>
         </div>
-        <div class="icon">
-          <i class="fa fa-building"></i>
-        </div>
-        <a href="javascript:appSubmitButton('mttoAgencias');" class="small-box-footer">Mas info <i class="fa fa-arrow-circle-right"></i></a>
       </div>
     </div>
   </div>

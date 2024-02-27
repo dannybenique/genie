@@ -83,6 +83,7 @@ function fn_EjecutarDesembolso(){
     matriculaID : objDesemb.matriculaID,
     pagos : objPagos,
     total : objTotales.PagosActual,
+    saldo : objTotales.ImporteMatricula - objTotales.PagosActual,
     importe : objTotales.ImporteMatricula,
     fecha : appConvertToFecha(document.querySelector("#txt_DesembFecha").value)
   }

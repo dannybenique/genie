@@ -47,7 +47,7 @@
       </div>
     </div>
   </div>
-  <div class="row" id="edit" style="display:inherit;">
+  <div class="row" id="edit" style="display:none;">
     <form class="form-horizontal" id="frmPersona" autocomplete="off">
       <div class="col-md-5">
         <div class="box box-primary">
@@ -78,19 +78,6 @@
             </div>
           </div>
         </div>
-        <div class="box box-primary">
-          <div class="box-header with-border">
-            <h3 class="box-title" style="font-family:flexoregular;"><b>Opciones</b></h3>
-          </div>
-          <div class="box-body">
-            <div class="btn-group pull-right">
-              <a id="lnk_viewTotalPagado" href="javascript:appMatriculasViewTotalPagado();" style="color:#bbb;">Ver Total Pagado&nbsp;&nbsp;<span id="iconTotalPagado"><i class="fa fa-toggle-off"></i></span></a>
-            </div><br>
-            <div class="btn-group pull-right">
-              <a id="lnk_viewTotalPorVencer" href="javascript:appMatriculasViewTotalPorVencer();" style="color:black;">Ver Total por Vencer&nbsp;&nbsp;<span id="iconTotalPorVencer"><i class="fa fa-toggle-off"></i></span></a>
-            </div>
-          </div>
-        </div>
       </div>
       <div class="col-md-7">
         <div class="box box-primary">
@@ -99,17 +86,13 @@
                 <table class="table table-hover" id="grdDetalle" style="font-family:helveticaneue_light;">
                   <thead>
                     <tr>
-                      <th style="width:30px;">Nro</th>
-                      <th style="width:30px;" title="dias entre cuotas">DS</th>
-                      <th style="width:80px;text-align:center;">Fecha</th>
+                      <th style="width:30px;">Item</th>
+                      <th style="">Concepto</th>
+                      <th style="width:80px;text-align:center;">Vencimiento</th>
                       <th style="width:95px;text-align:right;">Total</th>
-                      <th style="width:95px;text-align:right;">Capital</th>
-                      <th style="width:95px;text-align:right;">Interes</th>
-                      <th style="width:95px;text-align:right;">Mora</th>
-                      <th style="width:80px;text-align:right;">Gastos</th>
                       <th style="width:100px;text-align:right;">Saldo</th>
                       <th style="width:60px;text-align:center;" title="Retraso en dias">Atr.</th>
-                      <th style="">Doc Pago</th>
+                      <th></th>
                     </tr>
                   </thead>
                   <tbody id="grdDetalleDatos">

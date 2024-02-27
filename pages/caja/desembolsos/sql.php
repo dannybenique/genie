@@ -100,7 +100,7 @@
           }
 
           $pagos = array();
-          $qry = $db->query_all("select c.*,p.nombre as producto,p.abrevia,extract(days from age(now(),c.vencimiento)) as diferencia from app_colprod c join app_productos p on c.id_producto=p.id where c.obliga=1 and id_colegio=:colegioID order by abrevia",[":colegioID"=>$web->colegioID]);
+          $qry = $db->query_all("select c.*,p.nombre as producto,p.abrevia,current_date-c.vencimiento as diferencia from app_colprod c join app_productos p on c.id_producto=p.id where c.obliga=1 and id_colegio=:colegioID order by abrevia",[":colegioID"=>$web->colegioID]);
           if ($qry) {
             foreach($qry as $rs){
               $pagos[] = array(
@@ -142,13 +142,15 @@
           $matriculaID = $data->matriculaID;
           
           //pagos
-          foreach($data->pagos as $pago){
-            $sql = "insert into app_saldos(id_colegio,id_matricula,id_producto,saldo,estado,sys_ip,sys_user,sys_fecha) values(:colegioID,:matriculaID,:productoID,:saldo,:estado,:sysIP,:userID,now());";
+          foreach($data->pagos as $index=>$pago){
+            $sql = "insert into app_matriculas_det (id_matricula,item,id_producto,importe,saldo,vencimiento,estado,sys_ip,sys_user,sys_fecha) values(:matriculaID,:item,:productoID,:importe,:saldo,:vencimiento,:estado,:sysIP,:userID,now());";
             $params = [
-              ":colegioID"   => $colegioID,
               ":matriculaID" => $matriculaID,
               ":productoID"  => $pago->productoID,
+              ":item"  => $index+1,
+              ":importe"  => $pago->importe,
               ":saldo"  => ($pago->obliga==1) ? (0):($pago->importe),
+              ":vencimiento" => $pago->vencimiento,
               ":estado" => 1,
               ":sysIP"  => $clientIP,
               ":userID" => $userID
@@ -191,11 +193,13 @@
           }
 
           //matriculas
-          $sql = "update app_matriculas set fecha_matricula=:fecha,importe=:importe,estado=:estado,sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id=:id";
+          $sql = "update app_matriculas set fecha_matricula=:fecha,importe=:importe,saldo=:saldo,nro_cuotas=:nrocuotas,estado=:estado,sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id=:id";
           $params = [
             ":id" => $matriculaID,
             ":fecha" => $data->fecha,
             ":importe" => $data->importe,
+            ":saldo" => $data->saldo,
+            ":nrocuotas" => count($data->pagos),
             ":estado" => 1,
             ":sysIP"=>$clientIP,
             ":userID"=>$userID

@@ -47,7 +47,7 @@
           break;
         case "matricula_View": //visualiza el credito de la matricula
           //cabecera
-          $prestamo = 0;
+          $cabecera = 0;
           $qry = $db->query_all("select * from vw_matriculas_state1 where id=:id",[":id"=>$data->matriculaID]);
           if($qry) {
             $rs = reset($qry);
@@ -72,8 +72,9 @@
 
           //detalle
           $detalle = array();
-          $sql = "select d.*,p.nombre from app_matriculas_det d join app_productos p on p.id=d.id_producto where d.id_matricula=".$data->matriculaID;
-          $qry = $db->query_all($sql);
+          $sql = "select d.*,p.nombre as producto,current_date-vencimiento as atraso from app_matriculas_det d join app_productos p on p.id=d.id_producto where d.id_matricula=:matriculaID order by item;";
+          $params = ["matriculaID" => $data->matriculaID];
+          $qry = $db->query_all($sql,$params);
           if ($qry) {
             foreach($qry as $rs){
               $detalle[] = array(
@@ -82,7 +83,8 @@
                 "producto" => $rs["producto"],
                 "importe" => $rs["importe"]*1,
                 "saldo" => $rs["saldo"]*1,
-                "vencimiento" => $rs["vencimiento"]
+                "vencimiento" => $rs["vencimiento"],
+                "atraso" => $rs["atraso"]
               );
             }
           }
