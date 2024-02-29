@@ -132,8 +132,9 @@ function appDesembView(matriculaID){
     document.querySelector('#grid').style.display = 'none';
     document.querySelector('#edit').style.display = 'block';
 
+    objPagos = resp.tablaPagos;
     appDesembSetData(resp.tablaDesembolso);  //pestaña matricula
-    appPagosSetData(resp.tablaPagos);
+    appPagosSetData(objPagos);
     appPersonaSetData(resp.tablaPers);
   });
 }
@@ -166,14 +167,14 @@ function appDesembSetData(data){
 
 function appPagosSetData(data){
   objTotales = { PagosActual:0, ImporteMatricula:0 }
-  objPagos = data;
   if(data.length>0){
     let fila = "";
     data.forEach((valor,key)=>{
       objTotales.ImporteMatricula += valor.importe;
-      objTotales.PagosActual += (valor.obliga==1) ? (valor.importe):(0);
+      objTotales.PagosActual += (valor.checked==1) ? (valor.importe):(0);
       fila += '<tr>'+
-              '<td><input type="checkbox" name="chk_BorrarPagos" value="'+(valor.productoID)+'" '+((valor.obliga) ? ("checked disabled"):(""))+' onclick="javascript:appPagosCheck(this);"/></td>'+
+              '<td><a href="javascript:appPagosDeleteItem('+(valor.productoID)+')"><i style="color:red;" class="fa fa-trash"></i></a></td>'+
+              '<td><input type="checkbox" name="chk_BorrarPagos" value="'+(valor.productoID)+'" '+((valor.checked) ? ("checked "):(""))+((valor.disabled) ? ("disabled "):(""))+' onclick="javascript:appPagosCheck(this);"/></td>'+
               '<td>'+(valor.abrevia)+'</td>'+
               '<td>'+(valor.producto)+'</td>'+
               '<td>'+moment(valor.vencimiento).format("DD/MM/YYYY")+'</td>'+
@@ -181,7 +182,7 @@ function appPagosSetData(data){
               '</tr>';
     });
     fila += '<tfoot><tr>'+
-            '<td colspan="3" style="text-align:center;"><b>TOTAL A PAGAR</b></td>'+
+            '<td colspan="4" style="text-align:center;"><b>TOTAL A PAGAR</b></td>'+
             '<td colspan="2" style="text-align:right;border-bottom-style:double;"><span id="lbl_DesembTotal">'+appFormatMoney(objTotales.PagosActual,2)+'</span></td>'+
             '</tr></tfoot>';
     document.querySelector('#grdPagos').innerHTML = fila;
@@ -231,8 +232,17 @@ function appPagosCheck(e){
   
   if(e.checked){ objTotales.PagosActual += objPagos[idx]["importe"]; } 
   else { objTotales.PagosActual -= objPagos[idx]["importe"]; }
-  objPagos[idx]["obliga"] = (e.checked) ? (1):(0);
+  objPagos[idx]["checked"] = (e.checked);
 
   document.querySelector('#lbl_DesembPagoTotal').innerHTML = appFormatMoney(objTotales.PagosActual,2);
   document.querySelector('#lbl_DesembTotal').innerHTML = appFormatMoney(objTotales.PagosActual,2);
+}
+
+function appPagosDeleteItem(productoID){
+  let idx = objPagos.findIndex(elemento => elemento.productoID === productoID); 
+  if(confirm("¿Desea eliminar "+objPagos[idx]["producto"]+" de la lista de pagos?")){
+    
+    objPagos.splice(idx,1);
+    appPagosSetData(objPagos);
+  }
 }

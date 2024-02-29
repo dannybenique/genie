@@ -109,7 +109,8 @@
                 "abrevia" => $rs["abrevia"],
                 "importe" => $rs["importe"]*1,
                 "vencimiento" => $rs["vencimiento"],
-                "obliga" => ($rs["diferencia"]>=0) ? (1):(0)
+                "disabled" => ($rs["diferencia"]>=0) ? (true):(false),
+                "checked" => ($rs["diferencia"]>=0) ? (true):(false)
               );
             }
           }
@@ -149,7 +150,7 @@
               ":productoID"  => $pago->productoID,
               ":item"  => $index+1,
               ":importe"  => $pago->importe,
-              ":saldo"  => ($pago->obliga==1) ? (0):($pago->importe),
+              ":saldo"  => ($pago->checked==1) ? (0):($pago->importe),
               ":vencimiento" => $pago->vencimiento,
               ":estado" => 1,
               ":sysIP"  => $clientIP,

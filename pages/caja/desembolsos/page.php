@@ -84,7 +84,7 @@
           <div class="tab-content">
             <div id="datosMatricula" class="tab-pane active">
               <div class="box-body row">
-                <div class="col-md-6">
+                <div class="col-md-5">
                   <div class="box-body">
                       <strong><i class="fa fa-thumbs-up margin-r-5"></i> Ejecucion</strong>
                       <div class="form-group" style="margin-bottom:15px;">
@@ -101,13 +101,14 @@
                       </p>
                   </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-7">
                   <div class="box-body">
                     <strong><i class="fa fa-ticket margin-r-5"></i> Pagos</strong>
                     <div class="box-body table-responsive no-padding">
                       <table class="table table-hover">
                         <thead>
                           <tr>
+                            <th style="width:25px;"></th>
                             <th style="width:25px;"></th>
                             <th style="width:45px;" title="Abreviatura">Abr</th>
                             <th style="">Pago <i class="fa fa-sort"></i></th>

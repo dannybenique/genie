@@ -31,15 +31,16 @@
         </div>
         <div class="box-body">
           <div class="box-body">
-            Alumno: <a id="lbl_crediAlumno"></a><br/>
-            <span id="lbl_crediTipoDUI">DUI</span>: <a id="lbl_crediNroDUI"></a><br/><br/>
-            Matricula: <a id="lbl_crediFecha"></a><br/>
-            Codigo: <a id="lbl_crediCodigo"></a><br/><br/>
-            Nivel: <a id="lbl_crediNivel"></a><br/>
-            Grado: <a id="lbl_crediGrado"></a><br/>
-            Seccion: <a id="lbl_crediSeccion"></a><br/><br/>
-            Atraso: <b><a id="lbl_crediAtraso"></a></b><br/>
-            Saldo: <b><a id="lbl_crediSaldo"></a></b><br/><br/>
+            Alumno: <a id="lbl_matriAlumno"></a><br/>
+            <span id="lbl_matriTipoDUI">DUI</span>: <a id="lbl_matriNroDUI"></a><br/><br/>
+            Matricula: <a id="lbl_matriFecha"></a><br/>
+            Codigo: <a id="lbl_matriCodigo"></a><br/>
+            Año Matr: <a id="lbl_matriYYYY"></a><br/><br/>
+            Nivel: <a id="lbl_matriNivel"></a><br/>
+            Grado: <a id="lbl_matriGrado"></a><br/>
+            Seccion: <a id="lbl_matriSeccion"></a><br/><br/>
+            Atraso: <b><a id="lbl_matriAtraso"></a></b><br/>
+            Saldo: <b><a id="lbl_matriSaldo"></a></b><br/><br/>
           </div>
         </div>
       </div>
@@ -55,7 +56,7 @@
               <div class="box-body">
                   <div class="form-group" style="margin-bottom:5px;">
                     <div class="input-group">
-                      <span class="input-group-addon" style="background:#eeeeee;"><b>CAPITAL</b></span>
+                      <span class="input-group-addon" style="background:#eeeeee;"><b>PAGO</b></span>
                       <input id="txt_DeudaCapital" type="text" class="form-control" disabled="disabled"/>
                     </div>
                   </div>
