@@ -8,9 +8,6 @@ function appPagosGrid(){
   let datos = { TipoQuery: 'selPagos', buscar:txtBuscar };
 
   appFetch(datos,rutaSQL).then(resp => {
-    // console.log(resp);
-    // let disabledDelete = (menu.mtto.submenu.pagos.cmdDelete===1) ? "" : "disabled";
-    // document.querySelector("#chk_All").disabled = (menu.mtto.submenu.pagos.cmdDelete===1) ? false : true;
     fnPagosLlenarGrid(resp.pagos);
   });
 }
@@ -23,7 +20,7 @@ function fnPagosLlenarGrid(data){
               '<td style="text-align:center;"><a href="javascript:appPagosBloquear('+(valor.ID)+');"><i '+((valor.bloqueo)?('class="fa fa-lock" style="color:#aaa;"'):('class="fa fa-unlock" style="color:#555;"'))+' title="Bloqueo"></i></a></td>'+
               '<td>'+((valor.bloqueo)?(""):('<input type="checkbox" name="chk_Borrar" value="'+(valor.ID)+'"/>'))+'</td>'+
               '<td style="text-align:center;">'+(valor.codigo)+'</td>'+
-              '<td style="text-align:center;">'+((valor.obliga)?('<i class="fa fa-exclamation" style="color:#FF0084;" title="Obligatorio"></i>'):(''))+'</td>'+
+              '<td style="text-align:center;">'+((valor.obliga)?('<i class="fa fa-exclamation" style='+((valor.bloqueo) ? ("color:#aaa;"):("color:#FF0084;"))+' title="Obligatorio"></i>'):(''))+'</td>'+
               '<td>'+((valor.bloqueo) ? (valor.pago):('<a href="javascript:appPagoView('+(valor.ID)+');" title="'+(valor.ID)+'">'+(valor.pago)+'</a>'))+'</td>'+
               '<td style="text-align:center;">'+(valor.abrevia)+'</td>'+
               '<td style="text-align:right;">'+appFormatMoney(valor.importe,2)+'</td>'+
@@ -138,18 +135,6 @@ function appPagosBorrar(){
   }
 }
 
-function appPagosBloquear(ID){
-  let txtBuscar = document.querySelector("#txtBuscar").value;
-  let datos = {
-    TipoQuery : 'pagos_bloquear',
-    productoID : ID,
-    buscar : txtBuscar
-  }
-  appFetch(datos,rutaSQL).then(resp => {
-    fnPagosLlenarGrid(resp.pagos);
-  });
-}
-
 function appPagosCambiarImporteBatch(){
   let arr = Array.from(document.querySelectorAll('[name="chk_Borrar"]:checked')).map(function(obj){return obj.attributes[2].nodeValue});
   if(arr.length>0){
@@ -195,6 +180,18 @@ function appPagosCambiarVcmtoBatch(){
   }
 }
 
+function appPagosBloquear(ID){
+  let txtBuscar = document.querySelector("#txtBuscar").value;
+  let datos = {
+    TipoQuery : 'pagos_bloquear',
+    productoID : ID,
+    buscar : txtBuscar
+  }
+  appFetch(datos,rutaSQL).then(resp => {
+    fnPagosLlenarGrid(resp.pagos);
+  });
+}
+
 function appPagoCancel(){
   appPagosGrid();
   document.querySelector('#grid').style.display = 'block';
@@ -218,4 +215,3 @@ function modGetDataToDataBase(){
   }
   return rpta;
 }
-

@@ -1,15 +1,15 @@
 const rutaSQL = "pages/caja/desembolsos/sql.php";
 var menu = "";
-var objDesemb = null;
 var objPagos = null;
 var objTotales = null;
+var objMatricula = null;
 
 //=========================funciones para Personas============================
 function appDesembGrid(){
   document.querySelector('#grdDatos').innerHTML = ('<tr><td colspan="9"><div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></td></tr>');
   let txtBuscar = document.querySelector("#txtBuscar").value;
   let datos = {
-    TipoQuery: 'selDesembolsos',
+    TipoQuery: 'desemb_Select',
     buscar: txtBuscar
   };
 
@@ -40,7 +40,7 @@ function appDesembGrid(){
 
 function appDesembReset(){
   appFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php").then(resp => {
-    objDesemb = null;
+    objMatricula = null;
     objPagos = null;
     objTotales = { PagosActual:0, ImporteMatricula:0 }
 
@@ -77,10 +77,21 @@ function appDesembBotonDesembolsar(){
   }
 }
 
+function appDesembBotonModiImportePagos(){
+  let importe = appConvertToNumero(prompt("Ingrese la nueva cantidad para los pagos desbloqueados..."));
+  if(importe>0){
+    let nuevo = objPagos.map(pago => pago.bloqueo===0 ? {...pago,importe:importe}:pago);
+    objPagos = nuevo;
+    appPagosSetData(objPagos);
+  } else {
+    alert("el dato ingresado NO es un importe VALIDO");
+  }
+}
+
 function fn_EjecutarDesembolso(){
   let datos = {
-    TipoQuery : 'ejecutarDesembolso',
-    matriculaID : objDesemb.matriculaID,
+    TipoQuery : 'desemb_Ejecutar',
+    matriculaID : objMatricula.matriculaID,
     pagos : objPagos,
     total : objTotales.PagosActual,
     saldo : objTotales.ImporteMatricula - objTotales.PagosActual,
@@ -104,7 +115,7 @@ function appDesembBotonBorrar(){
   let arr = Array.from(document.querySelectorAll('[name="chk_Borrar"]:checked')).map(function(obj){return obj.attributes[2].nodeValue});
   if(arr.length>0){
     if(confirm("¿Esta seguro de continuar?")) {
-      appFetch({ TipoQuery:'delDesembolsos', arr:arr },rutaSQL).then(resp => {
+      appFetch({ TipoQuery:'desemb_Delete', arr:arr },rutaSQL).then(resp => {
         if (resp.error == false) { //sin errores
           //console.log(resp);
           appDesembGrid();
@@ -118,7 +129,7 @@ function appDesembBotonBorrar(){
 
 function appDesembView(matriculaID){
   let datos = {
-    TipoQuery : 'viewDesembolso',
+    TipoQuery : 'desemb_View',
     matriculaID : matriculaID
   };
   
@@ -141,7 +152,7 @@ function appDesembView(matriculaID){
 
 function appDesembSetData(data){
   //pestaña de desembolso
-  objDesemb = {
+  objMatricula = {
     matriculaID : data.ID,
     alumnoID : data.alumnoID
   }
@@ -179,16 +190,18 @@ function appPagosSetData(data){
               '<td>'+(valor.producto)+'</td>'+
               '<td>'+moment(valor.vencimiento).format("DD/MM/YYYY")+'</td>'+
               '<td style="text-align:right;">'+appFormatMoney(valor.importe,2)+'</td>'+
+              '<td style="padding:0;line-height:30px;">'+((valor.bloqueo) ? ('<i style="font-size:9px;" class="fa fa-lock"></i>'):(''))+'</td>'+
               '</tr>';
     });
     fila += '<tfoot><tr>'+
             '<td colspan="4" style="text-align:center;"><b>TOTAL A PAGAR EN MATRICULA</b></td>'+
             '<td colspan="2" style="text-align:right;border-bottom-style:double;"><span id="lbl_DesembTotal">'+appFormatMoney(objTotales.PagosActual,2)+'</span></td>'+
+            '<td></td>'+
             '</tr></tfoot>';
     document.querySelector('#grdPagos').innerHTML = fila;
     document.querySelector('#lbl_DesembPagoTotal').innerHTML = appFormatMoney(objTotales.PagosActual,2);
   } else {
-    document.querySelector('#grdPagos').innerHTML = '<tr><td colspan="5" style="text-align:center;color:red;">Sin Resultados</td></tr>';
+    document.querySelector('#grdPagos').innerHTML = '<tr><td colspan="6" style="text-align:center;color:red;">Sin Resultados</td></tr>';
   }
 }
 

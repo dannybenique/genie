@@ -39,7 +39,7 @@
         return $tabla; 
       }
       switch ($data->TipoQuery) {
-        case "selDesembolsos":
+        case "desemb_Select":
           $whr = "";
           $tabla = array();
           $buscar = strtoupper($data->buscar);
@@ -71,7 +71,7 @@
           echo json_encode($rpta);
           break;
         
-        case "viewDesembolso":
+        case "desemb_View":
           $matricula = 0;
           $alumnoID = 0;
           $qry = $db->query_all("select * from vw_matriculas_state2 where id=:id",[":id"=>$data->matriculaID]);
@@ -108,6 +108,7 @@
                 "producto" => $rs["producto"],
                 "abrevia" => $rs["abrevia"],
                 "importe" => $rs["importe"]*1,
+                "bloqueo" => $rs["bloqueo"],
                 "vencimiento" => $rs["vencimiento"],
                 "disabled" => ($rs["diferencia"]>=0) ? (true):(false),
                 "checked" => ($rs["diferencia"]>=0) ? (true):(false)
@@ -122,7 +123,7 @@
           );
           echo json_encode($rpta);
           break;
-        case "delDesembolsos":
+        case "desemb_Delete":
           $userID = $_SESSION['usr_ID'];
           $clientIP = $fn->getClientIP();
 
@@ -136,7 +137,7 @@
           $rpta = array("error"=>false, "delete"=>$data->arr);
           echo json_encode($rpta);
           break;
-        case "ejecutarDesembolso":
+        case "desemb_Ejecutar":
           $userID = $_SESSION['usr_ID'];
           $clientIP = $fn->getClientIP();
           $colegioID = $web->colegioID;

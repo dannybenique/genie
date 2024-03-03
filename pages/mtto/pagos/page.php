@@ -20,14 +20,14 @@
         <div class="box-header no-padding">
           <div class="mailbox-controls">
             <div class="btn-group">
-              <button type="button" id="btn_EDTMONTO" class="btn btn-default btn-sm" onclick="javascript:appPagosCambiarImporteBatch();" title="cambiar en bloque el importe de pago de los registros"><i class="fa fa-beer"></i></button>
-              <button type="button" id="btn_EDTVCMTO" class="btn btn-default btn-sm" onclick="javascript:appPagosCambiarVcmtoBatch();" title="cambiar en bloque el vencimiento de los  registros"><i class="fa fa-book"></i></button>
+              <button type="button" id="btn_EDTMONTO" class="btn btn-default btn-sm" onclick="javascript:appPagosCambiarImporteBatch();" title="cambiar en bloque el importe de pago de los registros"><i class="fa fa-beer"></i> Cambiar Importe</button>
+              <button type="button" id="btn_EDTVCMTO" class="btn btn-default btn-sm" onclick="javascript:appPagosCambiarVcmtoBatch();" title="cambiar en bloque el vencimiento de los  registros"><i class="fa fa-calendar"></i> Cambiar Año Vcmto</button>
             </div>
             <div class="btn-group">
-              <button type="button" id="btn_DEL" class="btn btn-default btn-sm" onclick="javascript:appPagosBorrar();"><i class="fa fa-trash"></i></button>
-              <button type="button" id="btn_NEW" class="btn btn-default btn-sm" onclick="javascript:appPagoNuevo();"><i class="fa fa-plus"></i></button>
+              <button type="button" id="btn_DEL" class="btn btn-default btn-sm" onclick="javascript:appPagosBorrar();" title="Borrar Pagos"><i class="fa fa-trash"></i></button>
+              <button type="button" id="btn_NEW" class="btn btn-default btn-sm" onclick="javascript:appPagoNuevo();" title="Agregar Pagos"><i class="fa fa-plus"></i></button>
             </div>
-            <button type="button" id="btn_RST" class="btn btn-default btn-sm" onclick="javascript:appPagosReset();"><i class="fa fa-refresh"></i></button>
+            <button type="button" id="btn_RST" class="btn btn-default btn-sm" onclick="javascript:appPagosReset();" title="Actualizar la Grilla de Pagos"><i class="fa fa-refresh"></i></button>
             <div class="btn-group">
               <input type="text" id="txtBuscar" class="form-control input-sm pull-right" placeholder="pago..." onkeypress="javascript:appPagosBuscar(event);" style="text-transform:uppercase;" autocomplete="off">
               <span class="fa fa-search form-control-feedback"></span>

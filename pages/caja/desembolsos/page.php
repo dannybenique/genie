@@ -104,8 +104,8 @@
                 <div class="col-md-7">
                   <div class="box-body">
                     <strong><i class="fa fa-ticket margin-r-5"></i>Pagos</strong>&nbsp;&nbsp; 
-                    <button type="button" class="btn btn-success btn-xs"><i class="fa fa-plus"></i></button>
-                    <button type="button" class="btn btn-warning btn-xs"><i class="fa fa-edit"></i></button>
+                    <button type="button" class="btn btn-success btn-xs" title="Agregar otros pagos"><i class="fa fa-plus"></i></button>
+                    <button type="button" class="btn btn-warning btn-xs" onclick="javascript:appDesembBotonModiImportePagos();" title="Modificar el importe en los pagos NO bloqueados"><i class="fa fa-edit"></i></button>
                     <div class="box-body table-responsive no-padding">
                       <table class="table table-hover">
                         <thead>
@@ -115,7 +115,8 @@
                             <th style="width:45px;" title="Abreviatura">Abr</th>
                             <th style="">Pago <i class="fa fa-sort"></i></th>
                             <th style="width:85px;text-align:center;" title="Fecha de Vencimiento">Vcmto</th>
-                            <th style="text-align:right;" title="Costo">Importe</th>
+                            <th style="text-align:right;" title="Monto del pago que se cobrara y/o se almacenara para un futur pago">Importe</th>
+                            <th style="width:10px;padding:0;"></th>
                           </tr>
                         </thead>
                         <tbody id="grdPagos"></tbody>
