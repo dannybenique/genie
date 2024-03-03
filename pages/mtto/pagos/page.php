@@ -20,6 +20,10 @@
         <div class="box-header no-padding">
           <div class="mailbox-controls">
             <div class="btn-group">
+              <button type="button" id="btn_EDTMONTO" class="btn btn-default btn-sm" onclick="javascript:appPagosCambiarImporteBatch();" title="cambiar en bloque el importe de pago de los registros"><i class="fa fa-beer"></i></button>
+              <button type="button" id="btn_EDTVCMTO" class="btn btn-default btn-sm" onclick="javascript:appPagosCambiarVcmtoBatch();" title="cambiar en bloque el vencimiento de los  registros"><i class="fa fa-book"></i></button>
+            </div>
+            <div class="btn-group">
               <button type="button" id="btn_DEL" class="btn btn-default btn-sm" onclick="javascript:appPagosBorrar();"><i class="fa fa-trash"></i></button>
               <button type="button" id="btn_NEW" class="btn btn-default btn-sm" onclick="javascript:appPagoNuevo();"><i class="fa fa-plus"></i></button>
             </div>
@@ -34,6 +38,7 @@
             <table class="table table-hover" id="grd">
               <thead>
                 <tr>
+                  <th style="width:30px;text-align:center;"><i class="fa fa-lock" title="Bloqueo"></i></th>
                   <th style="width:25px;"><input type="checkbox" id="chk_All" onclick="javascript:toggleAll(this,'chk_Borrar');" /></th>
                   <th style="width:70px;text-align:center;">Codigo</th>
                   <th style="width:30px;text-align:center;"><i class="fa fa-exclamation" title="Obligatorio"></i></th>

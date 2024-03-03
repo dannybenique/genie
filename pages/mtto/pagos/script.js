@@ -3,34 +3,40 @@ var menu = "";
 
 //=========================funciones para Personas============================
 function appPagosGrid(){
-  document.querySelector('#grdDatos').innerHTML = ('<tr><td colspan="8"><div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></td></tr>');
+  document.querySelector('#grdDatos').innerHTML = ('<tr><td colspan="9"><div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></td></tr>');
   let txtBuscar = document.querySelector("#txtBuscar").value;
   let datos = { TipoQuery: 'selPagos', buscar:txtBuscar };
 
   appFetch(datos,rutaSQL).then(resp => {
-    let disabledDelete = (menu.mtto.submenu.pagos.cmdDelete===1) ? "" : "disabled";
-    document.querySelector("#chk_All").disabled = (menu.mtto.submenu.pagos.cmdDelete===1) ? false : true;
-    if(resp.pagos.length>0){
-      let fila = "";
-      resp.pagos.forEach((valor,key)=>{
-        fila += '<tr>'+
-                '<td><input type="checkbox" name="chk_Borrar" value="'+(valor.ID)+'" '+(disabledDelete)+'/></td>'+
-                '<td style="text-align:center;">'+(valor.codigo)+'</td>'+
-                '<td style="text-align:center;">'+((valor.obliga==1)?('<i class="fa fa-exclamation" style="color:#FF0084;" title="Obligatorio"></i>'):(''))+'</td>'+
-                '<td><a href="javascript:appPagoView('+(valor.ID)+');" title="'+(valor.ID)+'">'+(valor.pago)+'</a></td>'+
-                '<td style="text-align:center;">'+(valor.abrevia)+'</td>'+
-                '<td style="text-align:right;">'+appFormatMoney(valor.importe,2)+'</td>'+
-                '<td style="text-align:center;">'+moment(valor.vencimiento).format("DD/MM/YYYY")+'</td>'+
-                '<td></td>'+
-                '</tr>';
-      });
-      document.querySelector('#grdDatos').innerHTML = (fila);
-    } else {
-      let rpta = (txtBuscar==="") ? ("") : ("para "+txtBuscar);
-      document.querySelector('#grdDatos').innerHTML = ('<tr><td colspan="8" style="text-align:center;color:red;">Sin Resultados '+rpta+'</td></tr>');
-    }
-    document.querySelector('#grdCount').innerHTML = (resp.pagos.length);
+    // console.log(resp);
+    // let disabledDelete = (menu.mtto.submenu.pagos.cmdDelete===1) ? "" : "disabled";
+    // document.querySelector("#chk_All").disabled = (menu.mtto.submenu.pagos.cmdDelete===1) ? false : true;
+    fnPagosLlenarGrid(resp.pagos);
   });
+}
+
+function fnPagosLlenarGrid(data){
+  if(data.length>0){
+    let fila = "";
+    data.forEach((valor,key)=>{
+      fila += '<tr style="'+((valor.bloqueo) ? ("color:#aaa;"):(""))+'">'+
+              '<td style="text-align:center;"><a href="javascript:appPagosBloquear('+(valor.ID)+');"><i '+((valor.bloqueo)?('class="fa fa-lock" style="color:#aaa;"'):('class="fa fa-unlock" style="color:#555;"'))+' title="Bloqueo"></i></a></td>'+
+              '<td>'+((valor.bloqueo)?(""):('<input type="checkbox" name="chk_Borrar" value="'+(valor.ID)+'"/>'))+'</td>'+
+              '<td style="text-align:center;">'+(valor.codigo)+'</td>'+
+              '<td style="text-align:center;">'+((valor.obliga)?('<i class="fa fa-exclamation" style="color:#FF0084;" title="Obligatorio"></i>'):(''))+'</td>'+
+              '<td>'+((valor.bloqueo) ? (valor.pago):('<a href="javascript:appPagoView('+(valor.ID)+');" title="'+(valor.ID)+'">'+(valor.pago)+'</a>'))+'</td>'+
+              '<td style="text-align:center;">'+(valor.abrevia)+'</td>'+
+              '<td style="text-align:right;">'+appFormatMoney(valor.importe,2)+'</td>'+
+              '<td style="text-align:center;">'+moment(valor.vencimiento).format("DD/MM/YYYY")+'</td>'+
+              '<td></td>'+
+              '</tr>';
+    });
+    document.querySelector('#grdDatos').innerHTML = (fila);
+  } else {
+    let rpta = (txtBuscar==="") ? ("") : ("para "+txtBuscar);
+    document.querySelector('#grdDatos').innerHTML = ('<tr><td colspan="9" style="text-align:center;color:red;">Sin Resultados '+rpta+'</td></tr>');
+  }
+  document.querySelector('#grdCount').innerHTML = (data.length);
 }
 
 function appPagosReset(){
@@ -132,6 +138,69 @@ function appPagosBorrar(){
   }
 }
 
+function appPagosBloquear(ID){
+  let txtBuscar = document.querySelector("#txtBuscar").value;
+  let datos = {
+    TipoQuery : 'pagos_bloquear',
+    productoID : ID,
+    buscar : txtBuscar
+  }
+  appFetch(datos,rutaSQL).then(resp => {
+    fnPagosLlenarGrid(resp.pagos);
+  });
+}
+
+function appPagosCambiarImporteBatch(){
+  let arr = Array.from(document.querySelectorAll('[name="chk_Borrar"]:checked')).map(function(obj){return obj.attributes[2].nodeValue});
+  if(arr.length>0){
+    res = appConvertToNumero(prompt("Ingrese cantidad para cambiar en bloque"));
+    if(res>0){
+      let txtBuscar = document.querySelector("#txtBuscar").value;
+      let datos = {
+        TipoQuery : "pagos_cambioMontoBloque",
+        importe : res,
+        buscar : txtBuscar
+      }
+  
+      appFetch(datos,rutaSQL).then(resp => {
+        fnPagosLlenarGrid(resp.pagos);
+      });
+    }
+  } else {
+    alert("NO eligio ninguno");
+  }
+}
+
+function appPagosCambiarVcmtoBatch(){
+  let arr = Array.from(document.querySelectorAll('[name="chk_Borrar"]:checked')).map(function(obj){return obj.attributes[2].nodeValue});
+  if(arr.length>0){
+    dato = prompt("Ingrese el año de vencimiento para cambiar en bloque");
+    const result = parseInt(dato,10);
+    if(!isNaN(result) && result>=2020){
+      let txtBuscar = document.querySelector("#txtBuscar").value;
+      let datos = {
+        TipoQuery : "pagos_cambioVencimientoBloque",
+        yyyy : result,
+        buscar : txtBuscar
+      }
+  
+      appFetch(datos,rutaSQL).then(resp => {
+        fnPagosLlenarGrid(resp.pagos);
+      });
+    } else {
+      alert("El valor ingresado no es un año valido");
+    }
+  } else {
+    alert("NO eligio ninguno");
+  }
+}
+
+function appPagoCancel(){
+  appPagosGrid();
+  document.querySelector('#grid').style.display = 'block';
+  document.querySelector('#edit').style.display = 'none';
+}
+
 function modGetDataToDataBase(){
   let rpta = "";
   let esError = false;
@@ -150,8 +219,3 @@ function modGetDataToDataBase(){
   return rpta;
 }
 
-function appPagoCancel(){
-  appPagosGrid();
-  document.querySelector('#grid').style.display = 'block';
-  document.querySelector('#edit').style.display = 'none';
-}

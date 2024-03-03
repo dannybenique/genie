@@ -86,7 +86,7 @@
               <div class="box-body row">
                 <div class="col-md-5">
                   <div class="box-body">
-                      <strong><i class="fa fa-thumbs-up margin-r-5"></i> Ejecucion</strong>
+                      <strong><i class="fa fa-thumbs-up margin-r-5"></i>Ejecucion</strong>
                       <div class="form-group" style="margin-bottom:15px;">
                         <div class="input-group">
                           <span class="input-group-addon" style="background:#eeeeee;"><b>Fecha</b></span>
@@ -95,7 +95,7 @@
                       </div>
                       Solicitud: <a id="lbl_DesembFechaSolicita"></a><br>
                       Aprobacion: <a id="lbl_DesembFechaAprueba"></a><br><br>
-                      <strong><i class="fa fa-file-text-o margin-r-5"></i> Observaciones</strong>
+                      <strong><i class="fa fa-file-text-o margin-r-5"></i>Observaciones</strong>
                       <p class="text-muted">
                         <span id="lbl_DesembObservac"></span>
                       </p>
@@ -103,7 +103,9 @@
                 </div>
                 <div class="col-md-7">
                   <div class="box-body">
-                    <strong><i class="fa fa-ticket margin-r-5"></i> Pagos</strong>
+                    <strong><i class="fa fa-ticket margin-r-5"></i>Pagos</strong>&nbsp;&nbsp; 
+                    <button type="button" class="btn btn-success btn-xs"><i class="fa fa-plus"></i></button>
+                    <button type="button" class="btn btn-warning btn-xs"><i class="fa fa-edit"></i></button>
                     <div class="box-body table-responsive no-padding">
                       <table class="table table-hover">
                         <thead>

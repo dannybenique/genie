@@ -172,7 +172,7 @@ function appPagosSetData(data){
     data.forEach((valor,key)=>{
       objTotales.ImporteMatricula += valor.importe;
       objTotales.PagosActual += (valor.checked==1) ? (valor.importe):(0);
-      fila += '<tr>'+
+      fila += '<tr style="'+((valor.checked) ? ("color;black;"):("color:#aaa;"))+'">'+
               '<td><a href="javascript:appPagosDeleteItem('+(valor.productoID)+')"><i style="color:red;" class="fa fa-trash"></i></a></td>'+
               '<td><input type="checkbox" name="chk_BorrarPagos" value="'+(valor.productoID)+'" '+((valor.checked) ? ("checked "):(""))+((valor.disabled) ? ("disabled "):(""))+' onclick="javascript:appPagosCheck(this);"/></td>'+
               '<td>'+(valor.abrevia)+'</td>'+
@@ -182,7 +182,7 @@ function appPagosSetData(data){
               '</tr>';
     });
     fila += '<tfoot><tr>'+
-            '<td colspan="4" style="text-align:center;"><b>TOTAL A PAGAR</b></td>'+
+            '<td colspan="4" style="text-align:center;"><b>TOTAL A PAGAR EN MATRICULA</b></td>'+
             '<td colspan="2" style="text-align:right;border-bottom-style:double;"><span id="lbl_DesembTotal">'+appFormatMoney(objTotales.PagosActual,2)+'</span></td>'+
             '</tr></tfoot>';
     document.querySelector('#grdPagos').innerHTML = fila;
@@ -230,12 +230,12 @@ function appPersonaSetData(data){
 function appPagosCheck(e){
   let idx = objPagos.findIndex(elemento => elemento.productoID === Number(e.value));
   
-  if(e.checked){ objTotales.PagosActual += objPagos[idx]["importe"]; } 
-  else { objTotales.PagosActual -= objPagos[idx]["importe"]; }
+  // if(e.checked){ objTotales.PagosActual += objPagos[idx]["importe"]; } 
+  // else { objTotales.PagosActual -= objPagos[idx]["importe"]; }
   objPagos[idx]["checked"] = (e.checked);
-
-  document.querySelector('#lbl_DesembPagoTotal').innerHTML = appFormatMoney(objTotales.PagosActual,2);
-  document.querySelector('#lbl_DesembTotal').innerHTML = appFormatMoney(objTotales.PagosActual,2);
+  appPagosSetData(objPagos);
+  // document.querySelector('#lbl_DesembPagoTotal').innerHTML = appFormatMoney(objTotales.PagosActual,2);
+  // document.querySelector('#lbl_DesembTotal').innerHTML = appFormatMoney(objTotales.PagosActual,2);
 }
 
 function appPagosDeleteItem(productoID){

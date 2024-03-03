@@ -27,6 +27,7 @@
                 "abrevia" => $rs["abrevia"],
                 "estado" => $rs["estado"],
                 "obliga" => $rs["obliga"],
+                "bloqueo" => $rs["bloqueo"],
                 "importe" => $rs["importe"],
                 "vencimiento" => $rs["vencimiento"]
               );
@@ -64,11 +65,12 @@
           break;
         case "insPago":
           //agregando a la tabla
-          $sql = "insert into app_colprod values (:colegioID,:productoID,:obliga,:importe,:vencimiento,:estado,:sysIP,:userID,now())";
+          $sql = "insert into app_colprod values (:colegioID,:productoID,:obliga,:bloqueo,:importe,:vencimiento,:estado,:sysIP,:userID,now())";
           $params = [
             ":productoID"=>$data->productoID,
             ":colegioID"=>$web->colegioID,
             ":obliga"=>$data->obliga,
+            ":bloqueo"=>0,
             ":importe"=>$data->importe,
             ":vencimiento"=>$data->vencimiento,
             ":estado"=>1,
@@ -113,6 +115,113 @@
 
           //respuesta
           $rpta = array("error" => false,"borrados" => count($data->arr));
+          echo json_encode($rpta);
+          break;
+        case "pagos_cambioMontoBloque"://cambia el importe de los registros en bloque
+          //actualizamos todos los registros
+          $sql = "update app_colprod set importe=:importe where bloqueo=0 and id_colegio=:colegioID;";
+          $params = [
+            "importe" => $data->importe,
+            ":colegioID"=>$web->colegioID
+          ];
+          $qry = $db->query_all($sql,$params);
+          $rs = ($qry) ? (reset($qry)) : (null);
+
+          //cargamos nuevamente toda la data
+          $tabla = array();
+          $buscar = strtoupper($data->buscar);
+          $sql = "select * from vw_pagos where estado=1 and nombre LIKE :buscar order by nombre;";
+          $params = [":buscar"=>'%'.$buscar.'%'];
+          $qry = $db->query_all($sql,$params);
+          if ($qry) {
+            foreach($qry as $rs){
+              $tabla[] = array(
+                "ID" => $rs["id"],
+                "codigo" => $rs["codigo"],
+                "pago" => str_ireplace($buscar, '<span style="background:yellow;">'.$buscar.'</span>', $rs["nombre"]),
+                "abrevia" => $rs["abrevia"],
+                "estado" => $rs["estado"],
+                "obliga" => $rs["obliga"],
+                "bloqueo" => $rs["bloqueo"],
+                "importe" => $rs["importe"],
+                "vencimiento" => $rs["vencimiento"]
+              );
+            }
+          }
+          //respuesta
+          $rpta = array("error" => false,"pagos"=>$tabla);
+          echo json_encode($rpta);
+          break;
+        case "pagos_cambioVencimientoBloque"://cambia el año de vencimiento de los registros seleccionados
+          //actualizamos todos los registros
+          $sql = "update app_colprod set vencimiento = TO_DATE(:yyyy || '-' || extract(month from vencimiento) || '-' || extract(day from vencimiento),'YYYY-MM-DD') where bloqueo=0 and id_colegio=:colegioID;";
+          $params = [
+            ":yyyy" => $data->yyyy,
+            ":colegioID"=>$web->colegioID
+          ];
+          $qry = $db->query_all($sql,$params);
+          $rs = ($qry) ? (reset($qry)) : (null);
+
+          //cargamos nuevamente toda la data
+          $tabla = array();
+          $buscar = strtoupper($data->buscar);
+          $sql = "select * from vw_pagos where estado=1 and nombre LIKE :buscar order by nombre;";
+          $params = [":buscar"=>'%'.$buscar.'%'];
+          $qry = $db->query_all($sql,$params);
+          if ($qry) {
+            foreach($qry as $rs){
+              $tabla[] = array(
+                "ID" => $rs["id"],
+                "codigo" => $rs["codigo"],
+                "pago" => str_ireplace($buscar, '<span style="background:yellow;">'.$buscar.'</span>', $rs["nombre"]),
+                "abrevia" => $rs["abrevia"],
+                "estado" => $rs["estado"],
+                "obliga" => $rs["obliga"],
+                "bloqueo" => $rs["bloqueo"],
+                "importe" => $rs["importe"],
+                "vencimiento" => $rs["vencimiento"]
+              );
+            }
+          }
+          //respuesta
+          $rpta = array("error" => false,"pagos"=>$tabla);
+          echo json_encode($rpta);
+          break;
+        case "pagos_bloquear":
+          //bloqueamos el registro
+          $sql = "update app_colprod set bloqueo=(select case bloqueo when 1 then 0 when 0 then 1 end as ego from app_colprod where id_producto=:productoID),sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id_colegio=:colegioID and id_producto=:productoID;";
+          $params = [
+            ":productoID"=>$data->productoID,
+            ":colegioID"=>$web->colegioID,
+            ":sysIP"=>$fn->getClientIP(),
+            ":userID"=>$_SESSION['usr_ID']
+          ];
+          $qry = $db->query_all($sql,$params);
+          $rs = ($qry) ? (reset($qry)) : (null);
+
+          //cargamos nuevamente toda la data
+          $tabla = array();
+          $buscar = strtoupper($data->buscar);
+          $sql = "select * from vw_pagos where estado=1 and nombre LIKE :buscar order by nombre;";
+          $params = [":buscar"=>'%'.$buscar.'%'];
+          $qry = $db->query_all($sql,$params);
+          if ($qry) {
+            foreach($qry as $rs){
+              $tabla[] = array(
+                "ID" => $rs["id"],
+                "codigo" => $rs["codigo"],
+                "pago" => str_ireplace($buscar, '<span style="background:yellow;">'.$buscar.'</span>', $rs["nombre"]),
+                "abrevia" => $rs["abrevia"],
+                "estado" => $rs["estado"],
+                "obliga" => $rs["obliga"],
+                "bloqueo" => $rs["bloqueo"],
+                "importe" => $rs["importe"],
+                "vencimiento" => $rs["vencimiento"]
+              );
+            }
+          }
+          //respuesta
+          $rpta = array("error" => false,"ingresados" => 1,"pagos"=>$tabla);
           echo json_encode($rpta);
           break;
         case "startPago":
