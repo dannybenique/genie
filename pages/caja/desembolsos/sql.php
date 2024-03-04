@@ -191,7 +191,7 @@
               ":productoID" => $pago->productoID,
               ":importe" => $pago->importe
             ];
-            if($pago->obliga==1) { $qry = $db->query_all($sql,$params); $rs = reset($qry); }
+            if($pago->checked) { $qry = $db->query_all($sql,$params); $rs = reset($qry); }
           }
 
           //matriculas
