@@ -102,12 +102,12 @@
       </div>
     </div>
   </div>
-  <div class="modal fade" id="modalCredi" role="dialog">
+  <div class="modal fade" id="modalMatric" role="dialog">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header" style="background:#f9f9f9;padding:8px;">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 id="modalCredi_Titulo" class="modal-title" style="font-family:flexoregular;font-weight:bold;">Datos Credito</h4>
+          <h4 id="modalMatric_Titulo" class="modal-title" style="font-family:flexoregular;font-weight:bold;">Datos Matricula</h4>
         </div>
         <div class="modal-body">
           <div class="row">
@@ -115,15 +115,15 @@
               <div class="form-group">
                 <div class="input-group">
                   <span class="input-group-addon no-border">Nro Documento</span>
-                  <input type="number" id="modalCredi_TxtBuscar" class="form-control" placeholder="DNI, RUC..." onkeypress="javascript:modalCredi_keyBuscar(event);">
+                  <input type="number" id="modalMatric_TxtBuscar" class="form-control" placeholder="DNI, RUC..." onkeypress="javascript:modalMatric_keyBuscar(event);">
                   <div class="input-group-btn" style="height:30px;">
-                    <button type="button" class="btn btn-primary" onclick="javacript:modalCrediBuscar();"><i class="fa fa-search"></i></button>
+                    <button type="button" class="btn btn-primary" onclick="javacript:modalMatricBuscar();"><i class="fa fa-search"></i></button>
                   </div>
                 </div>
               </div>
               <div class="box-body table-responsive no-padding">
-                <span id="modalCredi_Wait"></span>
-                <div id="modalCredi_Grid">
+                <span id="modalMatric_Wait"></span>
+                <div id="modalMatric_Grid">
                   <table class="table table-hover">
                     <tr>
                       <th style="width:110px;">DUI</th>
@@ -132,7 +132,7 @@
                       <th style="width:100px;text-align:right;">Importe</th>
                       <th style="width:100px;text-align:right;">Saldo</th>
                     </tr>
-                    <tbody id="modalCredi_GridBody"></tbody>
+                    <tbody id="modalMatric_GridBody"></tbody>
                   </table>
                 </div>
               </div>

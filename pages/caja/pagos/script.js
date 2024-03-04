@@ -13,18 +13,18 @@ function appPagosReset(){
     
     document.querySelector("#btn_PAGAR").disabled = true;
     document.querySelector("#btn_NEW").style.display = (menu.caja.submenu.pagos.cmdInsert==1)?('inline'):('none');
-    document.querySelector("#lbl_crediAtraso").style.color = "#777";
+    document.querySelector("#lbl_matriAtraso").style.color = "#777";
     
-    document.querySelector('#lbl_crediAtraso').innerHTML = ("");
-    document.querySelector('#lbl_crediAlumno').innerHTML = ("");
-    document.querySelector('#lbl_crediTipoDUI').innerHTML = ("DUI");
-    document.querySelector('#lbl_crediNroDUI').innerHTML = ("");
-    document.querySelector('#lbl_crediFecha').innerHTML = ("");
-    document.querySelector('#lbl_crediCodigo').innerHTML = ("");
-    document.querySelector('#lbl_crediNivel').innerHTML = ("");
-    document.querySelector('#lbl_crediGrado').innerHTML = ("");
-    document.querySelector('#lbl_crediSeccion').innerHTML = ("");
-    document.querySelector('#lbl_crediSaldo').innerHTML = ("");
+    document.querySelector('#lbl_matriAtraso').innerHTML = ("");
+    document.querySelector('#lbl_matriAlumno').innerHTML = ("");
+    document.querySelector('#lbl_matriTipoDUI').innerHTML = ("DUI");
+    document.querySelector('#lbl_matriNroDUI').innerHTML = ("");
+    document.querySelector('#lbl_matriFecha').innerHTML = ("");
+    document.querySelector('#lbl_matriCodigo').innerHTML = ("");
+    document.querySelector('#lbl_matriNivel').innerHTML = ("");
+    document.querySelector('#lbl_matriGrado').innerHTML = ("");
+    document.querySelector('#lbl_matriSeccion').innerHTML = ("");
+    document.querySelector('#lbl_matriSaldo').innerHTML = ("");
 
     document.querySelector('#txt_DeudaCapital').value = ("");
     document.querySelector('#txt_DeudaFecha').value = ("");
@@ -35,12 +35,12 @@ function appPagosReset(){
 }
 
 function appPagosBotonNuevo(){
-  document.querySelector("#modalCredi_Titulo").innerHTML = ("Verificar Creditos por Doc. Identidad");
-  document.querySelector("#modalCredi_Grid").style.display = 'none';
-  document.querySelector("#modalCredi_Wait").innerHTML = ("");
-  document.querySelector("#modalCredi_TxtBuscar").value = ("");
-  $('#modalCredi').modal({keyboard:true});
-  $('#modalCredi').on('shown.bs.modal', ()=> { document.querySelector("#modalCredi_TxtBuscar").focus(); });
+  document.querySelector("#modalMatric_Titulo").innerHTML = ("Verificar Creditos por Doc. Identidad");
+  document.querySelector("#modalMatric_Grid").style.display = 'none';
+  document.querySelector("#modalMatric_Wait").innerHTML = ("");
+  document.querySelector("#modalMatric_TxtBuscar").value = ("");
+  $('#modalMatric').modal({keyboard:true});
+  $('#modalMatric').on('shown.bs.modal', ()=> { document.querySelector("#modalMatric_TxtBuscar").focus(); });
 }
 
 function appPagosBotonPagar(){
@@ -82,28 +82,28 @@ function appPagosBotonPagar(){
   }
 }
 
-function modalCredi_keyBuscar(e){
+function modalMatric_keyBuscar(e){
   let code = (e.keyCode ? e.keyCode : e.which);
-  if(code == 13) { modalCrediBuscar(); }
+  if(code == 13) { modalMatricBuscar(); }
 }
 
-function modalCrediBuscar(){
-  document.querySelector("#modalCredi_Grid").style.display = 'none';
-  if(document.querySelector("#modalCredi_TxtBuscar").value.length>=3){ 
-    modalCrediGrid();
+function modalMatricBuscar(){
+  document.querySelector("#modalMatric_Grid").style.display = 'none';
+  if(document.querySelector("#modalMatric_TxtBuscar").value.length>=3){ 
+    modalMatricGrid();
   } else { 
-    document.querySelector('#modalCredi_Wait').innerHTML = ('<div class="callout callout-warning"><h4>Demasiado Corto</h4><p>El NRO de documento de Identidad debe tener como minimo <b>4 numeros</b></p></div>'); 
+    document.querySelector('#modalMatric_Wait').innerHTML = ('<div class="callout callout-warning"><h4>Demasiado Corto</h4><p>El NRO de documento de Identidad debe tener como minimo <b>4 numeros</b></p></div>'); 
   }
 }
 
-function modalCrediGrid(){
-  document.querySelector('#modalCredi_Wait').innerHTML = ('<div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></div>');
-  let txtBuscar = document.querySelector("#modalCredi_TxtBuscar").value;
+function modalMatricGrid(){
+  document.querySelector('#modalMatric_Wait').innerHTML = ('<div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></div>');
+  let txtBuscar = document.querySelector("#modalMatric_TxtBuscar").value;
   let datos = { TipoQuery: 'selCreditos', buscar:txtBuscar };
 
   appFetch(datos,rutaSQL).then(resp => {
-    document.querySelector('#modalCredi_Wait').innerHTML = "";
-    document.querySelector("#modalCredi_Grid").style.display = 'block';
+    document.querySelector('#modalMatric_Wait').innerHTML = "";
+    document.querySelector("#modalMatric_Grid").style.display = 'block';
     if(resp.prestamos.length>0){
       let fila = "";
       resp.prestamos.forEach((valor,key)=>{
@@ -115,15 +115,15 @@ function modalCrediGrid(){
                 '<td style="text-align:right;">'+(appFormatMoney(valor.saldo,2))+'</td>'+
                 '</tr>';
       });
-      document.querySelector('#modalCredi_GridBody').innerHTML = (fila);
+      document.querySelector('#modalMatric_GridBody').innerHTML = (fila);
     }else{
-      document.querySelector('#modalCredi_GridBody').innerHTML = ('<tr><td colspan="5" style="text-align:center;color:red;">Sin Resultados para '+txtBuscar+'</td></tr>');
+      document.querySelector('#modalMatric_GridBody').innerHTML = ('<tr><td colspan="5" style="text-align:center;color:red;">Sin Resultados para '+txtBuscar+'</td></tr>');
     }
   });
 }
 
 function appCreditoPagoView(prestamoID){
-  $('#modalCredi').modal('hide');
+  $('#modalMatric').modal('hide');
   let datos = {
     TipoQuery : 'viewCredito',
     prestamoID : prestamoID

@@ -20,7 +20,7 @@
         <div class="box-header no-padding">
           <div class="mailbox-controls">
             <div class="btn-group">
-              <button type="button" id="btn_EDTMONTO" class="btn btn-default btn-sm" onclick="javascript:appPagosCambiarImporteBatch();" title="cambiar en bloque el importe de pago de los registros"><i class="fa fa-beer"></i> Cambiar Importe</button>
+              <button type="button" id="btn_EDTMONTO" class="btn btn-default btn-sm" onclick="javascript:appPagosCambiarImporteBatch();" title="cambiar en bloque el importe de pago de los registros"><i class="fa fa-database"></i> Cambiar Importe</button>
               <button type="button" id="btn_EDTVCMTO" class="btn btn-default btn-sm" onclick="javascript:appPagosCambiarVcmtoBatch();" title="cambiar en bloque el vencimiento de los  registros"><i class="fa fa-calendar"></i> Cambiar Año Vcmto</button>
             </div>
             <div class="btn-group">
