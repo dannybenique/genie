@@ -104,7 +104,7 @@
                 <div class="col-md-7">
                   <div class="box-body">
                     <strong><i class="fa fa-ticket margin-r-5"></i>Pagos</strong>&nbsp;&nbsp; 
-                    <button type="button" class="btn btn-success btn-xs" title="Agregar otros pagos"><i class="fa fa-plus"></i></button>
+                    <button type="button" class="btn btn-success btn-xs" onclick="javascript:appDesembBotonAgregarPagos();" title="Agregar otros pagos"><i class="fa fa-plus"></i></button>
                     <button type="button" class="btn btn-warning btn-xs" onclick="javascript:appDesembBotonModiImportePagos();" title="Modificar el importe en los pagos NO bloqueados"><i class="fa fa-edit"></i></button>
                     <div class="box-body table-responsive no-padding">
                       <table class="table table-hover">
@@ -112,7 +112,7 @@
                           <tr>
                             <th style="width:25px;"></th>
                             <th style="width:25px;"></th>
-                            <th style="width:45px;" title="Abreviatura">Abr</th>
+                            <th style="width:45px;" title="Abreviatura">Abrev</th>
                             <th style="">Pago <i class="fa fa-sort"></i></th>
                             <th style="width:85px;text-align:center;" title="Fecha de Vencimiento">Vcmto</th>
                             <th style="text-align:right;" title="Monto del pago que se cobrara y/o se almacenara para un futur pago">Importe</th>
@@ -196,6 +196,35 @@
         </div>
       </div>
     </form>
+  </div>
+  <div class="modal fade" id="modalAddPagos" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header" style="background:#f9f9f9;padding:8px;">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" style="font-family:flexoregular;"><b>Agregar Items de Pago</b></h4>
+          </div>
+          <div class="modal-body" style="border-right:1px solid white;">
+            <table class="table table-hover" id="grdaddpagos">
+              <thead>
+                <tr>
+                <th style="width:25px;"></th>
+                <th style="width:45px;" title="Abreviatura">Abrev</th>
+                <th style="">Pago <i class="fa fa-sort"></i></th>
+                <th style="width:85px;text-align:center;" title="Fecha de Vencimiento">Vcmto</th>
+                <th style="text-align:right;" title="Monto del pago que se cobrara y/o se almacenara para un futuro pago">Importe</th>
+                </tr>
+              </thead>
+              <tbody id="grdaddpagosDatos">
+              </tbody>
+            </table>
+          </div>
+          <div class="modal-footer" style="background:#f9f9f9;padding:8px;">
+            <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><i class="fa fa-close"></i> Cerrar</button>
+            <button type="button" class="btn btn-primary" onclick="javascript:modaddpagos_BotonAgregar();"><i class="fa fa-thumbs-up"></i> Agregar Pago</button>
+          </div>
+      </div>
+    </div>
   </div>
   <div class="modal fade" id="modalPrint" role="dialog">
     <div class="modal-dialog">

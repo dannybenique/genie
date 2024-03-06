@@ -11,30 +11,25 @@
       $rpta = 0;
 
       //****************personas****************
-      function getViewAlumno($personaID){
+      function getPagos($todos){
         $db = $GLOBALS["db"]; //base de datos
-        $fn = $GLOBALS["fn"]; //funciones
         $web = $GLOBALS["web"]; //web-config
         
-        //obtener datos personales
-        $sql = "select s.*,b.nombre as agencia from bn_socios s join bn_bancos b on (s.id_agencia=b.id) where s.estado=1 and s.id_socio=:socioID and s.id_coopac=:coopacID";
-        $params = [":socioID"=>$personaID,":coopacID"=>$web->coopacID];
-        $qry = $db->query_all($sql,$params);
-        
+        $tabla = array();
+        $qry = $db->query_all("select c.*,p.nombre as producto,p.abrevia,current_date-c.vencimiento as diferencia from app_colprod c join app_productos p on c.id_producto=p.id where id_colegio=:colegioID ".(($todos) ? (""):("and c.obliga=1"))." order by abrevia",[":colegioID"=>$web->colegioID]);
         if ($qry) {
-            $rs = reset($qry);
-            $tabla = array(
-              "ID" => ($rs["id_socio"]),
-              "coopacID" => ($rs["id_coopac"]),
-              "agenciaID" => ($rs["id_agencia"]),
-              "comboAgencias" => ($fn->getComboBox("select id,nombre from bn_bancos where estado=1 and id_padre=".$web->coopacID." order by codigo;")),
-              "agencia" => $rs["agencia"],
-              "fecha" => $rs["fecha"],
-              "codigo" => $rs["codigo"],
-              "observac" => ($rs["observac"]),
-              "sysuser" => ($rs["sys_user"]),
-              "sysfecha" => ($rs["sys_fecha"])
+          foreach($qry as $rs){
+            $tabla[] = array(
+              "productoID" => $rs["id_producto"],
+              "producto" => $rs["producto"],
+              "abrevia" => $rs["abrevia"],
+              "importe" => $rs["importe"]*1,
+              "bloqueo" => $rs["bloqueo"],
+              "vencimiento" => $rs["vencimiento"],
+              "disabled" => ($rs["diferencia"]>=0) ? (true):(false),
+              "checked" => ($rs["diferencia"]>=0) ? (true):(false)
             );
+          }
         }
         return $tabla; 
       }
@@ -99,26 +94,10 @@
             );
           }
 
-          $pagos = array();
-          $qry = $db->query_all("select c.*,p.nombre as producto,p.abrevia,current_date-c.vencimiento as diferencia from app_colprod c join app_productos p on c.id_producto=p.id where c.obliga=1 and id_colegio=:colegioID order by abrevia",[":colegioID"=>$web->colegioID]);
-          if ($qry) {
-            foreach($qry as $rs){
-              $pagos[] = array(
-                "productoID" => $rs["id_producto"],
-                "producto" => $rs["producto"],
-                "abrevia" => $rs["abrevia"],
-                "importe" => $rs["importe"]*1,
-                "bloqueo" => $rs["bloqueo"],
-                "vencimiento" => $rs["vencimiento"],
-                "disabled" => ($rs["diferencia"]>=0) ? (true):(false),
-                "checked" => ($rs["diferencia"]>=0) ? (true):(false)
-              );
-            }
-          }
           //respuesta
           $rpta = array(
             'tablaDesembolso'=> $matricula,
-            'tablaPagos'=> $pagos,
+            'tablaPagos'=> getPagos($todos = false),
             'tablaPers'=>$fn->getViewPersona($alumnoID)
           );
           echo json_encode($rpta);
@@ -137,7 +116,7 @@
           $rpta = array("error"=>false, "delete"=>$data->arr);
           echo json_encode($rpta);
           break;
-        case "desemb_Ejecutar":
+        case "desemb_Execute":
           $userID = $_SESSION['usr_ID'];
           $clientIP = $fn->getClientIP();
           $colegioID = $web->colegioID;
@@ -195,13 +174,14 @@
           }
 
           //matriculas
-          $sql = "update app_matriculas set fecha_matricula=:fecha,importe=:importe,saldo=:saldo,nro_cuotas=:nrocuotas,estado=:estado,sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id=:id";
+          $sql = "update app_matriculas set fecha_matricula=:fecha,importe=:importe,saldo=:saldo,nro_cuotas=:nrocuotas,observac=:observac,estado=:estado,sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id=:id";
           $params = [
             ":id" => $matriculaID,
             ":fecha" => $data->fecha,
             ":importe" => $data->importe,
             ":saldo" => $data->saldo,
             ":nrocuotas" => count($data->pagos),
+            ":observac" => $data->observac,
             ":estado" => 1,
             ":sysIP"=>$clientIP,
             ":userID"=>$userID
@@ -214,6 +194,12 @@
             $rpta = array("error"=>true, "insert"=>0);
           }
           
+          //respuesta
+          echo json_encode($rpta);
+          break;
+        case "desemb_AddPago":
+          $rpta = array('tablaPagos'=> getPagos($todos = true));
+
           //respuesta
           echo json_encode($rpta);
           break;

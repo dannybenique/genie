@@ -1,6 +1,7 @@
 const rutaSQL = "pages/caja/desembolsos/sql.php";
 var menu = "";
 var objPagos = null;
+var objAddPagos = null;
 var objTotales = null;
 var objMatricula = null;
 
@@ -77,21 +78,53 @@ function appDesembBotonDesembolsar(){
   }
 }
 
+function appDesembBotonAgregarPagos(){
+  let datos = {
+    TipoQuery : "desemb_AddPago"
+  }
+  appFetch(datos,rutaSQL).then(resp => {
+    let fila = "";
+    let filterID = objPagos.map(obj => obj.productoID);
+    objAddPagos = resp.tablaPagos.filter(obj => !filterID.includes(obj.productoID));
+    objAddPagos.forEach((valor,key)=>{
+      fila += '<tr>'+
+              '<td><input type="checkbox" name="chk_modaladdpagos" value="'+(valor.productoID)+'"/></td>'+
+              '<td>'+(valor.abrevia)+'</td>'+
+              '<td>'+(valor.producto)+'</td>'+
+              '<td>'+moment(valor.vencimiento).format("DD/MM/YYYY")+'</td>'+
+              '<td style="text-align:right;">'+appFormatMoney(valor.importe,2)+'</td>'+
+              '</tr>';
+    });
+    document.querySelector('#grdaddpagosDatos').innerHTML = fila;
+    $("#modalAddPagos").modal("show");
+  });
+}
+
 function appDesembBotonModiImportePagos(){
-  let importe = appConvertToNumero(prompt("Ingrese la nueva cantidad para los pagos desbloqueados..."));
-  if(importe>0){
-    let nuevo = objPagos.map(pago => pago.bloqueo===0 ? {...pago,importe:importe}:pago);
-    objPagos = nuevo;
-    appPagosSetData(objPagos);
-  } else {
-    alert("el dato ingresado NO es un importe VALIDO");
+  let cantidad = prompt("Ingrese la nueva cantidad para los pagos desbloqueados...");
+  if(cantidad!=null){
+    let importe = appConvertToNumero(cantidad);
+    if(importe>0){
+      //agregamos observacion
+      let observac = prompt("ingrese un texto a la observacion");
+      objMatricula.observac += observac;
+      document.querySelector("#lbl_DesembObservac").innerHTML = objMatricula.observac;
+
+      //modificamos el monto de los pagos
+      let nuevo = objPagos.map(pago => pago.bloqueo===0 ? {...pago,importe:importe}:pago);
+      objPagos = nuevo;
+      appPagosSetData(objPagos);
+    } else {
+      alert("el dato ingresado NO es un importe VALIDO");
+    }
   }
 }
 
 function fn_EjecutarDesembolso(){
   let datos = {
-    TipoQuery : 'desemb_Ejecutar',
+    TipoQuery : 'desemb_Execute',
     matriculaID : objMatricula.matriculaID,
+    observac : objMatricula.observac,
     pagos : objPagos,
     total : objTotales.PagosActual,
     saldo : objTotales.ImporteMatricula - objTotales.PagosActual,
@@ -154,8 +187,10 @@ function appDesembSetData(data){
   //pestaña de desembolso
   objMatricula = {
     matriculaID : data.ID,
-    alumnoID : data.alumnoID
+    alumnoID : data.alumnoID,
+    observac : data.observac
   }
+
   //info corta
   document.querySelector('#lbl_DesembAlumno').innerHTML = (data.alumno);
   document.querySelector('#lbl_DesembAlumnoDNI').innerHTML = (data.nro_dui);
@@ -184,8 +219,8 @@ function appPagosSetData(data){
       objTotales.ImporteMatricula += valor.importe;
       objTotales.PagosActual += (valor.checked==1) ? (valor.importe):(0);
       fila += '<tr style="'+((valor.checked) ? ("color;black;"):("color:#aaa;"))+'">'+
-              '<td><a href="javascript:appPagosDeleteItem('+(valor.productoID)+')"><i style="color:red;" class="fa fa-trash"></i></a></td>'+
-              '<td><input type="checkbox" name="chk_BorrarPagos" value="'+(valor.productoID)+'" '+((valor.checked) ? ("checked "):(""))+((valor.disabled) ? ("disabled "):(""))+' onclick="javascript:appPagosCheck(this);"/></td>'+
+              '<td><a href="javascript:fnPagosDeleteItem('+(valor.productoID)+')"><i style="color:red;" class="fa fa-trash"></i></a></td>'+
+              '<td><input type="checkbox" name="chk_BorrarPagos" value="'+(valor.productoID)+'" '+((valor.checked) ? ("checked "):(""))+((valor.disabled) ? ("disabled "):(""))+' onclick="javascript:fnPagosCheck(this);"/></td>'+
               '<td>'+(valor.abrevia)+'</td>'+
               '<td>'+(valor.producto)+'</td>'+
               '<td>'+moment(valor.vencimiento).format("DD/MM/YYYY")+'</td>'+
@@ -240,7 +275,7 @@ function appPersonaSetData(data){
   document.querySelector("#lbl_PersSysUser").innerHTML = (data.sysuserPers);
 }
 
-function appPagosCheck(e){
+function fnPagosCheck(e){
   let idx = objPagos.findIndex(elemento => elemento.productoID === Number(e.value));
   
   // if(e.checked){ objTotales.PagosActual += objPagos[idx]["importe"]; } 
@@ -251,11 +286,17 @@ function appPagosCheck(e){
   // document.querySelector('#lbl_DesembTotal').innerHTML = appFormatMoney(objTotales.PagosActual,2);
 }
 
-function appPagosDeleteItem(productoID){
+function fnPagosDeleteItem(productoID){
   let idx = objPagos.findIndex(elemento => elemento.productoID === productoID); 
   if(confirm("¿Desea eliminar "+objPagos[idx]["producto"]+" de la lista de pagos?")){
     
     objPagos.splice(idx,1);
     appPagosSetData(objPagos);
   }
+}
+
+function modaddpagos_BotonAgregar(){
+  let miarray = [...objPagos,...objAddPagos];
+  miarray.sort((a,b )=> new Date(a.vencimiento)- new Date(b.vencimiento));
+  console.log(miarray);
 }
