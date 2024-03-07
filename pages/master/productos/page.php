@@ -39,6 +39,7 @@
                   <th style="width:30px;text-align:center;"><i class="fa fa-info-circle" title="Obligatorio"></i></th>
                   <th style="width:250px;">Producto</th>
                   <th style="width:70px;" title="Abreviatura">Abrev</th>
+                  <th style="width:30px;text-align:center;" title="Orden de Prioridad">Ord</th>
                   <th></th>
                 </tr>
               </thead>

@@ -15,7 +15,7 @@
         case "selProductos":
           $tabla = array();
           $buscar = strtoupper($data->buscar);
-          $sql = "select * from app_productos where estado=1 and nombre LIKE :buscar order by nombre;";
+          $sql = "select * from app_productos where estado=1 and nombre LIKE :buscar order by orden;";
           $params = [":buscar"=>'%'.$buscar.'%'];
           $qry = $db->query_all($sql,$params);
           if ($qry) {
@@ -25,7 +25,8 @@
                 "codigo" => $rs["codigo"],
                 "producto" => str_ireplace($buscar, '<span style="background:yellow;">'.$buscar.'</span>', $rs["nombre"]),
                 "abrevia" => $rs["abrevia"],
-                "estado" => $rs["estado"]
+                "estado" => $rs["estado"],
+                "orden" => $rs["orden"]
               );
             }
           }

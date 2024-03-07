@@ -107,7 +107,7 @@ function appDesembBotonModiImportePagos(){
     if(importe>0){
       //agregamos observacion
       let observac = prompt("ingrese un texto a la observacion");
-      objMatricula.observac += observac;
+      objMatricula.observac += " \n "+observac;
       document.querySelector("#lbl_DesembObservac").innerHTML = objMatricula.observac;
 
       //modificamos el monto de los pagos
@@ -296,7 +296,13 @@ function fnPagosDeleteItem(productoID){
 }
 
 function modaddpagos_BotonAgregar(){
-  let miarray = [...objPagos,...objAddPagos];
-  miarray.sort((a,b )=> new Date(a.vencimiento)- new Date(b.vencimiento));
-  console.log(miarray);
+  let arrSelect = Array.from(document.querySelectorAll('[name="chk_modaladdpagos"]:checked')).map(obj => parseInt(obj.value,10));
+  let arrFilter = objAddPagos.filter(elem => arrSelect.includes(elem.productoID));
+  let arrTemp = [...objPagos,...arrFilter];
+
+  arrTemp.sort((a,b )=> new Date(a.orden)- new Date(b.orden));
+  objPagos = arrTemp;
+  appPagosSetData(objPagos);
+  objAddPagos = null;
+  $("#modalAddPagos").modal("hide");
 }

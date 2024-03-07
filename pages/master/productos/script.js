@@ -19,6 +19,7 @@ function appProductosGrid(){
                 '<td style="text-align:center;">'+((valor.obliga==1)?('<i class="fa fa-info-circle" style="color:#AF2031;" title="Obligatorio"></i>'):(''))+'</td>'+
                 '<td><a href="javascript:appProductoView('+(valor.ID)+');" title="'+(valor.ID)+'">'+(valor.producto)+'</a></td>'+
                 '<td>'+(valor.abrevia)+'</td>'+
+                '<td style="text-align:center;">'+(valor.orden)+'</td>'+
                 '<td></td>'+
                 '</tr>';
       });

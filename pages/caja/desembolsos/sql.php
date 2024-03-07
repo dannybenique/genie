@@ -16,7 +16,7 @@
         $web = $GLOBALS["web"]; //web-config
         
         $tabla = array();
-        $qry = $db->query_all("select c.*,p.nombre as producto,p.abrevia,current_date-c.vencimiento as diferencia from app_colprod c join app_productos p on c.id_producto=p.id where id_colegio=:colegioID ".(($todos) ? (""):("and c.obliga=1"))." order by abrevia",[":colegioID"=>$web->colegioID]);
+        $qry = $db->query_all("select c.*,p.orden,p.nombre as producto,p.abrevia,current_date-c.vencimiento as diferencia from app_colprod c join app_productos p on c.id_producto=p.id where id_colegio=:colegioID ".(($todos) ? (""):("and c.obliga=1"))." order by orden",[":colegioID"=>$web->colegioID]);
         if ($qry) {
           foreach($qry as $rs){
             $tabla[] = array(
@@ -25,6 +25,7 @@
               "abrevia" => $rs["abrevia"],
               "importe" => $rs["importe"]*1,
               "bloqueo" => $rs["bloqueo"],
+              "orden" => $rs["orden"],
               "vencimiento" => $rs["vencimiento"],
               "disabled" => ($rs["diferencia"]>=0) ? (true):(false),
               "checked" => ($rs["diferencia"]>=0) ? (true):(false)

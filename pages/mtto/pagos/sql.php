@@ -15,7 +15,7 @@
         case "selPagos":
           $tabla = array();
           $buscar = strtoupper($data->buscar);
-          $sql = "select * from vw_pagos where estado=1 and nombre LIKE :buscar order by nombre;";
+          $sql = "select * from vw_pagos where estado=1 and nombre LIKE :buscar order by orden;";
           $params = [":buscar"=>'%'.$buscar.'%'];
           $qry = $db->query_all($sql,$params);
           if ($qry) {
