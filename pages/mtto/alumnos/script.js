@@ -1,18 +1,19 @@
 const rutaSQL = "pages/mtto/alumnos/sql.php";
-var menu = "";
+var menu = null;
 
 //=========================funciones para Personas============================
-function appAlumnosGrid(){
+async function appAlumnosGrid(){
+  //precarga
   document.querySelector('#grdDatos').innerHTML = ('<tr><td colspan="8"><div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></td></tr>');
-  let txtBuscar = document.querySelector("#txtBuscar").value.toUpperCase();
-  let datos = { 
-    TipoQuery: 'selAlumnos', 
-    buscar: txtBuscar,
-    verTodos: document.querySelector("#hidViewAll").value 
-  };
-
-  appFetch(datos,rutaSQL).then(resp => {
-    let disabledDelete = (menu.mtto.submenu.alumnos.cmdDelete===1) ? "" : "disabled";
+  const txtBuscar = document.querySelector("#txtBuscar").value.toUpperCase();
+  try{
+    const disabledDelete = (menu.mtto.submenu.alumnos.cmdDelete===1) ? "" : "disabled";
+    const resp = await appAsynFetch({ 
+      TipoQuery: 'selAlumnos', 
+      buscar: txtBuscar,
+      verTodos: document.querySelector("#hidViewAll").value 
+    },rutaSQL);
+    //respuesta
     document.querySelector("#chk_All").disabled = (menu.mtto.submenu.alumnos.cmdDelete===1) ? false : true;
     if(resp.tabla.length>0){
       let fila = "";
@@ -32,11 +33,14 @@ function appAlumnosGrid(){
       document.querySelector('#grdDatos').innerHTML = ('<tr><td colspan="8" style="text-align:center;color:red;">Sin Resultados '+(res)+'</td></tr>');
     }
     document.querySelector('#grdCount').innerHTML = (resp.tabla.length+"/"+resp.cuenta);
-  });
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
-function appAlumnosReset(){
-  appFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php").then(resp => {
+async function appAlumnosReset(){
+  try{
+    const resp = await appAsynFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php");
     menu = JSON.parse(resp.menu);
     document.querySelector("#btn_DEL").style.display = (menu.mtto.submenu.alumnos.cmdDelete==1)?('inline'):('none');
     document.querySelector("#btn_NEW").style.display = (menu.mtto.submenu.alumnos.cmdInsert==1)?('inline'):('none');
@@ -45,7 +49,9 @@ function appAlumnosReset(){
     document.querySelector("#grdDatos").innerHTML = ("");
     document.querySelector("#div_PersAuditoria").style.display = ((resp.rolID==101)?('block'):('none'));
     appAlumnosGrid();
-  });
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
 function appAlumnosBuscar(e){
@@ -59,25 +65,31 @@ function appAlumnosBotonCancel(){
   document.querySelector("#edit").style.display = 'none';
 }
 
-function appAlumnosBotonInsert(){
-  let datos = appAlumnoGetDatosToDatabase();
+async function appAlumnosBotonInsert(){
+  const datos = appAlumnoGetDatosToDatabase();
   
   if(datos!=""){
-    datos.TipoQuery = "insAlumno";
-    appFetch(datos,rutaSQL).then(resp => {
-      appAlumnosBotonCancel();
-    });
+    try{
+      datos.TipoQuery = "insAlumno";
+      const resp = await appAsynFetch(datos,rutaSQL);
+      if(!resp.error) {appAlumnosBotonCancel();}
+    } catch(err){
+      console.error('Error al cargar datos:', err);
+    }
   }
 }
 
-function appAlumnosBotonUpdate(){
-  let datos = appAlumnoGetDatosToDatabase();
+async function appAlumnosBotonUpdate(){
+  const datos = appAlumnoGetDatosToDatabase();
 
   if(datos!=""){
-    datos.TipoQuery = "updAlumno";
-    appFetch(datos,rutaSQL).then(resp => {
-      appAlumnosBotonCancel();
-    });
+    try{
+      datos.TipoQuery = "updAlumno";
+      const resp = await appAsynFetch(datos,rutaSQL);
+      if(!resp.error) {appAlumnosBotonCancel();}
+    } catch(err){
+      console.error('Error al cargar datos:', err);
+    }
   }
 }
 
@@ -114,7 +126,6 @@ function handlerAlumnosInsert_Click(e){
 }
 
 function handlerAlumnosAddToForm_Click(e){
-  // console.log("desde alumnos");
   document.querySelector('#grid').style.display = 'none';
   document.querySelector('#edit').style.display = 'block';
   appPersonaSetData(Persona.tablaPers); //pestaña Personales
@@ -124,39 +135,35 @@ function handlerAlumnosAddToForm_Click(e){
   $('#btn_modPersAddToForm').off('click');
 }
 
-function appAlumnosBotonBorrar(){
+async function appAlumnosBotonBorrar(){
   let arr = Array.from(document.querySelectorAll('[name="chk_Borrar"]:checked')).map(function(obj){return obj.attributes[2].nodeValue});
   if(arr.length>0){
     if(confirm("¿Esta seguro de continuar?")) {
-      appFetch({ TipoQuery:'delAlumnos', arr:arr },rutaSQL).then(resp => {
-        if (resp.error == false) { //sin errores
-          console.log(resp);
-          appAlumnosBotonCancel();
-        }
-      });
+      try{
+        const resp = await appAsynFetch({ TipoQuery:'delAlumnos', arr:arr },rutaSQL);
+        if (!resp.error) { appAlumnosBotonCancel(); }
+      } catch(err){
+        console.error('Error al cargar datos:', err);
+      }
     }
   } else {
     alert("NO eligio borrar ninguno");
   }
 }
 
-function appAlumnosBotonEstado(){
-  let datos = {
-    TipoQuery : 'addAlumno', //quitar el soft delete (estado)
-    alumnoID : document.querySelector("#lbl_ID").innerHTML
+async function appAlumnosBotonEstado(){
+  try{
+    const resp = await appAsynFetch({
+      TipoQuery : 'addAlumno', //quitar el soft delete (estado)
+      alumnoID : document.querySelector("#lbl_ID").innerHTML
+    },rutaSQL);
+    if(!resp.error){document.querySelector("#div_Estado").innerHTML = "";}
+  } catch(err){
+    console.error('Error al cargar datos:', err);
   }
-  appFetch(datos,rutaSQL).then(resp => {
-    document.querySelector("#div_Estado").innerHTML = "";
-  });
 }
 
-function appAlumnoView(personaID){
-  let datos = {
-    TipoQuery : 'viewAlumno',
-    personaID : personaID,
-    fullQuery : 2
-  };
-  
+async function appAlumnoView(personaID){
   //tabs default en primer tab
   $('.nav-tabs li').removeClass('active');
   $('.tab-content .tab-pane').removeClass('active');
@@ -166,13 +173,21 @@ function appAlumnoView(personaID){
   document.querySelector("#btnUpdate").style.display = (menu.mtto.submenu.alumnos.cmdUpdate==1)?('inline'):('none');
   document.querySelector("#btnInsert").style.display = 'none';
 
-  appFetch(datos,rutaSQL).then(resp => {
+  try{
+    const resp = await appAsynFetch({
+      TipoQuery : 'viewAlumno',
+      personaID : personaID,
+      fullQuery : 2
+    }, rutaSQL);
+    //respuesta
     appAlumnoSetData(resp.tablaAlumno);  //pestaña Alumno
     appPersonaSetData(resp.tablaPers); //pestaña Personales
     
     document.querySelector('#grid').style.display = 'none';
     document.querySelector('#edit').style.display = 'block';
-  });
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
 function appAlumnoSetData(data){
@@ -203,11 +218,7 @@ function appAlumnoSetData(data){
   document.querySelector("#lbl_AlumnoSysUser").innerHTML = (data.usermod);
 }
 
-function appAlumnoClear(){
-  let datos = {
-    TipoQuery : 'startAlumno'
-  }
-
+async function appAlumnoClear(){
   //tabs default en primer tab
   $('.nav-tabs li').removeClass('active');
   $('.tab-content .tab-pane').removeClass('active');
@@ -219,13 +230,14 @@ function appAlumnoClear(){
   document.querySelector("#div_AlumnoAuditoria").style.display = 'none';
   document.querySelector("#btnInsert").style.display = (menu.mtto.submenu.alumnos.cmdInsert==1)?('inline'):('none');
   document.querySelector("#btnUpdate").style.display = 'none';
-
-  appFetch(datos,rutaSQL).then(resp => {
+  try{
+    const resp = await appAsynFetch({ TipoQuery : 'startAlumno' },rutaSQL); 
+    
     //pestaña de Alumno
     document.querySelector('#txt_AlumnoFechaIng').value = (moment(resp.fecha).format("DD/MM/YYYY"));
     document.querySelector("#txt_AlumnoCodigo").placeholder = ("00-000000");
     document.querySelector("#txt_AlumnoCodigo").value = ("");
-    
+
     document.querySelector("#hid_alumnoFamiPadreID").value = ""
     document.querySelector("#lbl_alumnoFamiPadreNombre").innerHTML = ""
     document.querySelector("#lbl_alumnoFamiPadreDNI").innerHTML = ""
@@ -240,7 +252,9 @@ function appAlumnoClear(){
     document.querySelector("#lbl_alumnoFamiApoderaNombre").innerHTML = ""
     document.querySelector("#lbl_alumnoFamiApoderaDNI").innerHTML = ""
     document.querySelector("#lbl_alumnoFamiApoderaDireccion").innerHTML = ""
-  });
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
 function appFamiPadreAdd(){
@@ -253,7 +267,6 @@ function appFamiPadreAdd(){
 
 function handlerFamiPadreInsert_Click(e){
   if(Persona.sinErrores()){ //sin errores
-    // console.log("padre nuevo");
     Persona.ejecutaSQL().then(resp => {
       appFamiPadreSetData(resp.tablaPers);
       Persona.close();
@@ -266,7 +279,6 @@ function handlerFamiPadreInsert_Click(e){
 }
 
 function handlerFamiPadreAddToForm_Click(e){
-  // console.log("desde fami padre");
   appFamiPadreSetData(Persona.tablaPers);
   Persona.close();
   e.stopImmediatePropagation();
@@ -283,7 +295,6 @@ function appFamiMadreAdd(){
 
 function handlerFamiMadreInsert_Click(e){
   if(Persona.sinErrores()){ //sin errores
-    // console.log("mama nueva");
     Persona.ejecutaSQL().then(resp => {
       appFamiMadreSetData(resp.tablaPers);
       Persona.close();
@@ -296,7 +307,6 @@ function handlerFamiMadreInsert_Click(e){
 }
 
 function handlerFamiMadreAddToForm_Click(e){
-  // console.log("desde fami mama");
   appFamiMadreSetData(Persona.tablaPers);
   Persona.close();
   e.stopImmediatePropagation();
@@ -313,7 +323,6 @@ function appFamiApoderaAdd(){
 
 function handlerFamiApoderaInsert_Click(e){
   if(Persona.sinErrores()){ //sin errores
-    // console.log("apoderado nuevo");
     Persona.ejecutaSQL().then(resp => {
       appFamiApoderaSetData(resp.tablaPers);
       Persona.close();
@@ -326,7 +335,6 @@ function handlerFamiApoderaInsert_Click(e){
 }
 
 function handlerFamiApoderaAddToForm_Click(e){
-  // console.log("desde fami apoderado");
   appFamiApoderaSetData(Persona.tablaPers);
   Persona.close();
   e.stopImmediatePropagation();

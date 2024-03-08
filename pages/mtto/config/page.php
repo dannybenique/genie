@@ -20,7 +20,7 @@
         <div class="box-header no-padding">
           <div class="mailbox-controls">
             <button type="button" id="btn_RST" class="btn btn-default btn-sm" onclick="javascript:appConfigReset();"><i class="fa fa-refresh"></i></button>
-            <button type="button" id="btn_SAVE" class="btn btn-info btn-sm" onclick="javascript:appCoonfigUpdate();" disabled>Guardar Configuracion <i class="fa fa-save"></i></button>
+            <button type="button" id="btn_SAVE" class="btn btn-info btn-sm" onclick="javascript:appConfigUpdate();" disabled>Guardar Configuracion <i class="fa fa-save"></i></button>
             <span id="grdCount" style="display:inline-block;margin-left:5px;font-size:20px;font-weight:600;"></span>
           </div>
           <div class="box-body table-responsive no-padding">

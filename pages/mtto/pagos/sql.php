@@ -10,7 +10,7 @@
       $data = json_decode($_REQUEST['appSQL']);
       $rpta = 0;
 
-      //****************personas****************
+      //****************respuesta JSON****************
       switch ($data->TipoQuery) {
         case "selPagos":
           $tabla = array();

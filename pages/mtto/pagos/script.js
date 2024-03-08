@@ -2,14 +2,15 @@ const rutaSQL = "pages/mtto/pagos/sql.php";
 var menu = "";
 
 //=========================funciones para Personas============================
-function appPagosGrid(){
+async function appPagosGrid(){
   document.querySelector('#grdDatos').innerHTML = ('<tr><td colspan="9"><div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></td></tr>');
-  let txtBuscar = document.querySelector("#txtBuscar").value;
-  let datos = { TipoQuery: 'selPagos', buscar:txtBuscar };
-
-  appFetch(datos,rutaSQL).then(resp => {
+  try{
+    const txtBuscar = document.querySelector("#txtBuscar").value;
+    const resp = await appAsynFetch({ TipoQuery: 'selPagos', buscar:txtBuscar },rutaSQL);
     fnPagosLlenarGrid(resp.pagos);
-  });
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
 function fnPagosLlenarGrid(data){
@@ -36,15 +37,17 @@ function fnPagosLlenarGrid(data){
   document.querySelector('#grdCount').innerHTML = (data.length);
 }
 
-function appPagosReset(){
-  appFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php").then(resp => {
+async function appPagosReset(){
+  try{
+    const resp = await appAsynFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php");
     menu = JSON.parse(resp.menu);
     document.querySelector("#btn_DEL").style.display = (menu.mtto.submenu.pagos.cmdDelete==1)?('inline'):('none');
     document.querySelector("#btn_NEW").style.display = (menu.mtto.submenu.pagos.cmdInsert==1)?('inline'):('none');
-    
     document.querySelector("#txtBuscar").value = ("");
     appPagosGrid();
-  });
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
 function appPagosBuscar(e){
@@ -52,126 +55,128 @@ function appPagosBuscar(e){
   if(code == 13) { appPagosGrid(); }
 }
 
-function appPagoNuevo(){
+async function appPagoNuevo(){
   document.querySelector("#btnInsert").style.display = (menu.mtto.submenu.pagos.cmdInsert==1)?('inline'):('none');
   document.querySelector("#btnUpdate").style.display = 'none';
-  appFetch({ TipoQuery:'startPago' },rutaSQL).then(resp => {
-    try{
-      $(".form-group").removeClass("has-error");
-      $("#txt_Fecha").datepicker("setDate",moment().format("DD/MM/YYYY"));
-      document.querySelector("#txt_Importe").value = ("");
-      document.querySelector("#cbo_Obliga").value = 1;
-      appLlenarDataEnComboBox(resp.comboTipoProd,"#cbo_Producto",0); //tipos de pago
-      document.querySelector("#grid").style.display = 'none';
-      document.querySelector("#edit").style.display = 'block';
-    } catch (err){
-      console.log(err);
-    }
-  });
+
+  try{
+    const resp = await appAsynFetch({ TipoQuery:'startPago' },rutaSQL);
+    $(".form-group").removeClass("has-error");
+    $("#txt_Fecha").datepicker("setDate",moment().format("DD/MM/YYYY"));
+    document.querySelector("#txt_Importe").value = ("");
+    document.querySelector("#cbo_Obliga").value = 1;
+    appLlenarDataEnComboBox(resp.comboTipoProd,"#cbo_Producto",0); //tipos de pago
+    document.querySelector("#grid").style.display = 'none';
+    document.querySelector("#edit").style.display = 'block';
+  } catch (err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
-function appPagoView(pagoID){
+async function appPagoView(pagoID){
   document.querySelector("#btnUpdate").style.display = (menu.mtto.submenu.pagos.cmdUpdate==1)?('inline'):('none');
   document.querySelector("#btnInsert").style.display = 'none';
   $(".form-group").removeClass("has-error");
 
-  let datos = {
-    TipoQuery : 'editPago',
-    productoID : pagoID
+  try {
+    const resp = await appAsynFetch({
+      TipoQuery : 'editPago',
+      productoID : pagoID
+    }, rutaSQL);
+    
+    //respuesta
+    $(".form-group").removeClass("has-error");
+    $("#txt_Fecha").datepicker("setDate",moment(resp.vencimiento).format("DD/MM/YYYY"));
+    document.querySelector("#txt_Importe").value = appFormatMoney(resp.importe,2);
+    document.querySelector("#cbo_Obliga").value = (resp.obliga);
+    appLlenarDataEnComboBox(resp.comboTipoProd,"#cbo_Producto",resp.productoID); //tipo pago
+    document.querySelector('#grid').style.display = 'none';
+    document.querySelector('#edit').style.display = 'block';
+  } catch(err){
+    console.error('Error al cargar datos:', err);
   }
-
-  appFetch(datos,rutaSQL).then(resp => {
-    try{
-      $(".form-group").removeClass("has-error");
-      $("#txt_Fecha").datepicker("setDate",moment(resp.vencimiento).format("DD/MM/YYYY"));
-      document.querySelector("#txt_Importe").value = appFormatMoney(resp.importe,2);
-      document.querySelector("#cbo_Obliga").value = (resp.obliga);
-      appLlenarDataEnComboBox(resp.comboTipoProd,"#cbo_Producto",resp.productoID); //tipo pago
-      document.querySelector('#grid').style.display = 'none';
-      document.querySelector('#edit').style.display = 'block';
-    } catch(err){
-      console.log(err);
-    }
-  });
 }
 
-function appPagoInsert(){
-  let datos = modGetDataToDataBase();
+async function appPagoInsert(){
+  const datos = modGetDataToDataBase();
   if(datos!=""){
     datos.TipoQuery = 'insPago';
-    appFetch(datos,rutaSQL).then(resp => {
-      appPagoCancel();
-    });
+    try{
+      const resp = await appAsynFetch(datos,rutaSQL);
+      if(!resp.error) {appPagoCancel();}
+    } catch(err){
+      console.error('Error al cargar datos:', err);
+    }
   } else {
     alert("!!!Faltan Datos!!!");
   }
 }
 
-function appPagoUpdate(){
-  let datos = modGetDataToDataBase();
+async function appPagoUpdate(){
+  const datos = modGetDataToDataBase();
   if(datos!=""){
     datos.TipoQuery = 'updPago';
-    appFetch(datos,rutaSQL).then(resp => {
-      appPagoCancel();
-    });
+    try{
+      const resp = await appAsynFetch(datos,rutaSQL);
+      if(!resp.error) {appPagoCancel();}
+    } catch(err){
+      console.error('Error al cargar datos:', err);
+    }
   } else {
     alert("!!!Faltan Datos!!!");
   }
 }
 
-function appPagosBorrar(){
+async function appPagosBorrar(){
   //let arr = $('[name="chk_Borrar"]:checked').map(function(){return this.value}).get();
   let arr = Array.from(document.querySelectorAll('[name="chk_Borrar"]:checked')).map(function(obj){return obj.attributes[2].nodeValue});
   if(arr.length>0){
     if(confirm("¿Esta seguro de continuar?")) {
-      appFetch({ TipoQuery:'delPagos', arr:arr },rutaSQL).then(resp => {
-        if (resp.error == false) { //sin errores
-          appPagoCancel();
-        }
-      });
+      try{
+        const resp = await appAsynFetch({ TipoQuery:'delPagos', arr:arr },rutaSQL);
+        if (!resp.error) { appPagoCancel(); }
+      } catch(err){
+        console.error('Error al cargar datos:', err);
+      }
     }
   } else {
     alert("NO eligio borrar ninguno");
   }
 }
 
-function appPagosCambiarImporteBatch(){
+async function appPagosCambiarImporteBatch(){
   let arr = Array.from(document.querySelectorAll('[name="chk_Borrar"]:checked')).map(function(obj){return obj.attributes[2].nodeValue});
   if(arr.length>0){
-    res = appConvertToNumero(prompt("Ingrese cantidad para cambiar en bloque"));
+    const res = appConvertToNumero(prompt("Ingrese cantidad para cambiar en bloque"));
     if(res>0){
-      let txtBuscar = document.querySelector("#txtBuscar").value;
-      let datos = {
-        TipoQuery : "pagos_cambioMontoBloque",
-        importe : res,
-        buscar : txtBuscar
+      try{
+        const resp = await appAsynFetch({
+          TipoQuery : "pagos_cambioMontoBloque",
+          buscar : document.querySelector("#txtBuscar").value,
+          importe : res
+        }, rutaSQL);
+        if(!resp.error) {fnPagosLlenarGrid(resp.pagos); }
+      } catch(err){
+        console.error('Error al cargar datos:', err);
       }
-  
-      appFetch(datos,rutaSQL).then(resp => {
-        fnPagosLlenarGrid(resp.pagos);
-      });
     }
   } else {
     alert("NO eligio ninguno");
   }
 }
 
-function appPagosCambiarVcmtoBatch(){
+async function appPagosCambiarVcmtoBatch(){
   let arr = Array.from(document.querySelectorAll('[name="chk_Borrar"]:checked')).map(function(obj){return obj.attributes[2].nodeValue});
   if(arr.length>0){
-    dato = prompt("Ingrese el año de vencimiento para cambiar en bloque");
-    const result = parseInt(dato,10);
+    const result = parseInt(prompt("Ingrese el año de vencimiento para cambiar en bloque"),10);
     if(!isNaN(result) && result>=2020){
-      let txtBuscar = document.querySelector("#txtBuscar").value;
-      let datos = {
+      const resp = await appAsynFetch({
         TipoQuery : "pagos_cambioVencimientoBloque",
-        yyyy : result,
-        buscar : txtBuscar
-      }
-  
-      appFetch(datos,rutaSQL).then(resp => {
-        fnPagosLlenarGrid(resp.pagos);
-      });
+        buscar : document.querySelector("#txtBuscar").value,
+        yyyy : result
+      }, rutaSQL);
+      //respuesta
+      if(!resp.error) { fnPagosLlenarGrid(resp.pagos); }
     } else {
       alert("El valor ingresado no es un año valido");
     }
@@ -180,16 +185,18 @@ function appPagosCambiarVcmtoBatch(){
   }
 }
 
-function appPagosBloquear(ID){
-  let txtBuscar = document.querySelector("#txtBuscar").value;
-  let datos = {
-    TipoQuery : 'pagos_bloquear',
-    productoID : ID,
-    buscar : txtBuscar
+async function appPagosBloquear(ID){
+  try{
+    const resp = await appAsynFetch({
+      TipoQuery : 'pagos_bloquear',
+      buscar : document.querySelector("#txtBuscar").value,
+      productoID : ID
+    },rutaSQL);
+    //respuesta
+      if(!resp.error){fnPagosLlenarGrid(resp.pagos);}
+  } catch(err){
+    console.error('Error al cargar datos:', err);
   }
-  appFetch(datos,rutaSQL).then(resp => {
-    fnPagosLlenarGrid(resp.pagos);
-  });
 }
 
 function appPagoCancel(){

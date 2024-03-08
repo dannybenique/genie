@@ -41,20 +41,23 @@ async function appDesembGrid(){
   }
 }
 
-function appDesembReset(){
-  appFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php").then(resp => {
-    objMatricula = null;
-    objPagos = null;
-    objTotales = { PagosActual:0, ImporteMatricula:0 }
-
+async function appDesembReset(){
+  objMatricula = null;
+  objPagos = null;
+  objTotales = { PagosActual:0, ImporteMatricula:0 }
+  document.querySelector("#txtBuscar").value = ("");
+  document.querySelector("#grdDatos").innerHTML = ("");
+  
+  try{
+    const resp = await appAsynFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php");
+  
     menu = JSON.parse(resp.menu);
     document.querySelector("#btn_DEL").style.display = (menu.caja.submenu.desembolsos.cmdDelete==1)?('inline'):('none');
-
-    document.querySelector("#txtBuscar").value = ("");
-    document.querySelector("#grdDatos").innerHTML = ("");
     document.querySelector("#div_PersAuditoria").style.display = ((resp.rolID==101)?('block'):('none'));
     appDesembGrid();
-  });
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
 function appDesembBuscar(e){
@@ -80,11 +83,11 @@ function appDesembBotonDesembolsar(){
   }
 }
 
-function appDesembBotonAgregarPagos(){
-  let datos = {
-    TipoQuery : "desemb_AddPago"
-  }
-  appFetch(datos,rutaSQL).then(resp => {
+async function appDesembBotonAgregarPagos(){
+  try{
+    const resp = await appAsynFetch({ TipoQuery : "desemb_AddPago" },rutaSQL);
+    
+    //respuesta
     let fila = "";
     let filterID = objPagos.map(obj => obj.productoID);
     objAddPagos = resp.tablaPagos.filter(obj => !filterID.includes(obj.productoID));
@@ -99,17 +102,18 @@ function appDesembBotonAgregarPagos(){
     });
     document.querySelector('#grdaddpagosDatos').innerHTML = fila;
     $("#modalAddPagos").modal("show");
-  });
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
 function appDesembBotonModiImportePagos(){
-  let cantidad = prompt("Ingrese la nueva cantidad para los pagos desbloqueados...");
+  const cantidad = prompt("Ingrese la nueva cantidad para los pagos desbloqueados...");
   if(cantidad!=null){
     let importe = appConvertToNumero(cantidad);
     if(importe>0){
       //agregamos observacion
-      let observac = prompt("ingrese un texto a la observacion");
-      objMatricula.observac += " \n "+observac;
+      objMatricula.observac += "\n"+prompt("ingrese un texto a la observacion");
       document.querySelector("#lbl_DesembObservac").innerHTML = objMatricula.observac;
 
       //modificamos el monto de los pagos
@@ -122,19 +126,20 @@ function appDesembBotonModiImportePagos(){
   }
 }
 
-function fn_EjecutarDesembolso(){
-  let datos = {
-    TipoQuery : 'desemb_Execute',
-    matriculaID : objMatricula.matriculaID,
-    observac : objMatricula.observac,
-    pagos : objPagos,
-    total : objTotales.PagosActual,
-    saldo : objTotales.ImporteMatricula - objTotales.PagosActual,
-    importe : objTotales.ImporteMatricula,
-    fecha : appConvertToFecha(document.querySelector("#txt_DesembFecha").value)
-  }
-  // console.log(datos);
-  appFetch(datos,rutaSQL).then(resp => {
+async function fn_EjecutarDesembolso(){
+  try{
+    const resp = await appAsynFetch({
+      TipoQuery : 'desemb_Execute',
+      matriculaID : objMatricula.matriculaID,
+      observac : objMatricula.observac,
+      pagos : objPagos,
+      total : objTotales.PagosActual,
+      saldo : objTotales.ImporteMatricula - objTotales.PagosActual,
+      importe : objTotales.ImporteMatricula,
+      fecha : appConvertToFecha(document.querySelector("#txt_DesembFecha").value)
+    },rutaSQL);
+
+    //respuesta
     if (!resp.error) { 
       if(confirm("¿Desea Imprimir el desembolso?")){
         $("#modalPrint").modal("show");
@@ -143,37 +148,40 @@ function fn_EjecutarDesembolso(){
       }
       appDesembBotonCancel(); 
     }
-  });
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
-function appDesembBotonBorrar(){
+async function appDesembBotonBorrar(){
   let arr = Array.from(document.querySelectorAll('[name="chk_Borrar"]:checked')).map(function(obj){return obj.attributes[2].nodeValue});
   if(arr.length>0){
     if(confirm("¿Esta seguro de continuar?")) {
-      appFetch({ TipoQuery:'desemb_Delete', arr:arr },rutaSQL).then(resp => {
-        if (resp.error == false) { //sin errores
-          //console.log(resp);
-          appDesembGrid();
-        }
-      });
+      try{
+        const resp = await appAsynFetch({ TipoQuery:'desemb_Delete', arr:arr },rutaSQL);
+        if (!resp.error) { appDesembGrid(); }
+      } catch(err){
+        console.error('Error al cargar datos:', err);
+      }
     }
   } else {
     alert("NO eligio borrar ninguno");
   }
 }
 
-function appDesembView(matriculaID){
-  let datos = {
-    TipoQuery : 'desemb_View',
-    matriculaID : matriculaID
-  };
-  
-  appFetch(datos,rutaSQL).then(resp => {
-    //tabs default en primer tab
-    $('.nav-tabs li').removeClass('active');
-    $('.tab-content .tab-pane').removeClass('active');
-    $('a[href="#datosMatricula"]').closest('li').addClass('active');
-    $('#datosMatricula').addClass('active');
+async function appDesembView(matriculaID){
+  //tabs default en primer tab
+  $('.nav-tabs li').removeClass('active');
+  $('.tab-content .tab-pane').removeClass('active');
+  $('a[href="#datosMatricula"]').closest('li').addClass('active');
+  $('#datosMatricula').addClass('active');
+
+  try{
+    const resp = await appAsynFetch({
+      TipoQuery : 'desemb_View',
+      matriculaID : matriculaID
+    },rutaSQL);
+      
     document.querySelector("#btnInsert").style.display = (menu.caja.submenu.desembolsos.cmdUpdate==1)?('inline'):('none');
     document.querySelector('#grid').style.display = 'none';
     document.querySelector('#edit').style.display = 'block';
@@ -182,7 +190,9 @@ function appDesembView(matriculaID){
     appDesembSetData(resp.tablaDesembolso);  //pestaña matricula
     appPagosSetData(objPagos);
     appPersonaSetData(resp.tablaPers);
-  });
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
 function appDesembSetData(data){
@@ -291,7 +301,6 @@ function fnPagosCheck(e){
 function fnPagosDeleteItem(productoID){
   let idx = objPagos.findIndex(elemento => elemento.productoID === productoID); 
   if(confirm("¿Desea eliminar "+objPagos[idx]["producto"]+" de la lista de pagos?")){
-    
     objPagos.splice(idx,1);
     appPagosSetData(objPagos);
   }

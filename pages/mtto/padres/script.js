@@ -2,13 +2,14 @@ const rutaSQL = "pages/mtto/padres/sql.php";
 var menu = "";
 
 //=========================funciones para Personas============================
-function appPadresGrid(){
+async function appPadresGrid(){
   document.querySelector('#grdDatos').innerHTML = ('<tr><td colspan="8"><div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></td></tr>');
-  let txtBuscar = document.querySelector("#txtBuscar").value.toUpperCase();
-  let datos = { TipoQuery: 'selPadres', buscar: txtBuscar };
+  const disabledDelete = (menu.mtto.submenu.padres.cmdDelete===1) ? "" : "disabled";
+  const txtBuscar = document.querySelector("#txtBuscar").value.toUpperCase();
+  try{
+    const resp = await appAsynFetch({ TipoQuery: 'selPadres', buscar: txtBuscar },rutaSQL);
 
-  appFetch(datos,rutaSQL).then(resp => {
-    let disabledDelete = (menu.mtto.submenu.padres.cmdDelete===1) ? "" : "disabled";
+    //respuesta    
     document.querySelector("#chk_All").disabled = (menu.mtto.submenu.padres.cmdDelete===1) ? false : true;
     if(resp.tabla.length>0){
       let fila = "";
@@ -26,11 +27,14 @@ function appPadresGrid(){
       document.querySelector('#grdDatos').innerHTML = ('<tr><td colspan="8" style="text-align:center;color:red;">Sin Resultados '+(rpta)+'</td></tr>');
     }
     document.querySelector('#grdCount').innerHTML = (resp.tabla.length+"/"+resp.cuenta);
-  });
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
-function appPadresReset(){
-  appFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php").then(resp => {
+async function appPadresReset(){
+  try{
+    const resp = await appAsynFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php");
     menu = JSON.parse(resp.menu);
     document.querySelector("#btn_DEL").style.display = (menu.mtto.submenu.padres.cmdDelete==1)?('inline'):('none');
     document.querySelector("#btn_NEW").style.display = (menu.mtto.submenu.padres.cmdInsert==1)?('inline'):('none');
@@ -39,7 +43,9 @@ function appPadresReset(){
     document.querySelector("#grdDatos").innerHTML = ("");
     document.querySelector("#div_PersAuditoria").style.display = ((resp.rolID==101)?('block'):('none'));
     appPadresGrid();
-  });
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
 function appPadresBuscar(e){
@@ -53,25 +59,31 @@ function appPadresBotonCancel(){
   document.querySelector("#edit").style.display = 'none';
 }
 
-function appPadresBotonInsert(){
-  let datos = appPadreGetDatosToDatabase();
+async function appPadresBotonInsert(){
+  const datos = appPadreGetDatosToDatabase();
   
   if(datos!=""){
     datos.TipoQuery = "insPadre";
-    appFetch(datos,rutaSQL).then(resp => {
-      appPadresBotonCancel();
-    });
+    try{
+      const resp = await appAsynFetch(datos,rutaSQL);
+      if(!resp.error) {appPadresBotonCancel();}
+    } catch(err){
+      console.error('Error al cargar datos:', err);
+    }
   }
 }
 
-function appPadresBotonUpdate(){
-  let datos = appPadreGetDatosToDatabase();
+async function appPadresBotonUpdate(){
+  const datos = appPadreGetDatosToDatabase();
 
   if(datos!=""){
     datos.TipoQuery = "updPadre";
-    appFetch(datos,rutaSQL).then(resp => {
-      appPadresBotonCancel();
-    });
+    try{
+      const resp = await appAsynFetch(datos,rutaSQL);
+      if(!resp.error) {appPadresBotonCancel();}
+    } catch(err){
+      console.error('Error al cargar datos:', err);
+    }
   }
 }
 
@@ -113,29 +125,23 @@ function handlerPadresAddToForm_Click(e){
   $('#btn_modPersAddToForm').off('click');
 }
 
-function appPadresBotonBorrar(){
+async function appPadresBotonBorrar(){
   let arr = Array.from(document.querySelectorAll('[name="chk_Borrar"]:checked')).map(function(obj){return obj.attributes[2].nodeValue});
   if(arr.length>0){
     if(confirm("¿Esta seguro de continuar?")) {
-      appFetch({ TipoQuery:'delPadres', arr:arr },rutaSQL).then(resp => {
-        if (resp.error == false) { //sin errores
-          console.log(resp);
-          appPadresBotonCancel();
-        }
-      });
+      try{
+        const resp = await appAsynFetch({ TipoQuery:'delPadres', arr:arr },rutaSQL);
+        if(!resp.error) {appPadresBotonCancel();}
+      } catch(err){
+        console.error('Error al cargar datos:', err);
+      }
     }
   } else {
     alert("NO eligio borrar ninguno");
   }
 }
 
-function appPadreView(personaID){
-  let datos = {
-    TipoQuery : 'viewPadre',
-    personaID : personaID,
-    fullQuery : 2
-  };
-  
+async function appPadreView(personaID){
   //tabs default en primer tab
   $('.nav-tabs li').removeClass('active');
   $('.tab-content .tab-pane').removeClass('active');
@@ -145,7 +151,14 @@ function appPadreView(personaID){
   document.querySelector("#btnUpdate").style.display = (menu.mtto.submenu.padres.cmdUpdate==1)?('inline'):('none');
   document.querySelector("#btnInsert").style.display = 'none';
 
-  appFetch(datos,rutaSQL).then(resp => {
+  try{
+    const resp = await appAsynFetch({
+      TipoQuery : 'viewPadre',
+      personaID : personaID,
+      fullQuery : 2
+    }, rutaSQL);
+
+    //respuesta
     document.querySelector("#lbl_Celular").innerHTML = (resp.tablaPers.celular);  //info Corta
     appPersonaSetData(resp.tablaPers); //pestaña Personales
     appLaboralSetData(resp.tablaLabo); //pestaña laborales
@@ -153,7 +166,9 @@ function appPadreView(personaID){
 
     document.querySelector('#grid').style.display = 'none';
     document.querySelector('#edit').style.display = 'block';
-  });
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
 function appPadreClear(){

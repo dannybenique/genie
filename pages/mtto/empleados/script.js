@@ -21,17 +21,18 @@ var zSetting = {
 };
 
 //=========================funciones============================
-function appWorkersGrid(){
+async function appWorkersGrid(){
   document.querySelector('#grdDatos').innerHTML = ('<tr><td colspan="9"><div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></td></tr>');
-  let txtBuscar = document.querySelector("#txtBuscar").value.toUpperCase();
-  let datos = { 
-    TipoQuery: 'selWorkers', 
-    buscar: txtBuscar, 
-    verTodos: document.querySelector("#hidViewAll").value 
-  };
+  const txtBuscar = document.querySelector("#txtBuscar").value.toUpperCase();
+  const disabledDelete = (menu.mtto.submenu.empleados.cmdDelete===1) ? "" : "disabled";
+  try{
+    const resp = await appAsynFetch({ 
+      TipoQuery: 'selWorkers', 
+      buscar: txtBuscar, 
+      verTodos: document.querySelector("#hidViewAll").value 
+    }, rutaSQL);
 
-  appFetch(datos,rutaSQL).then(resp => {
-    let disabledDelete = (menu.mtto.submenu.empleados.cmdDelete===1) ? "" : "disabled";
+    //respuesta
     document.querySelector("#chk_All").disabled = (menu.mtto.submenu.empleados.cmdDelete===1) ? false : true;
     if(resp.tabla.length>0){
       let fila = "";
@@ -54,15 +55,16 @@ function appWorkersGrid(){
       document.querySelector('#grdDatos').innerHTML = ('<tr><td colspan="9" style="text-align:center;color:red;">Sin Resultados '+(res)+'</td></tr>');
     }
     document.querySelector('#grdCount').innerHTML = (resp.tabla.length+"/"+resp.cuenta);
-  });
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
-function appWorkersReset(){
-  appFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php").then(resp => {
-    //configurar treeview
-    zTreeObj = $.fn.zTree.init($("#appTreeView"), zSetting, null);
-    
-    //otros controles
+async function appWorkersReset(){
+  //configurar treeview
+  zTreeObj = $.fn.zTree.init($("#appTreeView"), zSetting, null);
+  try{
+    const resp = await appAsynFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php");
     menu = JSON.parse(resp.menu);
     document.querySelector("#btn_DEL").style.display = (menu.mtto.submenu.empleados.cmdDelete==1)?('inline'):('none');
     document.querySelector("#btn_NEW").style.display = (menu.mtto.submenu.empleados.cmdInsert==1)?('inline'):('none');
@@ -71,7 +73,9 @@ function appWorkersReset(){
     document.querySelector("#grdDatos").innerHTML = ("");
     document.querySelector("#div_PersAuditoria").style.display = ((resp.rolID==101)?('block'):('none'));
     appWorkersGrid();
-  });
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
 function appWorkersBuscar(e){
@@ -85,27 +89,33 @@ function appWorkersBotonCancel(){
   document.querySelector("#edit").style.display = 'none';
 }
 
-function appWorkersBotonInsert(){
-  let datos = appWorkerGetDatosToDatabase();
+async function appWorkersBotonInsert(){
+  const datos = appWorkerGetDatosToDatabase();
 
   if(datos!=null){
     datos.TipoQuery = "insWorker";
     datos.usuario = appUserGetDatosToDatabase();
-    appFetch(datos,rutaSQL).then(resp => {
-      appWorkersBotonCancel();
-    });
+    try{
+      const resp = await appAsynFetch(datos,rutaSQL);
+      if(!resp.error){appWorkersBotonCancel();}
+    } catch(err){
+      console.error('Error al cargar datos:', err);
+    }
   }
 }
 
-function appWorkersBotonUpdate(){
-  let datos = appWorkerGetDatosToDatabase();
+async function appWorkersBotonUpdate(){
+  const datos = appWorkerGetDatosToDatabase();
   
   if(datos!=null){
     datos.TipoQuery = "updWorker";
     datos.usuario = appUserGetDatosToDatabase();
-    appFetch(datos,rutaSQL).then(resp => {
-      appWorkersBotonCancel();
-    });
+    try{
+      const resp = await appAsynFetch(datos,rutaSQL);
+      if(!resp.error){appWorkersBotonCancel();}
+    } catch(err){
+      console.error('Error al cargar datos:', err);
+    }
   }
 }
 
@@ -155,56 +165,62 @@ function handlerWorkersAddToForm_Click(e){
   $('#btn_modPersAddToForm').off('click');
 }
 
-function appWorkersBotonBorrar(){
+async function appWorkersBotonBorrar(){
   let arr = Array.from(document.querySelectorAll('[name="chk_Borrar"]:checked')).map(function(obj){return obj.attributes[2].nodeValue});
   if(arr.length>0){
     if(confirm("¿Esta seguro de continuar?")) {
-      appFetch({ TipoQuery:'delWorkers', arr:arr },rutaSQL).then(resp => {
-        if (resp.error == false) { //sin errores
-          console.log(resp);
-          appWorkersBotonCancel();
-        }
-      });
+      try{
+        const resp = await appAsynFetch({ TipoQuery:'delWorkers', arr:arr },rutaSQL);
+        if (!resp.error) { appWorkersBotonCancel(); }
+      } catch(err){
+        console.error('Error al cargar datos:', err);
+      }
     }
   } else {
     alert("NO eligio borrar ninguno");
   }
 }
 
-function appWorkersBotonEstado(){
-  let datos = {
-    TipoQuery : 'addWorker', //quitar el soft delete (estado)
-    workerID : document.querySelector("#lbl_ID").innerHTML
+async function appWorkersBotonEstado(){
+  try{
+    const resp = await appAsynFetch({
+      TipoQuery : 'addWorker', //quitar el soft delete (estado)
+      workerID : document.querySelector("#lbl_ID").innerHTML
+    }, rutaSQL);
+    
+    //respuesta
+    if(!resp.error){ document.querySelector("#div_Estado").innerHTML = ""; }
+  } catch(err){
+    console.error('Error al cargar datos:', err);
   }
-  appFetch(datos,rutaSQL).then(resp => {
-    document.querySelector("#div_Estado").innerHTML = "";
-  });
 }
 
-function appWorkerView(personaID){
-  let datos = {
-    TipoQuery : 'viewWorker',
-    personaID : personaID,
-    fullQuery : 2
-  };
-  
-  appFetch(datos,rutaSQL).then(resp => {
+async function appWorkerView(personaID){
+  //tabs default en primer tab
+  $('.nav-tabs li').removeClass('active');
+  $('.tab-content .tab-pane').removeClass('active');
+  $('a[href="#datosWorker"]').closest('li').addClass('active');
+  $('#datosWorker').addClass('active');
+  document.querySelector("#div_WorkerAuditoria").style.display = 'block';
+  document.querySelector("#btnUpdate").style.display = (menu.mtto.submenu.empleados.cmdUpdate==1)?('inline'):('none');
+  document.querySelector("#btnInsert").style.display = 'none';
+
+  try{
+    const resp = await appAsynFetch({
+      TipoQuery : 'viewWorker',
+      personaID : personaID,
+      fullQuery : 2
+    }, rutaSQL);
+    
+    //respuesta
     appPersonaSetData(resp.tablaPers); //pestaña Personales
     appWorkerSetData(resp.tablaWorker);  //pestaña Empleado
     appUserSetData(resp.tablaUser); //pestaña usuario
-
-    //tabs default en primer tab
-    $('.nav-tabs li').removeClass('active');
-    $('.tab-content .tab-pane').removeClass('active');
-    $('a[href="#datosWorker"]').closest('li').addClass('active');
-    $('#datosWorker').addClass('active');
-    document.querySelector("#div_WorkerAuditoria").style.display = 'block';
-    document.querySelector("#btnUpdate").style.display = (menu.mtto.submenu.empleados.cmdUpdate==1)?('inline'):('none');
-    document.querySelector("#btnInsert").style.display = 'none';
-
     document.querySelector('#grid').style.display = 'none';
     document.querySelector('#edit').style.display = 'block';
-  });
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
 function appWorkerSetData(data){
@@ -369,37 +385,45 @@ function appUserClear(data){
   appUserEsUsuario();
 }
 
-function appUserCambioPassw(userID){
+async function appUserCambioPassw(userID){
   $("#modalChangePassw").modal("show");
-  let datos = {
-    TipoQuery:"selUserPass",
-    userID:userID
-  }
-  appFetch(datos,rutaSQL).then(resp => {
+  try{
+    const resp = await appAsynFetch({
+      TipoQuery:"selUserPass",
+      userID:userID
+    }, rutaSQL);
+    
+    //respuesta
     document.querySelector("#hid_PassID").value = resp.ID;
     document.querySelector("#hid_PassColegioID").value = resp.colegioID;
     document.querySelector("#lbl_PassNombrecorto").innerHTML = resp.nombrecorto;
     document.querySelector("#lbl_PassLogin").innerHTML = resp.login;
     document.querySelector("#txt_PassPassNew").value = "";
     document.querySelector("#txt_PassPassRe").value = "";
-  });
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
-function modUserBotonUpdatePassw(){
+async function modUserBotonUpdatePassw(){
   if(document.querySelector("#txt_PassPassNew").value!=""){
     if(document.querySelector("#txt_PassPassNew").value===document.querySelector("#txt_PassPassRe").value){
-      let datos = {
-        TipoQuery:"changeUserPass",
-        userID : document.querySelector("#hid_PassID").value,
-        colegioID : document.querySelector("#hid_PassColegioID").value,
-        passw : SHA1(document.querySelector("#txt_PassPassNew").value).toString().toUpperCase()
-      }
-      appFetch(datos,rutaSQL).then(resp => {
+      try{
+        const resp = await appAsynFetch({
+          TipoQuery:"changeUserPass",
+          userID : document.querySelector("#hid_PassID").value,
+          colegioID : document.querySelector("#hid_PassColegioID").value,
+          passw : SHA1(document.querySelector("#txt_PassPassNew").value).toString().toUpperCase()
+        }, rutaSQL);
+
+        //respuesta
         if (!resp.error) { 
           alert("El PASSWORD se modifico correctamente");
           $("#modalChangePassw").modal("hide");
         }
-      });
+      } catch(err){
+        console.error('Error al cargar datos:', err);
+      }
     } else {
       alert("!!!El PASSWORD es distintos en ambos campos!!!");
     }
@@ -451,16 +475,19 @@ function appUserGetDatosToDatabase(){
   return rpta;
 }
 
-function appUserPerfilMenu(perfilID){
-  let datos = {
-    TipoQuery : "selSisMenu",
-    perfilID : perfilID
-  }
-  
-  appFetch(datos,rutaSQL).then(resp => {
+async function appUserPerfilMenu(perfilID){
+  try{
+    const resp = await appAsynFetch({
+      TipoQuery : "selSisMenu",
+      perfilID : perfilID
+    }, rutaSQL);
+    
+    //respuesta
     let mnu = JSON.parse(resp.menu);
     zTreeObj = $.fn.zTree.init($("#appTreeView"), zSetting, transformData(mnu));
-  });
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
 //menu

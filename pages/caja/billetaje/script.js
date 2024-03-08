@@ -2,16 +2,18 @@ const rutaSQL = "pages/caja/billetaje/sql.php";
 var menu = "";
 
 //=========================funciones para Personas============================
-function appBillGrid(){
+async function appBillGrid(){
+  //loader
   document.querySelector('#grdDatos').innerHTML = ('<tr><td colspan="9"><div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></td></tr>');
-  let datos = {
-    TipoQuery: 'selBilletaje',
-    usuarioID: document.querySelector("#cboUsuarios").value,
-    monedaID: document.querySelector("#cboMonedas").value
-  };
-
-  appFetch(datos,rutaSQL).then(resp => {
-    let disabledDelete = (menu.caja.submenu.billetaje.cmdDelete===1) ? "" : "disabled";
+  const disabledDelete = (menu.caja.submenu.billetaje.cmdDelete===1) ? "" : "disabled";
+  try{
+    const resp = await appAsynFetch({
+      TipoQuery: 'selBilletaje',
+      usuarioID: document.querySelector("#cboUsuarios").value,
+      monedaID: document.querySelector("#cboMonedas").value
+    }, rutaSQL);
+  
+    //respuesta
     document.querySelector("#chk_All").disabled = (menu.caja.submenu.billetaje.cmdDelete===1) ? false : true;
     if(resp.tabla.length>0){
       let fila = "";
@@ -30,22 +32,26 @@ function appBillGrid(){
       $('#grdDatos').html('<tr><td colspan="5" style="text-align:center;color:red;">Sin Resultados</td></tr>');
     }
     $('#grdCount').html(resp.tabla.length+"/"+resp.cuenta);
-  });
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
-function appBillReset(){
-  appFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php").then(resp => {
+async function appBillReset(){
+  try{
+    const resp = await appAsynFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php");
     menu = JSON.parse(resp.menu);
     document.querySelector("#btn_DEL").style.display = (menu.caja.submenu.billetaje.cmdDelete==1)?('inline'):('none');
     document.querySelector("#btn_NEW").style.display = (menu.caja.submenu.billetaje.cmdInsert==1)?('inline'):('none');
-    let datos = { TipoQuery:'StartBilletaje' }
-    appFetch(datos,rutaSQL).then(resp => {
-      appLlenarDataEnComboBox(resp.comboMonedas,"#cboMonedas",0);
-      appLlenarDataEnComboBox(resp.comboUsuarios,"#cboUsuarios",((resp.rolID=resp.root)?(0):(resp.userID)));
-      document.querySelector("#cboUsuarios").disabled = ((resp.rolID==resp.root)?(false):(true));
-      appBillGrid();
-    })
-  });
+    
+    const rpta = await appAsynFetch({ TipoQuery:'StartBilletaje' },rutaSQL);
+    appLlenarDataEnComboBox(rpta.comboMonedas,"#cboMonedas",0);
+    appLlenarDataEnComboBox(rpta.comboUsuarios,"#cboUsuarios",((rpta.rolID=rpta.root)?(0):(rpta.userID)));
+    document.querySelector("#cboUsuarios").disabled = ((rpta.rolID==rpta.root)?(false):(true));
+    appBillGrid();
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
 function appBillBotonCancel(){
@@ -54,78 +60,80 @@ function appBillBotonCancel(){
   $('#edit').hide();
 }
 
-function appBillBotonBorrar(){
+async function appBillBotonBorrar(){
   let arr = Array.from(document.querySelectorAll('[name="chk_Borrar"]:checked')).map(function(obj){return obj.attributes[2].nodeValue});
   if(arr.length>0){
     if(confirm("¿Esta seguro de continuar?")) {
-      appFetch({ TipoQuery:'delBilletaje', arr:arr },rutaSQL).then(resp => {
-        if (resp.error == false) { //sin errores
-          appBillGrid();
-        }
-      });
+      try{
+        const resp = await appAsynFetch({ TipoQuery:'delBilletaje', arr:arr },rutaSQL);
+        if(!resp.error) { appBillGrid(); }
+      } catch(err){
+        console.error('Error al cargar datos:', err);
+      }
     }
   } else {
     alert("NO eligio borrar ninguno");
   }
 }
 
-function appBillBotonNuevo(){
-  let datos = {
-    TipoQuery:'newBilletaje',
-    monedaID : document.querySelector("#cboMonedas").value,
-    usuarioID : document.querySelector("#cboUsuarios").value 
-  }
-  appFetch(datos,rutaSQL).then(resp => {
-    document.querySelector("#btnInsert").style.display = (menu.caja.submenu.billetaje.cmdInsert==1)?('inline'):('none');
-    document.querySelector("#btnUpdate").style.display = 'none';
-    try{
-      $(".form-group").removeClass("has-error");
-      $(".billetaje_mon").html(resp.mon_abrevia);
-      $('#txt_Fecha').datepicker("setDate",moment(resp.fecha).format("DD/MM/YYYY"));
-      appLlenarDataEnComboBox(resp.comboMonedas,"#cbo_MonedasEdit",document.querySelector("#cboMonedas").value);
-      appLlenarDataEnComboBox(resp.comboAgencias,"#cbo_AgenciasEdit",0);
-      document.querySelector("#hid_billID").value = 0;
-      document.querySelector("#hid_usuarioID").value = (document.querySelector("#cboUsuarios").value);
-      document.querySelector("#txt_UsuarioEdit").value = resp.usuario;
-      document.querySelector("#txt_Mx200").value = "";
-      document.querySelector("#txt_Mx100").value = "";
-      document.querySelector("#txt_Mx50").value = "";
-      document.querySelector("#txt_Mx20").value = "";
-      document.querySelector("#txt_Mx10").value = "";
-      document.querySelector("#txt_Mx5").value = "";
-      document.querySelector("#txt_Mx2").value = "";
-      document.querySelector("#txt_Mx1").value = "";
-      document.querySelector("#txt_Mx05").value = "";
-      document.querySelector("#txt_Mx02").value = "";
-      document.querySelector("#txt_Mx01").value = "";
-      document.querySelector("#txt_MxTotal").innerHTML = "0.00";
+async function appBillBotonNuevo(){
+  document.querySelector("#btnInsert").style.display = (menu.caja.submenu.billetaje.cmdInsert==1)?('inline'):('none');
+  document.querySelector("#btnUpdate").style.display = 'none';
+  
+  try{
+    const resp = await appAsynFetch({
+      TipoQuery:'newBilletaje',
+      monedaID : document.querySelector("#cboMonedas").value,
+      usuarioID : document.querySelector("#cboUsuarios").value 
+    },rutaSQL);
       
-      document.querySelector("#grid").style.display = 'none';
-      document.querySelector("#edit").style.display = 'block';
-    } catch (err){
-      console.log(err);
-    }
-  });
+    //respuesta  
+    $(".form-group").removeClass("has-error");
+    $(".billetaje_mon").html(resp.mon_abrevia);
+    $('#txt_Fecha').datepicker("setDate",moment(resp.fecha).format("DD/MM/YYYY"));
+    appLlenarDataEnComboBox(resp.comboMonedas,"#cbo_MonedasEdit",document.querySelector("#cboMonedas").value);
+    appLlenarDataEnComboBox(resp.comboAgencias,"#cbo_AgenciasEdit",0);
+    document.querySelector("#hid_billID").value = 0;
+    document.querySelector("#hid_usuarioID").value = (document.querySelector("#cboUsuarios").value);
+    document.querySelector("#txt_UsuarioEdit").value = resp.usuario;
+    document.querySelector("#txt_Mx200").value = "";
+    document.querySelector("#txt_Mx100").value = "";
+    document.querySelector("#txt_Mx50").value = "";
+    document.querySelector("#txt_Mx20").value = "";
+    document.querySelector("#txt_Mx10").value = "";
+    document.querySelector("#txt_Mx5").value = "";
+    document.querySelector("#txt_Mx2").value = "";
+    document.querySelector("#txt_Mx1").value = "";
+    document.querySelector("#txt_Mx05").value = "";
+    document.querySelector("#txt_Mx02").value = "";
+    document.querySelector("#txt_Mx01").value = "";
+    document.querySelector("#txt_MxTotal").innerHTML = "0.00";
+    
+    document.querySelector("#grid").style.display = 'none';
+    document.querySelector("#edit").style.display = 'block';
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
-function appBillView(billID){
-  let datos = {
-    TipoQuery : 'viewBilletaje',
-    billID : billID
-  };
-  
-  appFetch(datos,rutaSQL).then(resp => {
+async function appBillView(billID){
+  try{
+    const resp = await appAsynFetch({
+      TipoQuery : 'viewBilletaje',
+      billID : billID
+    },rutaSQL);
+
     document.querySelector("#btnUpdate").style.display = (resp.rolUSR===resp.rolROOT)?('inline'):((resp.fecha==resp.tabla.fecha && menu.caja.submenu.billetaje.cmdUpdate==1)?('inline'):('none'));
     document.querySelector("#btnInsert").style.display = 'none';
     document.querySelector('#grid').style.display = 'none';
     document.querySelector('#edit').style.display = 'block';
-
+  
     $(".form-group").removeClass("has-error");
     $(".billetaje_mon").html(resp.tabla.mon_abrevia);
     $('#txt_Fecha').datepicker("setDate",moment(resp.tabla.fecha).format("DD/MM/YYYY"));
     appLlenarDataEnComboBox(resp.comboMonedas,"#cbo_MonedasEdit",resp.tabla.monedaID);
     appLlenarDataEnComboBox(resp.comboAgencias,"#cbo_AgenciasEdit",resp.tabla.agenciaID);
-  
+    
     document.querySelector("#hid_billID").value = resp.tabla.ID;
     document.querySelector("#hid_usuarioID").value = resp.tabla.usuarioID;
     document.querySelector("#txt_UsuarioEdit").value = resp.tabla.usuario;
@@ -141,7 +149,9 @@ function appBillView(billID){
     document.querySelector("#txt_Mx02").value = resp.tabla.mx_02;
     document.querySelector("#txt_Mx01").value = resp.tabla.mx_01;
     document.querySelector("#txt_MxTotal").innerHTML = appFormatMoney(resp.tabla.mx_total,2);
-  });
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
 function appBillCalcular(){
@@ -161,27 +171,37 @@ function appBillCalcular(){
   document.querySelector("#txt_MxTotal").innerHTML = appFormatMoney(total,2);
 }
 
-function appBillInsert(){
-  let datos = appGetDataToDataBase();
+async function appBillInsert(){
+  const datos = appGetDataToDataBase();
   if(datos!=null){
     datos.TipoQuery = 'insBilletaje';
-    appFetch(datos,rutaSQL).then(resp => {
-      appBillGrid();
-      appBillBotonCancel();
-    });
+    try{
+      const resp = await appAsynFetch(datos,rutaSQL);
+      if(!resp.error){
+        appBillGrid();
+        appBillBotonCancel();
+      }
+    } catch(err){
+      console.error('Error al cargar datos:', err);
+    }
   } else {
     alert("!!!Faltan Datos!!!");
   }
 }
 
-function appBillUpdate(){
-  let datos = appGetDataToDataBase();
+async function appBillUpdate(){
+  const datos = appGetDataToDataBase();
   if(datos!=null){
     datos.TipoQuery = 'updBilletaje';
-    appFetch(datos,rutaSQL).then(resp => {
-      appBillGrid();
-      appBillBotonCancel();
-    });
+    try{
+      const resp = await appAsynFetch(datos,rutaSQL);
+      if(!resp.error){
+        appBillGrid();
+        appBillBotonCancel();
+      }
+    } catch(err){
+      console.error('Error al cargar datos:', err);
+    }
   } else {
     alert("!!!Faltan Datos!!!");
   }

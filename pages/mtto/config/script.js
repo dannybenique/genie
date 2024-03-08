@@ -4,16 +4,18 @@ var config = null;
 var strLoader = '<tr><td colspan="7"><div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></td></tr>';
 
 //=========================funciones de Formulario============================
-function appConfigReset(){
-  appFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php").then(resp => {
+async function appConfigReset(){
+  try{
+    const resp = await appAsynFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php");
     menu = JSON.parse(resp.menu);
-    let datos = { TipoQuery:'config_start' }
-    appFetch(datos,rutaSQL).then(resp => {
-      config = resp.config;
-      resp.comboYEAR.map(function(valor){ valor.nombre=valor.ID; return valor; });
-      appLlenarDataEnComboBox(resp.comboYEAR,"#cbo_currYEAR",config.YearCurrentMatricula);
-    })
-  });
+
+    const rpta = await appAsynFetch({ TipoQuery:'config_start' },rutaSQL);
+    config = rpta.config;
+    rpta.comboYEAR.map(function(valor){ valor.nombre=valor.ID; return valor; });
+    appLlenarDataEnComboBox(rpta.comboYEAR,"#cbo_currYEAR",config.YearCurrentMatricula);
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
 function appHabilitarGuardar(){
@@ -21,13 +23,18 @@ function appHabilitarGuardar(){
   document.querySelector("#btn_SAVE").disabled = false;
 }
 
-function appCoonfigUpdate(){
-  let datos = {
-    TipoQuery : "config_update",
-    config : JSON.stringify(config)
+async function appConfigUpdate(){
+  try{
+    const resp = await appAsynFetch({
+      TipoQuery : "config_update",
+      config : JSON.stringify(config)
+    }, rutaSQL);
+    
+    //respuesta
+    if(!resp.error){ document.querySelector("#btn_SAVE").disabled = true; }
+  } catch(err){
+    console.error('Error al cargar datos:', err);
   }
-  appFetch(datos,rutaSQL).then(resp => {
-    document.querySelector("#btn_SAVE").disabled = true;
-  });
+  
 }
 

@@ -3,44 +3,47 @@ var menu = "";
 var agenciaID = 0;
 
 //=========================funciones para Personas============================
-function appPagosReset(){
-  appFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php").then(resp => {
+async function appPagosReset(){
+  document.querySelector("#lbl_crediAtraso").style.color = "#777";
+  document.querySelector('#lbl_crediAtraso').innerHTML = ("");
+
+  document.querySelector('#hid_crediID').value = ("");
+  document.querySelector('#hid_crediProductoID').value = ("");
+  document.querySelector('#hid_crediTasaMora').value = ("");
+  document.querySelector('#hid_crediSocioID').value = ("");
+  document.querySelector('#lbl_crediSocio').innerHTML = ("");
+  document.querySelector('#lbl_crediTipoDUI').innerHTML = ("DUI");
+  document.querySelector('#lbl_crediNroDUI').innerHTML = ("");
+  document.querySelector('#lbl_crediFecha').innerHTML = ("");
+  document.querySelector('#lbl_crediMoneda').innerHTML = ("");
+  document.querySelector('#lbl_crediProducto').innerHTML = ("");
+  document.querySelector('#lbl_crediCodigo').innerHTML = ("");
+  document.querySelector('#lbl_crediTasaCred').innerHTML = ("%");
+  document.querySelector('#lbl_crediTasaMora').innerHTML = ("%");
+  document.querySelector('#lbl_crediAgencia').innerHTML = ("");
+  document.querySelector('#lbl_crediPromotor').innerHTML = ("");
+  document.querySelector('#lbl_crediAnalista').innerHTML = ("");
+  document.querySelector('#lbl_crediImporte').innerHTML = ("");
+  document.querySelector('#lbl_crediSaldo').innerHTML = ("");
+
+  document.querySelector('#txt_DeudaCapital').value = ("");
+  document.querySelector('#txt_DeudaInteres').value = ("");
+  document.querySelector('#txt_DeudaMora').value = ("");
+  document.querySelector('#txt_DeudaOtros').value = ("");
+  document.querySelector('#txt_DeudaFecha').value = ("");
+  document.querySelector('#txt_DeudaTotalNeto').value = ("");
+  document.querySelector('#txt_DeudaImporte').value = ("");
+  document.querySelector('#cbo_DeudaMedioPago').innerHTML = ("");
+  document.querySelector('#cbo_DeudaMonedas').innerHTML = ("");
+  try{
+    const resp = await appAsynFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php");
     menu = JSON.parse(resp.menu);
     agenciaID = resp.agenciaID;
     document.querySelector("#btn_NEW").style.display = (menu.caja.submenu.pagos.cmdInsert==1)?('inline'):('none');
     document.querySelector("#btn_PAGAR").disabled = true;
-    document.querySelector("#lbl_crediAtraso").style.color = "#777";
-    document.querySelector('#lbl_crediAtraso').innerHTML = ("");
-
-    document.querySelector('#hid_crediID').value = ("");
-    document.querySelector('#hid_crediProductoID').value = ("");
-    document.querySelector('#hid_crediTasaMora').value = ("");
-    document.querySelector('#hid_crediSocioID').value = ("");
-    document.querySelector('#lbl_crediSocio').innerHTML = ("");
-    document.querySelector('#lbl_crediTipoDUI').innerHTML = ("DUI");
-    document.querySelector('#lbl_crediNroDUI').innerHTML = ("");
-    document.querySelector('#lbl_crediFecha').innerHTML = ("");
-    document.querySelector('#lbl_crediMoneda').innerHTML = ("");
-    document.querySelector('#lbl_crediProducto').innerHTML = ("");
-    document.querySelector('#lbl_crediCodigo').innerHTML = ("");
-    document.querySelector('#lbl_crediTasaCred').innerHTML = ("%");
-    document.querySelector('#lbl_crediTasaMora').innerHTML = ("%");
-    document.querySelector('#lbl_crediAgencia').innerHTML = ("");
-    document.querySelector('#lbl_crediPromotor').innerHTML = ("");
-    document.querySelector('#lbl_crediAnalista').innerHTML = ("");
-    document.querySelector('#lbl_crediImporte').innerHTML = ("");
-    document.querySelector('#lbl_crediSaldo').innerHTML = ("");
-
-    document.querySelector('#txt_DeudaCapital').value = ("");
-    document.querySelector('#txt_DeudaInteres').value = ("");
-    document.querySelector('#txt_DeudaMora').value = ("");
-    document.querySelector('#txt_DeudaOtros').value = ("");
-    document.querySelector('#txt_DeudaFecha').value = ("");
-    document.querySelector('#txt_DeudaTotalNeto').value = ("");
-    document.querySelector('#txt_DeudaImporte').value = ("");
-    document.querySelector('#cbo_DeudaMedioPago').innerHTML = ("");
-    document.querySelector('#cbo_DeudaMonedas').innerHTML = ("");
-  });
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
 function appPagosBotonNuevo(){
@@ -52,26 +55,27 @@ function appPagosBotonNuevo(){
   $('#modalCredi').on('shown.bs.modal', ()=> { document.querySelector("#modalCredi_Buscar").focus(); });
 }
 
-function appPagosBotonPagar(){
-  let importe = appConvertToNumero(document.querySelector("#txt_DeudaImporte").value);
+async function appPagosBotonPagar(){
+  const importe = appConvertToNumero(document.querySelector("#txt_DeudaImporte").value);
   if(!isNaN(importe)){
     if(importe>0){
       if(confirm("¿Esta seguro de continuar con el PAGO?")){
-        let datos = {
-          TipoQuery : 'insPago',
-          agenciaID : agenciaID*1,
-          codprod : document.querySelector("#lbl_crediCodigo").innerHTML,
-          prestamoID : document.querySelector("#hid_crediID").value*1,
-          medioPagoID : document.querySelector("#cbo_DeudaMedioPago").value*1,
-          productoID : document.querySelector("#hid_crediProductoID").value*1,
-          tasaMora : document.querySelector('#hid_crediTasaMora').value*1,
-          socioID : document.querySelector("#hid_crediSocioID").value*1,
-          monedaID : document.querySelector("#cbo_DeudaMonedas").value*1,
-          importe : importe*1
-        };
-        console.log(datos);
-        appFetch(datos,rutaSQL).then(resp => {
-          if (!resp.error) { 
+        try{
+          const resp = await appAsynFetch({
+            TipoQuery : 'insPago',
+            agenciaID : agenciaID*1,
+            codprod : document.querySelector("#lbl_crediCodigo").innerHTML,
+            prestamoID : document.querySelector("#hid_crediID").value*1,
+            medioPagoID : document.querySelector("#cbo_DeudaMedioPago").value*1,
+            productoID : document.querySelector("#hid_crediProductoID").value*1,
+            tasaMora : document.querySelector('#hid_crediTasaMora').value*1,
+            socioID : document.querySelector("#hid_crediSocioID").value*1,
+            monedaID : document.querySelector("#cbo_DeudaMonedas").value*1,
+            importe : importe*1
+          },rutaSQL);
+          
+          //respuesta
+          if(!resp.error) { 
             if(confirm("¿Desea Imprimir el desembolso?")){
               $("#modalPrint").modal("show");
               let urlServer = appUrlServer()+"pages/caja/pagos/rpt.voucher.php?movimID="+resp.movimID;
@@ -79,7 +83,9 @@ function appPagosBotonPagar(){
             }
             appPagosReset();
           }
-        });
+        } catch(err){
+          console.error('Error al cargar datos:', err);
+        }
       }
     } else {
       alert("el IMPORTE debe ser mayor a cero 0.00");
@@ -101,48 +107,54 @@ function modalCredi_keyBuscar(e){
   }
 }
 
-function modalCrediGrid(){
+async function modalCrediGrid(){
+  //loader
   document.querySelector('#modalCredi_Wait').innerHTML = ('<div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></div>');
-  let txtBuscar = document.querySelector("#modalCredi_Buscar").value;
-  let datos = { TipoQuery: 'selCreditos', buscar:txtBuscar };
-
-  appFetch(datos,rutaSQL).then(resp => {
+  const txtBuscar = document.querySelector("#modalCredi_Buscar").value;
+  try{
+    const resp = await appAsynFetch({ TipoQuery: 'selCreditos', buscar:txtBuscar },rutaSQL);
+    
+    //respuesta
     document.querySelector('#modalCredi_Wait').innerHTML = "";
     document.querySelector("#modalCredi_Grid").style.display = 'block';
     if(resp.prestamos.length>0){
       let fila = "";
       resp.prestamos.forEach((valor,key)=>{
-        fila += '<tr>';
-        fila += '<td>'+(valor.nro_DUI)+'</td>';
-        fila += '<td>'+(valor.socio)+'</td>';
-        fila += '<td><a href="javascript:appCreditoPagoView('+(valor.ID)+');">'+(valor.codigo+' &raquo; '+valor.producto+'; '+valor.mon_abrevia+'; '+appFormatMoney(valor.tasa,2)+'%')+'</a></td>';
-        fila += '<td style="text-align:right;">'+(appFormatMoney(valor.importe,2))+'</td>';
-        fila += '<td style="text-align:right;">'+(appFormatMoney(valor.saldo,2))+'</td>';
-        fila += '</tr>';
+        fila += '<tr>'+
+                '<td>'+(valor.nro_DUI)+'</td>'+
+                '<td>'+(valor.socio)+'</td>'+
+                '<td><a href="javascript:appCreditoPagoView('+(valor.ID)+');">'+(valor.codigo+' &raquo; '+valor.producto+'; '+valor.mon_abrevia+'; '+appFormatMoney(valor.tasa,2)+'%')+'</a></td>'+
+                '<td style="text-align:right;">'+(appFormatMoney(valor.importe,2))+'</td>'+
+                '<td style="text-align:right;">'+(appFormatMoney(valor.saldo,2))+'</td>'+
+                '</tr>';
       });
       document.querySelector('#modalCredi_GridBody').innerHTML = (fila);
     }else{
       document.querySelector('#modalCredi_GridBody').innerHTML = ('<tr><td colspan="5" style="text-align:center;color:red;">Sin Resultados para '+txtBuscar+'</td></tr>');
     }
-  });
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
-function appCreditoPagoView(prestamoID){
+async function appCreditoPagoView(prestamoID){
   $('#modalCredi').modal('hide');
-  let datos = {
-    TipoQuery : 'viewCredito',
-    prestamoID : prestamoID
-  };
-  
-  appFetch(datos,rutaSQL).then(resp => {
-    //console.log(resp);
+  try{
+    const resp = await appAsynFetch({
+      TipoQuery : 'viewCredito',
+      prestamoID : prestamoID
+    },rutaSQL);
+    
+    //respuesta
     appCredi_Cabecera_SetData(resp.cabecera);
     appCredi_Detalle_SetData(resp.detalle);
     appLlenarDataEnComboBox(resp.comboTipoPago,"#cbo_DeudaMedioPago",0); //medios de pago
     appLlenarDataEnComboBox(resp.comboMonedas,"#cbo_DeudaMonedas",0); //monedas
     document.querySelector('#txt_DeudaFecha').value = (moment(resp.fecha).format("DD/MM/YYYY"));
     document.querySelector("#btn_PAGAR").disabled = false;
-  });
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
 function appCredi_Cabecera_SetData(data){

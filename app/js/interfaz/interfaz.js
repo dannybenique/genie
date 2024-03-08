@@ -6,22 +6,22 @@ function appSubmitButton(miTarea,miModulo){
   }
 }
 
-function appNotificacionesSetInterval(){
-  $.ajax({
-    url:'includes/sql_select.php',
-    type:'POST',
-    dataType:'json',
-    data:{"appSQL":JSON.stringify({TipoQuery:'notificaciones'})},
-    success: function(data){ appNotificacionesData(data); },
-    complete:function(data){ setTimeout(appNotificacionesSetInterval,4000); }
-  });
-}
+// function appNotificacionesSetInterval(){
+//   $.ajax({
+//     url:'includes/sql_select.php',
+//     type:'POST',
+//     dataType:'json',
+//     data:{"appSQL":JSON.stringify({TipoQuery:'notificaciones'})},
+//     success: function(data){ appNotificacionesData(data); },
+//     complete:function(data){ setTimeout(appNotificacionesSetInterval,4000); }
+//   });
+// }
 
-function appNotificaciones(){
-  appAjaxSelect('includes/sql_select.php',{TipoQuery:'notificaciones'}).done(function(data){
-    appNotificacionesData(data);
-  });
-}
+// function appNotificaciones(){
+//   appAjaxSelect('includes/sql_select.php',{TipoQuery:'notificaciones'}).done(function(data){
+//     appNotificacionesData(data);
+//   });
+// }
 
 function appNotificacionesData(resp){
   //cuenta total
@@ -41,18 +41,12 @@ function appNotificacionesData(resp){
   }
 }
 
-function inicioAPP(){
+async function inicioAPP(){
   //const user = JSON.parse(localStorage.getItem("user"));
-  appFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php").then(resp => {
+  try{
+    const resp = await appAsynFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php");
+    
     resp.menu = JSON.parse(resp.menu);
-    //console.log(resp.menu);
-    
-    
-    /*if(resp.rolID>102){ //oncontextmenu="return false;" ondragstart="return false;" onselectstart="return false;"
-      $(document.body).attr("oncontextmenu","return false;");
-      $(document.body).attr("onselectstart","return false;");
-      $(document.body).attr("ondragstart","return false;");
-    }*/
     document.querySelector("#ifaz_menu_imagen").src = (resp.urlfoto);
     document.querySelector("#ifaz_menu_nombrecorto").innerHTML = (resp.nombrecorto);
     document.querySelector("#ifaz_menu_login").innerHTML = (resp.login);
@@ -61,5 +55,13 @@ function inicioAPP(){
     document.querySelector("#ifaz_perfil_imagen").src = (resp.urlfoto);
     document.querySelector("#ifaz_perfil_nombrecorto").innerHTML = (resp.nombrecorto);
     document.querySelector("#ifaz_perfil_cargo").innerHTML = (resp.cargo);
-  });
+    /*if(resp.rolID>102){ 
+      //oncontextmenu="return false;" ondragstart="return false;" onselectstart="return false;"
+      $(document.body).attr("oncontextmenu","return false;");
+      $(document.body).attr("onselectstart","return false;");
+      $(document.body).attr("ondragstart","return false;");
+    }*/
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
