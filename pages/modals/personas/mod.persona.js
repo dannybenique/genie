@@ -39,16 +39,16 @@
           $("#modalPers").modal({keyboard:true});
           $('#modalPers').on('shown.bs.modal', function() { document.querySelector("#txt_modPersBuscar").focus(); });
         },
-        buscar : function(){
-          let nroDUI = document.querySelector("#txt_modPersBuscar").value.trim();
-          if(nroDUI.length>=8){
-            document.querySelector('#lbl_modPersWait').innerHTML = ('<div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></div>');
-            let datos = {
-              TipoQuery : Persona.queryBuscar,
-              nroDNI : nroDUI
-            }
-            
-            appFetch(datos,Persona.queryURL).then(resp => {
+        buscar : async function(){
+          try{
+            let nroDUI = document.querySelector("#txt_modPersBuscar").value.trim();
+            if(nroDUI.length>=8){
+              document.querySelector('#lbl_modPersWait').innerHTML = ('<div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></div>');
+              const resp = await appAsynFetch({
+                TipoQuery : Persona.queryBuscar,
+                nroDNI : nroDUI
+              }, Persona.queryURL);
+              
               document.querySelector('#lbl_modPersWait').innerHTML = ("");
               document.querySelector('#lbl_modPersDUI').innerHTML = (nroDUI);
               document.querySelector("#modPersGridDatosTabla").style.display = 'block';
@@ -72,19 +72,21 @@
                     document.querySelector('#lbl_modPersPersona').innerHTML = (resp.tablaPers.persona+' &raquo; '+resp.tablaPers.direccion+' No puede ser agregado a esta lista');
                     break;
                 }
-              }else{ //NO existe en Personas
+              } else { //NO existe en Personas
                 document.querySelector('#btn_modPersAddToForm').style.display = 'none';
                 document.querySelector('#btn_modPersAddToPersonas').style.display = ((Persona.addNewPers)?('block'):('none')); //permite añadir nuevas personas segun config
                 document.querySelector('#lbl_modPersPersona').innerHTML = ('No existe la persona identificada con nro <b>'+nroDUI+'</b> y deseo Agregarla');
               }
-            });
-          } else{ alert("!!!El Nro de DNI debe ser de 08 digitos y el RUC de 11 digitos!!!");}
+            } else { alert("!!!El Nro de DNI debe ser de 08 digitos y el RUC de 11 digitos!!!"); }
+          } catch (err){
+            console.error('Error al cargar datos:', err);
+          }
         },
-        nuevo : function(){
-          document.querySelector('#lbl_modPersWait').innerHTML = ('<div class="progress progress-sm active"><div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" style="width:100%"></div></div>');
-          let nroDNI = document.querySelector("#txt_modPersBuscar").value.trim();
-
-          appFetch({TipoQuery:'newPersona'},Persona.rutaSQL).then(resp => {
+        nuevo : async function(){
+          try {
+            document.querySelector('#lbl_modPersWait').innerHTML = ('<div class="progress progress-sm active"><div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" style="width:100%"></div></div>');
+            const nroDNI = document.querySelector("#txt_modPersBuscar").value.trim();
+            const resp = await appAsynFetch( { TipoQuery:'newPersona' }, Persona.rutaSQL);
             document.querySelector('#lbl_modPersWait').innerHTML = ("");
 
             //pestaña de datos personales
@@ -120,7 +122,7 @@
             appLlenarDataEnComboBox(resp.comboProvincias,"#cbo_modPersProvincia",1401); //provincia arequipa
             appLlenarDataEnComboBox(resp.comboDistritos,"#cbo_modPersDistrito",140101); //distrito arequipa
             $('#date_modPersFechanac').datepicker("setDate",moment(resp.fecha).format("DD/MM/YYYY"));
-
+            
             //config inicial
             document.querySelector("#txt_modPersNombres").placeholder = 'NOMBRES';
             document.querySelector("#div_modPersApePaterno").style.display = 'block';
@@ -134,15 +136,18 @@
             document.querySelector("#btn_modPersUpdate").style.display = 'none';
             document.querySelector("#btn_modPersInsert").style.display = 'inline';
             //$("#modalPers").modal();
-          });
-        },
-        editar : function(personaID,tipoPers){
-          Persona.tipoPersona = tipoPers;
-          let datos = {
-            TipoQuery : 'selPersona',
-            personaID : personaID
+          } catch(err){
+            console.error('Error al cargar datos:', err);
           }
-          appFetch(datos,Persona.rutaSQL).then(resp => {
+        },
+        editar : async function(personaID,tipoPers){
+          try {
+            Persona.tipoPersona = tipoPers;
+            const resp = await appAsynFetch({
+              TipoQuery : 'selPersona',
+              personaID : personaID
+            }, Persona.rutaSQL);
+  
             Persona.datosToForm(resp);
             document.querySelector("#modPersTitulo").innerTHML = ("Datos Personales &raquo; "+personaID);
             document.querySelector("#modPersFormGrid").style.display = 'none';
@@ -151,46 +156,54 @@
             document.querySelector("#btn_modPersUpdate").style.display = 'inline';
             $("#modalPers").modal({keyboard:true});
             $('#modalPers').on('shown.bs.modal', function() { $('#txt_modPersNombres').trigger('focus') });
-          });
-        },
-        comboProvincia : function(){
-          let datos = {
-            TipoQuery : "comboUbigeo",
-            tipoID  : 3, //provincias
-            padreID : document.querySelector("#cbo_modPersRegion").value
+          } catch(err){
+            console.error('Error al cargar datos:', err);
           }
-          appFetch(datos,Persona.rutaSQL).then(resp => {
+        },
+        comboProvincia : async function(){
+          try{
+            const resp = await appAsynFetch({
+              TipoQuery : "comboUbigeo",
+              tipoID  : 3, //provincias
+              padreID : document.querySelector("#cbo_modPersRegion").value
+            }, Persona.rutaSQL);
+
             appLlenarDataEnComboBox(resp.provincias,"#cbo_modPersProvincia",0); //provincia
             appLlenarDataEnComboBox(resp.distritos,"#cbo_modPersDistrito",0); //distrito
-          });
-        },
-        comboDistrito : function(){
-          let datos = {
-            TipoQuery : "comboUbigeo",
-            tipoID  : 4, //distritos
-            padreID : document.querySelector("#cbo_modPersProvincia").value
+          } catch(err){
+            console.error('Error al cargar datos:', err);
           }
-          appFetch(datos,Persona.rutaSQL).then(resp => {
-            appLlenarDataEnComboBox(resp.distritos,"#cbo_modPersDistrito",0); //distrito
-          });
         },
-        apidni : function(){
-          let nroDoc = document.querySelector("#txt_modPersDocumento").value; 
-          fetch("https://dniruc.apisperu.com/api/v1/"+(((nroDoc.length==8)?("dni/"):((nroDoc.length==11)?("ruc/"):("")))+(nroDoc))+"?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImRhbm55YmVuaXF1ZUBtc24uY29tIn0.ts3qFRsLtLxqnoOMvwYEeOu470tyTUGWQbsuH4ZTC7I")
-          .then(response=>response.json())
-          .then((resp)=>{
-            if(resp.nombres==null){
-              alert("NO hay datos desde la API");
+        comboDistrito : async function(){
+          try {
+            const resp = await appAsynFetch({
+              TipoQuery : "comboUbigeo",
+              tipoID  : 4, //distritos
+              padreID : document.querySelector("#cbo_modPersProvincia").value
+            }, Persona.rutaSQL);
+
+            appLlenarDataEnComboBox(resp.distritos,"#cbo_modPersDistrito",0); //distrito
+          } catch(err){
+            console.error('Error al cargar datos:', err);
+          }
+        },
+        apidni : async function(){
+          try {
+            const nroDoc = document.querySelector("#txt_modPersDocumento").value;
+            const resp = await fetch("https://dniruc.apisperu.com/api/v1/"+(((nroDoc.length==8)?("dni/"):((nroDoc.length==11)?("ruc/"):("")))+(nroDoc))+"?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImRhbm55YmVuaXF1ZUBtc24uY29tIn0.ts3qFRsLtLxqnoOMvwYEeOu470tyTUGWQbsuH4ZTC7I");
+            const rpta = await resp.json();
+            
+            if(rpta.success){
+              document.querySelector("#txt_modPersNombres").value = (rpta.nombres);
+              document.querySelector("#txt_modPersApePaterno").value = (rpta.apellidoPaterno);
+              document.querySelector("#txt_modPersApeMaterno").value = (rpta.apellidoMaterno);  
             } else {
-              document.querySelector("#txt_modPersNombres").value = (resp.nombres);
-              document.querySelector("#txt_modPersApePaterno").value = (resp.apellidoPaterno);
-              document.querySelector("#txt_modPersApeMaterno").value = (resp.apellidoMaterno);
+              alert("NO hay datos desde la API");
             }
-          })
-          .catch((error)=>{
-            console.log(error);
+          } catch(err) {
+            console.log(err);
             alert("Hubo un error con la API");
-          });
+          }
         },
         sinErrores : function(){
           let rpta = true;
@@ -211,7 +224,7 @@
           return rpta;
         },
         datosToDatabase : function(){
-          let datosPers = {
+          const datosPers = {
             TipoQuery : ((Persona.personaID==0)?("insPersona"):("updPersona")),
             commandSQL : Persona.commandSQL,
             ID : Persona.personaID,
@@ -293,17 +306,19 @@
             document.querySelector("#cbo_modPersDocumento").removeAttribute('disabled');
           }
         },
-        ejecutaSQL : function(){
-          let datos = Persona.datosToDatabase();
+        ejecutaSQL : async function(){
           let foto = $('#file_modPersFoto')[0].files[0];
           let exec = new FormData();
           exec.append('imgFoto', foto);
-          exec.append("appSQL",JSON.stringify(datos));
+          exec.append("appSQL",JSON.stringify(Persona.datosToDatabase()));
           
-          let rpta = fetch(Persona.rutaSQL, { method:'POST', body:exec })
-            .then(rpta => rpta.json())
-            .catch(err => console.log(err));
-          return rpta;
+          try {
+            const resp = await fetch(Persona.rutaSQL, { method:'POST', body:exec });
+            const rpta = await resp.json();
+            return rpta;
+          } catch(err){
+            console.log(err);
+          }
         }
       };
     return Persona;

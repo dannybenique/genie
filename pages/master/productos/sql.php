@@ -50,17 +50,17 @@
           echo json_encode($rpta);
           break;
         case "insProducto":
-          //obteniendo nuevo ID
-          $qry = $db->query_all("select COALESCE(max(id)+1,1) as maxi from app_productos;");
-          $id = reset($qry)["maxi"];
+          //obteniendo nuevo nro orden
+          $qry = $db->query_all("select COALESCE(max(orden)+1,1) as maxi from app_productos;");
+          $orden = reset($qry)["maxi"];
 
           //agregando a la tabla
-          $sql = "insert into app_productos values (:id,:codigo,:nombre,:abrevia,:estado,:sysIP,:userID,now())";
+          $sql = "insert into app_productos (codigo,nombre,abrevia,orden,estado,sys_ip,sys_user,sys_fecha) values (:codigo,:nombre,:abrevia,:orden,:estado,:sysIP,:userID,now()) returning id;";
           $params = [
-            ":id"=>$id,
             ":codigo"=>$data->codigo,
             ":nombre"=>$data->nombre,
             ":abrevia"=>$data->abrevia,
+            ":orden"=>$orden,
             ":estado"=>1,
             ":sysIP"=>$fn->getClientIP(),
             ":userID"=>$_SESSION['usr_ID']

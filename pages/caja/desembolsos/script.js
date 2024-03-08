@@ -6,16 +6,16 @@ var objTotales = null;
 var objMatricula = null;
 
 //=========================funciones para Personas============================
-function appDesembGrid(){
-  document.querySelector('#grdDatos').innerHTML = ('<tr><td colspan="9"><div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></td></tr>');
-  let txtBuscar = document.querySelector("#txtBuscar").value;
-  let datos = {
-    TipoQuery: 'desemb_Select',
-    buscar: txtBuscar
-  };
-
-  appFetch(datos,rutaSQL).then(resp => {
-    let disabledDelete = (menu.caja.submenu.desembolsos.cmdDelete===1) ? "" : "disabled";
+async function appDesembGrid(){
+  try {
+    document.querySelector('#grdDatos').innerHTML = ('<tr><td colspan="9"><div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></td></tr>');
+    const txtBuscar = document.querySelector("#txtBuscar").value;
+    const datos = {
+      TipoQuery: 'desemb_Select',
+      buscar: txtBuscar
+    };
+    const resp = await appAsynFetch(datos,rutaSQL);
+    const disabledDelete = (menu.caja.submenu.desembolsos.cmdDelete===1) ? (""):("disabled");
     document.querySelector("#chk_All").disabled = (menu.caja.submenu.desembolsos.cmdDelete===1) ? false : true;
     if(resp.tabla.length>0){
       let fila = "";
@@ -32,11 +32,13 @@ function appDesembGrid(){
                 '</tr>';
       });
       document.querySelector('#grdDatos').innerHTML =fila;
-    }else{
+    } else {
       document.querySelector('#grdDatos').innerHTML = '<tr><td colspan="9" style="text-align:center;color:red;">Sin Resultados '+((txtBuscar==="")?(""):("para "+txtBuscar))+'</td></tr>';
     }
     document.querySelector('#grdCount').innerHTML = resp.tabla.length+"/"+resp.cuenta;
-  });
+  } catch (err) {
+    console.error('Error al cargar datos:', err);
+  }
 }
 
 function appDesembReset(){

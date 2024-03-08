@@ -67,3 +67,17 @@ function appFetch(datos,rutaSQL){
     .catch(err => console.log(err));
   return rpta;
 }
+
+async function appAsynFetch(datos, rutaSQL) {
+  let data = new FormData();
+  data.append('appSQL', JSON.stringify(datos));
+
+  try {
+    const resp = await fetch(rutaSQL, { method: 'POST', body: data });
+    const rpta = await resp.json();
+    return rpta;
+  } catch (err) {
+      console.log(err);
+      return null; // Por ejemplo, devolver nulo o un objeto de error personalizado
+  }
+}

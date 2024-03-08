@@ -10,8 +10,9 @@
         tablaLabo : 0,
         addModalToParentForm : function(contenedor) { $("#"+contenedor).load(Laboral.rutaHTML); },
         close : function(){ $("#modalLabo").modal("hide"); },
-        nuevo : function(personaID){
-          appFetch({TipoQuery:'newLaboral'},Laboral.rutaSQL).then(resp => {
+        nuevo : async function(personaID){
+          try {
+            const resp = await appAsynFetch({TipoQuery:'newLaboral'}, Laboral.rutaSQL);
             Laboral.commandSQL = "INS";
             Laboral.ID = 0;
             Laboral.personaID = personaID;
@@ -36,14 +37,17 @@
             document.querySelector("#btn_modLaboUpdate").style.display = 'none';
             $("#modalLabo").modal({keyboard:true});
             $('#modalLabo').on('shown.bs.modal', function() { document.querySelector("#txt_LaboEmpresa").focus(); });
-          });
-        },
-        editar : function(laboralID){
-          let datos = {
-            TipoQuery : 'selLaboral',
-            ID : laboralID
+          } catch(err) {
+            console.error('Error al cargar datos:', err);
           }
-          appFetch(datos,Laboral.rutaSQL).then(resp => {
+        },
+        editar : async function(laboralID){
+          try {
+            const resp = await appAsynFetch({
+              TipoQuery : 'selLaboral',
+              ID : laboralID
+            }, Laboral.rutaSQL);
+
             Laboral.datosToForm(resp);
             document.querySelector("#modLaboTitulo").innerHTML = ("Editar Datos Laborales");
             document.querySelector("#modLaboFormEdit").style.display = 'block';
@@ -51,43 +55,49 @@
             document.querySelector("#btn_modLaboInsert").style.display = 'none';
             $("#modalLabo").modal({keyboard:true});
             $('#modalLabo').on('shown.bs.modal', function() { document.querySelector("#txt_LaboEmpresa").focus(); });
-          });
-        },
-        borrar : function(personaID,laboralID){
-          let datos = {
-            TipoQuery : "ersLaboral",
-            commandSQL: 'ERS',
-            laboralID : laboralID,
-            personaID : personaID
+          } catch(err){
+            console.error('Error al cargar datos:', err);
           }
+        },
+        borrar : async function(personaID,laboralID){
+          try{
+            const resp = await appAsynFetch({
+              TipoQuery : "ersLaboral",
+              commandSQL: 'ERS',
+              laboralID : laboralID,
+              personaID : personaID
+            }, Laboral.rutaSQL);
+            return resp;
+          } catch(err) {
+            console.error('Error al cargar datos:', err);
+          }
+        },
+        comboProvincia : async function(){
+          try {
+            const resp = await appAsynFetch({
+              TipoQuery : "comboUbigeo",
+              tipoID  : 3,
+              padreID : document.querySelector("#cbo_LaboEmprRegion").value
+            }, Laboral.rutaSQL);
 
-          let exec = new FormData();
-          exec.append("appSQL",JSON.stringify(datos));
-          let rpta = fetch(Laboral.rutaSQL, { method:'POST', body:exec })
-            .then(rpta => rpta.json())
-            .catch(err => console.log(err));
-          return rpta;
-        },
-        comboProvincia : function(){
-          let datos = {
-            TipoQuery : "comboUbigeo",
-            tipoID  : 3,
-            padreID : document.querySelector("#cbo_LaboEmprRegion").value
-          }
-          appFetch(datos,Laboral.rutaSQL).then(resp => {
             appLlenarDataEnComboBox(resp.provincias,"#cbo_LaboEmprProvincia",0); //provincia
             appLlenarDataEnComboBox(resp.distritos,"#cbo_LaboEmprDistrito",0); //distrito
-          });
-        },
-        comboDistrito : function(){
-          let datos = {
-            TipoQuery : "comboUbigeo",
-            tipoID  : 4,
-            padreID : document.querySelector("#cbo_LaboEmprProvincia").value
+          } catch(err) {
+            console.error('Error al cargar datos:', err);
           }
-          appFetch(datos,Laboral.rutaSQL).then(resp => {
+        },
+        comboDistrito : async function(){
+          try {
+            const resp = await appAsynFetch({
+              TipoQuery : "comboUbigeo",
+              tipoID  : 4,
+              padreID : document.querySelector("#cbo_LaboEmprProvincia").value
+            }, Laboral.rutaSQL);
+
             appLlenarDataEnComboBox(resp.distritos,"#cbo_LaboEmprDistrito",0); //distrito
-          });
+          } catch(err) {
+            console.error('Error al cargar datos:', err);
+          }
         },
         sinErrores : function(){
           let Error = true;
@@ -140,15 +150,13 @@
           document.querySelector("#txt_LaboEmprIngreso").value = (appFormatMoney(data.ingreso,2));
           document.querySelector("#txt_LaboObservac").value = (data.observLabo);
         },
-        ejecutaSQL : function(){
-          let exec = new FormData();
-          let datos = Laboral.datosToDatabase();
-          
-          exec.append("appSQL",JSON.stringify(datos));
-          let rpta = fetch(Laboral.rutaSQL, { method:'POST', body:exec })
-            .then(rpta => rpta.json())
-            .catch(err => console.log(err));
-          return rpta;
+        ejecutaSQL : async function(){
+          try{
+            const resp = await appAsynFetch(Laboral.datosToDatabase(), Laboral.rutaSQL);
+            return resp;
+          } catch(err) {
+            console.error('Error al cargar datos:', err);
+          }
         },
       };
     return Laboral;

@@ -65,12 +65,13 @@
           document.querySelector("#btn_modConyUpdate").style.display = 'none';
           Conyuge.lnkConyuge();
         },
-        editar : function(personaID){
-          let datos = {
-            TipoQuery : 'selConyuge',
-            personaID : personaID
-          }
-          appFetch(datos,Conyuge.rutaSQL).then(resp => {
+        editar : async function(personaID){
+          try{
+            const resp = await appAsynFetch({
+              TipoQuery : 'selConyuge',
+              personaID : personaID
+            }, Conyuge.rutaSQL);
+
             Conyuge.commandSQL = "UPD";
             Conyuge.personaID = personaID;
             Conyuge.datosToForm(resp);
@@ -78,33 +79,21 @@
             document.querySelector("#btn_modConyUpdate").style.display = 'inline';
             document.querySelector("#btn_modConyInsert").style.display = 'none';
             $("#modalCony").modal();
-          });
-        },
-        borrar : function(personaID){
-          let datos = {
-            TipoQuery : "delConyuge",
-            commandSQL: "DEL",
-            personaID : personaID
+          } catch(err) {
+            console.error('Error al cargar datos:', err);
           }
-          let exec = new FormData();
-          exec.append("appSQL",JSON.stringify(datos));
-          let rpta = fetch(Conyuge.rutaSQL, { method:'POST', body:exec })
-            .then(rpta => rpta.json())
-            .catch(err => console.log(err));
-          return rpta;
-          /*
-          let rpta = $.ajax({
-            url  : Conyuge.rutaSQL,
-            type : 'POST',
-            processData : false,
-            contentType : false,
-            data : exec
-          })
-          .fail(function(resp){
-            console.log("fail:.... "+resp.responseText);
-          });
-          return rpta;
-          */
+        },
+        borrar : async function(personaID){
+          try{
+            const resp = await appAsynFetch({
+              TipoQuery : "delConyuge",
+              commandSQL: "DEL",
+              personaID : personaID
+            }, Conyuge.rutaSQL);
+            return resp;
+          } catch(err){
+            console.error('Error al cargar datos:', err);
+          }
         },
         sinErrores : function(){
           let Error = true;
@@ -114,7 +103,7 @@
           return Error;
         },
         datosToDatabase : function(){
-          let data = {
+          const data = {
             TipoQuery : "execConyuge",
             commandSQL : Conyuge.commandSQL,
             personaID : Conyuge.personaID,
@@ -144,28 +133,13 @@
           //datos relacion
           document.querySelector("#txt_modConyTiempoRela").value = (data.tiempoRelacion);
         },
-        ejecutaSQL : function(){
-          let exec = new FormData();
-          let datos = Conyuge.datosToDatabase();
-
-          exec.append("appSQL",JSON.stringify(datos));
-          let rpta = fetch(Conyuge.rutaSQL, { method:'POST', body:exec })
-            .then(rpta => rpta.json())
-            .catch(err => console.log(err));
-          return rpta;
-          /*
-          let rpta = $.ajax({
-            url  : Conyuge.rutaSQL,
-            type : 'POST',
-            processData : false,
-            contentType : false,
-            data : exec
-          })
-          .fail(function(resp){
-            console.log("fail:.... "+resp.responseText);
-          });
-          return rpta;
-          */
+        ejecutaSQL : async function(){
+          try{
+            const resp = await appAsynFetch(Conyuge.datosToDatabase(), Conyuge.rutaSQL);
+            return resp;
+          }catch(err){
+            console.error('Error al cargar datos:', err);
+          }
         },
       };
     return Conyuge;
