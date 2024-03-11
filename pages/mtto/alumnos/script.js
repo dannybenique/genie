@@ -108,16 +108,18 @@ function appAlumnosBotonViewAll(){ //mostrar inclusive los alumnos eliminados
   appAlumnosGrid();
 }
 
-function handlerAlumnosInsert_Click(e){
-  if(Persona.sinErrores()){ //sin errores
-    // console.log("en alumnos ==> nuevos");
+async function handlerAlumnosInsert_Click(e){
+  if(Persona.sinErrores()){
     document.querySelector('#grid').style.display = 'none';
     document.querySelector('#edit').style.display = 'block';
-    Persona.ejecutaSQL().then(resp => {
+    try{
+      const resp = await Persona.ejecutaSQL();
       appPersonaSetData(resp.tablaPers);
       appAlumnoClear();
       Persona.close();
-    });
+    } catch(err){
+      console.error('Error al cargar datos:', err);
+    }
   } else {
     alert("!!!Faltan llenar Datos!!!");
   }
@@ -265,12 +267,15 @@ function appFamiPadreAdd(){
   $('#btn_modPersAddToForm').on('click',handlerFamiPadreAddToForm_Click);
 }
 
-function handlerFamiPadreInsert_Click(e){
-  if(Persona.sinErrores()){ //sin errores
-    Persona.ejecutaSQL().then(resp => {
+async function handlerFamiPadreInsert_Click(e){
+  if(Persona.sinErrores()){
+    try{
+      const resp = await Persona.ejecutaSQL();
       appFamiPadreSetData(resp.tablaPers);
       Persona.close();
-    });
+    } catch(err){
+      console.error('Error al cargar datos:', err);
+    }
   } else {
     alert("!!!Faltan llenar Datos!!!");
   }
@@ -293,12 +298,15 @@ function appFamiMadreAdd(){
   $('#btn_modPersAddToForm').on('click',handlerFamiMadreAddToForm_Click);
 }
 
-function handlerFamiMadreInsert_Click(e){
-  if(Persona.sinErrores()){ //sin errores
-    Persona.ejecutaSQL().then(resp => {
+async function handlerFamiMadreInsert_Click(e){
+  if(Persona.sinErrores()){
+    try{
+      const resp = await Persona.ejecutaSQL();
       appFamiMadreSetData(resp.tablaPers);
       Persona.close();
-    });
+    } catch(err){
+      console.error('Error al cargar datos:', err);
+    }
   } else {
     alert("!!!Faltan llenar Datos!!!");
   }
@@ -321,12 +329,15 @@ function appFamiApoderaAdd(){
   $('#btn_modPersAddToForm').on('click',handlerFamiApoderaAddToForm_Click);
 }
 
-function handlerFamiApoderaInsert_Click(e){
-  if(Persona.sinErrores()){ //sin errores
-    Persona.ejecutaSQL().then(resp => {
+async function handlerFamiApoderaInsert_Click(e){
+  if(Persona.sinErrores()){
+    try{
+      const resp = await Persona.ejecutaSQL();
       appFamiApoderaSetData(resp.tablaPers);
       Persona.close();
-    });
+    } catch(err){
+      console.error('Error al cargar datos:', err);
+    }
   } else {
     alert("!!!Faltan llenar Datos!!!");
   }
@@ -430,12 +441,15 @@ function appPersonaSetData(data){
 
 function appPersonaEditar(){
   Persona.editar(document.querySelector('#lbl_ID').innerHTML,'S');
-  $('#btn_modPersUpdate').on('click',function(e) {
-    if(Persona.sinErrores()){ //sin errores
-      Persona.ejecutaSQL().then(resp => {
+  $('#btn_modPersUpdate').on('click',async function(e) {
+    if(Persona.sinErrores()){
+      try{
+        const resp = await Persona.ejecutaSQL();
         appPersonaSetData(resp.tablaPers);
         Persona.close();
-      });
+      } catch(err){
+        console.error('Error al cargar datos:', err);
+      }
     } else {
       alert("!!!Faltan llenar Datos!!!");
     }

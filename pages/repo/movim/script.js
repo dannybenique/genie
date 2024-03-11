@@ -2,17 +2,18 @@ const rutaSQL = "pages/repo/movim/sql.php";
 var menu = "";
 
 //=========================funciones para Personas============================
-function appMovimGrid(){
+async function appMovimGrid(){
   document.querySelector('#grdDatos').innerHTML = ('<tr><td colspan="7"><div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></td></tr>');
-  let datos = { 
-    TipoQuery: 'selMovim',
-    agenciaID: document.querySelector('#cboAgencias').value,
-    usuarioID: document.querySelector('#cboUsuarios').value,
-    monedaID: document.querySelector('#cboMonedas').value,
-    fecha: appConvertToFecha(document.querySelector('#txtFecha').value,'')
-  };
+  try{
+    const resp = await appAsynFetch({ 
+      TipoQuery: 'selMovim',
+      agenciaID: document.querySelector('#cboAgencias').value,
+      usuarioID: document.querySelector('#cboUsuarios').value,
+      monedaID: document.querySelector('#cboMonedas').value,
+      fecha: appConvertToFecha(document.querySelector('#txtFecha').value,'')
+    },rutaSQL);
 
-  appFetch(datos,rutaSQL).then(resp => {
+    //respuesta
     if(resp.movim.length>0){
       let totIngresos = 0;
       let totSalidas = 0;
@@ -43,20 +44,24 @@ function appMovimGrid(){
       document.querySelector('#grdDatos').innerHTML = ('<tr><td colspan="7" style="text-align:center;color:red;">Sin Resultados</td></tr>');
     }
     document.querySelector('#grdCount').innerHTML = (resp.movim.length);
-  });
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
-function appMovimReset(){
-  appFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php").then(resp => {
+async function appMovimReset(){
+  $('#txtFecha').datepicker("setDate",moment().format("DD/MM/YYYY"));
+  try{
+    const resp = await appAsynFetch({TipoQuery:'selDataUser' },"includes/sess_interfaz.php");
     menu = JSON.parse(resp.menu);
-    let datos = { TipoQuery:'StartMovim' }
-    appFetch(datos,rutaSQL).then(resp => {
-      appLlenarDataEnComboBox(resp.comboAgencias,"#cboAgencias",0);
-      appLlenarDataEnComboBox(resp.comboMonedas,"#cboMonedas",0);
-      appLlenarDataEnComboBox(resp.comboUsuarios,"#cboUsuarios",0);
-      $('#txtFecha').datepicker("setDate",moment().format("DD/MM/YYYY"));
-    })
-  });
+      
+    const rpta = await appAsynFetch({ TipoQuery:'StartMovim' },rutaSQL);
+    appLlenarDataEnComboBox(rpta.comboAgencias,"#cboAgencias",0);
+    appLlenarDataEnComboBox(rpta.comboMonedas,"#cboMonedas",0);
+    appLlenarDataEnComboBox(rpta.comboUsuarios,"#cboUsuarios",0);
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
 function appMovimBuscar(e){
@@ -64,16 +69,16 @@ function appMovimBuscar(e){
   if(code == 13) { appMovimGrid(); }
 }
 
-function appMovimView(voucherID){
+async function appMovimView(voucherID){
+  $(".form-group").removeClass("has-error");
   document.querySelector('#grid').style.display = 'none';
   document.querySelector('#edit').style.display = 'block';
-  $(".form-group").removeClass("has-error");
+  try{
+    const resp = await appAsynFetch({
+      TipoQuery : 'viewMovim',
+      voucherID : voucherID
+    },rutaSQL);
 
-  let datos = {
-    TipoQuery : 'viewMovim',
-    voucherID : voucherID
-  }
-  appFetch(datos,rutaSQL).then(resp => {
     //cabecera
     document.querySelector("#hid_movimID").value = resp.cab.ID;
     document.querySelector("#lbl_pagoAgencia").innerHTML = (resp.cab.agencia);
@@ -85,7 +90,7 @@ function appMovimView(voucherID){
     document.querySelector("#lbl_pagoNroDUI").innerHTML = (resp.cab.nrodui);
     document.querySelector("#lbl_pagoCajera").innerHTML = (resp.cab.cajera);
     document.querySelector("#lbl_pagoImporte").innerHTML = "<small style='font-size:10px;'>"+resp.cab.mon_abrevia+"</small> "+appFormatMoney(resp.cab.importe,2);
-    
+
     //detalle
     if(resp.deta.length>0){
       console.log(resp.deta);
@@ -105,7 +110,9 @@ function appMovimView(voucherID){
 
     document.querySelector('#grid').style.display = 'none';
     document.querySelector('#edit').style.display = 'block';
-  });
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
 function appMovimRefresh(){

@@ -13,19 +13,21 @@
         lnkConyuge : function(){
           Persona.openBuscar('VerifyConyuge',Conyuge.rutaSQL,true,true,false);
 
-          $('#btn_modPersInsert').on('click',function(e) {
+          $('#btn_modPersInsert').on('click',async function(e) {
             if(Persona.sinErrores()){
-              Persona.ejecutaSQL().then(rpta => {
-                let data = {
+              try{
+                const resp = await Persona.ejecutaSQL();
+                Persona.close();
+                Conyuge.datosToForm({
                   id_conyuge : rpta.tablaPers.ID,
                   tiempoRelacion : 1,
                   persona : rpta.tablaPers
-                }
-                Persona.close();
-                Conyuge.datosToForm(data);
+                });
                 $("#modalCony").modal();
                 $('#btn_modConyLaboral').show();
-              });
+              } catch(err){
+                console.error('Error al cargar datos:', err);
+              }
             } else {
               alert("!!!Faltan llenar Datos!!!");
             }

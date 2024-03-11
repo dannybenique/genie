@@ -2,7 +2,7 @@ const rutaSQL = "pages/master/niveles/sql.php";
 var menu = null;
 var strLoader = '<tr><td colspan="7"><div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></td></tr>';
 
-//=========================funciones para Personas============================
+//=========================funciones============================
 async function appNivelesGrid(){
   //preloader
   document.querySelector('#grdDatos').innerHTML = (strLoader);
@@ -100,31 +100,35 @@ async function appNivelesRefresh(){
   }
 }
 
-function appNivelNuevo(){ //falta corregir
+async function appNivelNuevo(){ //falta corregir
+  // $(".form-group").removeClass("has-error");
   // document.querySelector("#btnInsert").style.display = (menu.master.submenu.niveles.cmdInsert==1)?('inline'):('none');
   // document.querySelector("#btnUpdate").style.display = 'none';
-  // appFetch({ TipoQuery:'nivel_start' },rutaSQL).then(resp => {
-  //   try{
-  //     $(".form-group").removeClass("has-error");
-  //     document.querySelector("#hid_productoID").value = ("0");
-  //     document.querySelector("#txt_Codigo").value = ("");
-  //     document.querySelector("#txt_Abrev").value = ("");
-  //     document.querySelector("#txt_Nombre").value = ("");
-  //     document.querySelector("#grid").style.display = 'none';
-  //     document.querySelector("#edit").style.display = 'block';
-  //   } catch (err){
-  //     console.log(err);
-  //   }
-  // });
+  
+  // try{
+  //   const resp = await appAsynFetch({ TipoQuery:'nivel_start' },rutaSQL);
+    
+  //   document.querySelector("#hid_productoID").value = ("0");
+  //   document.querySelector("#txt_Codigo").value = ("");
+  //   document.querySelector("#txt_Abrev").value = ("");
+  //   document.querySelector("#txt_Nombre").value = ("");
+  //   document.querySelector("#grid").style.display = 'none';
+  //   document.querySelector("#edit").style.display = 'block';
+  // } catch (err){
+  //   console.log(err);
+  // }
 }
 
-function appNivelInsert(){ //falta corregir
+async function appNivelInsert(){ //falta corregir
   // let datos = modGetDataToDataBase();
   // if(datos!=""){
   //   datos.TipoQuery = 'insNivel';
-  //   appFetch(datos,rutaSQL).then(resp => {
-  //     appNivelCancel();
-  //   });
+  //   try{
+  //     const resp = await appAsynFetch(datos,rutaSQL);
+  //     if(!resp.error){ appNivelCancel(); }
+  //   } catch(err){
+  //     console.error('Error al cargar datos:', err);
+  //   }
   // } else {
   //   alert("!!!Faltan Datos!!!");
   // }

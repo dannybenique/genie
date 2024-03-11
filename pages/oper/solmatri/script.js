@@ -2,16 +2,17 @@ const rutaSQL = "pages/oper/solmatri/sql.php";
 var menu = "";
 
 //=========================funciones para Personas============================
-function appSolMatriGrid(){
+async function appSolMatriGrid(){
   document.querySelector('#grdDatos').innerHTML = ('<tr><td colspan="10"><div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></td></tr>');
-  let txtBuscar = document.querySelector("#txtBuscar").value;
-  let datos = {
-    TipoQuery: 'selSolMatri',
-    buscar: txtBuscar
-  };
-
-  appFetch(datos,rutaSQL).then(resp => {
-    let disabledDelete = (menu.oper.submenu.solmatri.cmdDelete===1) ? "" : "disabled";
+  const disabledDelete = (menu.oper.submenu.solmatri.cmdDelete===1) ? "" : "disabled";
+  const txtBuscar = document.querySelector("#txtBuscar").value;
+  try{
+    const resp = await appAsynFetch({
+      TipoQuery: 'selSolMatri',
+      buscar: txtBuscar
+    },rutaSQL);
+  
+    //respuesta  
     document.querySelector("#chk_All").disabled = (menu.oper.submenu.solmatri.cmdDelete===1) ? false : true;
     if(resp.tabla.length>0){
       let fila = "";
@@ -33,19 +34,23 @@ function appSolMatriGrid(){
       $('#grdDatos').html('<tr><td colspan="10" style="text-align:center;color:red;">Sin Resultados '+(res)+'</td></tr>');
     }
     $('#grdCount').html(resp.tabla.length+"/"+resp.cuenta);
-  });
+  } catch(err) {
+    console.error('Error al cargar datos:', err);
+  }
 }
 
-function appSolMatriReset(){
-  appFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php").then(resp => {
+async function appSolMatriReset(){
+  document.querySelector("#txtBuscar").value = ("");
+  document.querySelector("#grdDatos").innerHTML = ("");
+  try{
+    const resp = await appAsynFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php");
     menu = JSON.parse(resp.menu);
     document.querySelector("#btn_DEL").style.display = (menu.oper.submenu.solmatri.cmdDelete==1)?('inline'):('none');
     document.querySelector("#btn_NEW").style.display = (menu.oper.submenu.solmatri.cmdInsert==1)?('inline'):('none');
-
-    document.querySelector("#txtBuscar").value = ("");
-    document.querySelector("#grdDatos").innerHTML = ("");
     appSolMatriGrid();
-  });
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
 function appSolMatriBuscar(e){
@@ -59,27 +64,33 @@ function appSolMatriBotonCancel(){
   $('#edit').hide();
 }
 
-function appSolMatriBotonInsert(){
+async function appSolMatriBotonInsert(){
   if(appSolMatriValidarCampos()){
     alert("¡¡¡Faltan datos!!!");
   } else {
-    let datos = appSolMatriGetDatosToDatabase();
+    const datos = appSolMatriGetDatosToDatabase();
     datos.TipoExec = "INS";
-    appFetch(datos,rutaSQL).then(resp => {
-      appSolMatriBotonCancel();
-    });
+    try{
+      const resp = await appAsynFetch(datos,rutaSQL);
+      if(!resp.error) { appSolMatriBotonCancel(); }
+    } catch(err){
+      console.error('Error al cargar datos:', err);
+    }
   }
 }
 
-function appSolMatriBotonUpdate(){
+async function appSolMatriBotonUpdate(){
   if(appSolMatriValidarCampos()){
     alert("¡¡¡Faltan datos!!!");
   } else {
-    let datos = appSolMatriGetDatosToDatabase();
+    const datos = appSolMatriGetDatosToDatabase();
     datos.TipoExec = "UPD";
-    appFetch(datos,rutaSQL).then(resp => {
-      appSolMatriBotonCancel();
-    });
+    try{
+      const resp = await appAsynFetch(datos,rutaSQL);
+      if(!resp.error) { appSolMatriBotonCancel(); }
+    } catch(err){
+      console.error('Error al cargar datos:', err);
+    }
   }
 }
 
@@ -102,30 +113,34 @@ function handlerSolMatriAddToForm_Click(e){
   $('#btn_modPersAddToForm').off('click');
 }
 
-function appSolMatriBotonBorrar(){
+async function appSolMatriBotonBorrar(){
   let arr = Array.from(document.querySelectorAll('[name="chk_Borrar"]:checked')).map(function(obj){return obj.attributes[2].nodeValue});
   if(arr.length>0){
     if(confirm("¿Esta seguro de continuar?")) {
-      appFetch({ TipoQuery:'delSolMatri', arr:arr },rutaSQL).then(resp => {
-        console.log(resp);
+      try{
+        const resp = await appAsynFetch({ TipoQuery:'delSolMatri', arr:arr },rutaSQL);
         if (!resp.error) { appSolMatriBotonCancel(); }
-      });
+      } catch(err){
+        console.error('Error al cargar datos:', err);
+      }
     }
   } else {
     alert("NO eligio borrar ninguno");
   }
 }
 
-function appSolMatriAprueba(matriculaID){
+async function appSolMatriAprueba(matriculaID){
   $("#modalAprueba").modal("show");
-  let datos = {
-    TipoQuery: 'viewApruebaSolMatri',
-    matriculaID: matriculaID
-  }
-  appFetch(datos,rutaSQL).then(resp => {
-    document.querySelector("#txt_modapruebaFechaAprueba").disabled = (resp.rolUser==resp.rolROOT) ? (false):(true);
+  
+  try{
+    const resp = await appAsynFetch({
+      TipoQuery: 'viewApruebaSolMatri',
+      matriculaID: matriculaID
+    },rutaSQL);
+    
+    //respuesta
+    document.querySelector("#txt_modapruebaFechaAprueba").disabled = (resp.rolUser==resp.rolROOT) ? (false):(true);    
     $("#txt_modapruebaFechaAprueba").datepicker("setDate",moment(resp.fecha_aprueba).format("DD/MM/YYYY"));
-
     document.querySelector("#hid_modapruebaID").value = (resp.ID);
     document.querySelector("#lbl_modapruebaAlumno").innerHTML = (resp.alumno);
     document.querySelector("#lbl_modapruebaDNI").innerHTML = (resp.nro_dui);
@@ -140,21 +155,23 @@ function appSolMatriAprueba(matriculaID){
     //botones del footer del modal
     document.querySelector("#div_modapruebaFooter").innerHTML = '<button type="button" class="btn btn-default pull-left" data-dismiss="modal"><i class="fa fa-close"></i> Cerrar</button>'+
       '<button type="button" class="btn btn-primary" onclick="javascript:modaprueba_BotonAprobar();"><i class="fa fa-thumbs-up"></i> Aprobar Solicitud</button>';
-  });
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
-function appSolMatriView(matriculaID){
-  let datos = {
-    TipoQuery : 'viewSolMatri',
-    matriculaID : matriculaID
-  };
-  
-  //tabs default en primer tab
+async function appSolMatriView(matriculaID){
+  //tabs default en primer tab - loader
   $('.nav-tabs li').removeClass('active');
   $('.tab-content .tab-pane').removeClass('active');
   $('a[href="#datosSolMatri"]').closest('li').addClass('active');
   $('#datosSolMatri').addClass('active');
-  appFetch(datos,rutaSQL).then(resp => {
+  
+  try{
+    const resp = await appAsynFetch({
+      TipoQuery : 'viewSolMatri',
+      matriculaID : matriculaID
+    },rutaSQL);
     document.querySelector("#btnUpdate").style.display = (menu.oper.submenu.solmatri.cmdUpdate==1)?('inline'):('none');
     document.querySelector("#btnInsert").style.display = 'none';
     resp.tablaSolMatri.persona = resp.tablaPers.persona;
@@ -163,7 +180,9 @@ function appSolMatriView(matriculaID){
 
     document.querySelector('#grid').style.display = 'none';
     document.querySelector('#edit').style.display = 'block';
-  });
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
 function appSolMatriSetData(data){
@@ -189,11 +208,7 @@ function appSolMatriSetData(data){
   $("#txt_SolMatriFechaSolicita").datepicker("setDate",moment(data.fecha_solicita).format("DD/MM/YYYY"));
 }
 
-function appSolMatriClear(txtSocio){
-  let datos = {
-    TipoQuery : 'newSolMatri'
-  }
-
+async function appSolMatriClear(txtSocio){
   //todos los inputs sin error y panel error deshabilitado
   $('.form-group').removeClass('has-error');
     
@@ -204,21 +219,23 @@ function appSolMatriClear(txtSocio){
   $('#datosSolMatri').addClass('active');
   document.querySelector("#btnUpdate").style.display = 'none';
   document.querySelector("#btnInsert").style.display = 'inline';
-  
-  appFetch(datos,rutaSQL).then(resp => {
+  document.querySelector("#hid_SolMatriID").value = (0);
+  document.querySelector("#txt_SolMatriAlumno").value = (txtSocio);
+  document.querySelector("#txt_SolMatriCodigo").value = ("");
+  document.querySelector("#txt_SolMatriObservac").value = ("");
+
+  try{
+    const resp = await appAsynFetch({ TipoQuery : 'newSolMatri' }, rutaSQL);
+
     appLlenarDataEnComboBox(resp.comboNiveles,"#cbo_SolMatriNiveles",0); //seteado a primaria
     appLlenarDataEnComboBox(resp.comboGrados,"#cbo_SolMatriGrados",0); //prmer grado
     appLlenarDataEnComboBox(resp.comboSecciones,"#cbo_SolMatriSecciones",0); //seccion A
-    
-    document.querySelector("#hid_SolMatriID").value = (0);
-    document.querySelector("#txt_SolMatriAlumno").value = (txtSocio);
     document.querySelector("#txt_SolMatriFechaSolicita").disabled = (resp.rolUser==resp.rolROOT) ? (false):(true);
-    document.querySelector("#txt_SolMatriCodigo").value = ("");
     document.querySelector("#txt_SolMatriYYYY").value = (resp.yyyy); //año de matricula
-    document.querySelector("#txt_SolMatriObservac").value = ("");
-
     $("#txt_SolMatriFechaSolicita").datepicker("setDate",moment(resp.fecha).format("DD/MM/YYYY"));
-  });
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
 function appSolMatriValidarCampos(){
@@ -279,54 +296,62 @@ function appPersonaSetData(data){
 }
 
 //niveles
-function comboGrados(){
-  let datos = {
-    TipoQuery : "comboNivel",
-    tipoID  : 3, //grados
-    padreID : document.querySelector("#cbo_SolMatriNiveles").value
-  }
-  //disabled
+async function comboGrados(){
   document.querySelector("#cbo_SolMatriGrados").disabled = true;
   document.querySelector("#cbo_SolMatriSecciones").disabled = true;
-  //fetch
-  appFetch(datos,rutaSQL).then(resp => {
+  try{
+    const resp = await appAsynFetch({
+      TipoQuery : "comboNivel",
+      tipoID  : 3, //grados
+      padreID : document.querySelector("#cbo_SolMatriNiveles").value
+    },rutaSQL);
+    
+    //respuesta
     appLlenarDataEnComboBox(resp.grados,"#cbo_SolMatriGrados",0); //grados
     appLlenarDataEnComboBox(resp.secciones,"#cbo_SolMatriSecciones",0); //secciones
     document.querySelector("#cbo_SolMatriGrados").disabled = false;
-  document.querySelector("#cbo_SolMatriSecciones").disabled = false;
-  });
+    document.querySelector("#cbo_SolMatriSecciones").disabled = false;
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
-function comboSecciones(){
-  let datos = {
-    TipoQuery : "comboNivel",
-    tipoID  : 4, //secciones
-    padreID : document.querySelector("#cbo_SolMatriGrados").value
-  }
-  
-  //disabled
+async function comboSecciones(){
+  //loader
   document.querySelector("#cbo_SolMatriSecciones").disabled = true;
-  //fetch
-  appFetch(datos,rutaSQL).then(resp => {
+  try{
+    const datos = await appAsynFetch({
+      TipoQuery : "comboNivel",
+      tipoID  : 4, //secciones
+      padreID : document.querySelector("#cbo_SolMatriGrados").value
+    }, rutaSQL);
+    
+    //respuesta
     appLlenarDataEnComboBox(resp.secciones,"#cbo_SolMatriSecciones",0); //secciones
     document.querySelector("#cbo_SolMatriSecciones").disabled = false;
-  });
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
 //modal
-function modaprueba_BotonAprobar(){
+async function modaprueba_BotonAprobar(){
   if(confirm("¿Esta seguro de continuar?")) {
-    let datos = {
-      TipoQuery : "aprobarSolMatri",
-      ID : document.querySelector("#hid_modapruebaID").value,
-      fecha_aprueba : appConvertToFecha(document.querySelector("#txt_modapruebaFechaAprueba").value),
-      TipoExec : "APRU" //aprueba solicitud de credito
-    }
-    appFetch(datos,rutaSQL).then(resp => {
+    try{
+      const resp = await appAsynFetch({
+        TipoQuery : "aprobarSolMatri",
+        ID : document.querySelector("#hid_modapruebaID").value,
+        fecha_aprueba : appConvertToFecha(document.querySelector("#txt_modapruebaFechaAprueba").value),
+        TipoExec : "APRU" //aprueba solicitud de credito
+      }, rutaSQL);
+      
+      //respuesta
       if (!resp.error) { 
         appSolMatriBotonCancel();
         $("#modalAprueba").modal("hide");
       }
-    });
+    } catch(err){
+      console.error('Error al cargar datos:', err);
+    }
   }
 }

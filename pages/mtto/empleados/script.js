@@ -134,18 +134,22 @@ function appWorkersBotonViewAll(){ //mostrar inclusive los empleados eliminados
   appWorkersGrid();
 }
 
-function handlerWorkersInsert_Click(e){
-  if(Persona.sinErrores()){ //sin errores
-    Persona.ejecutaSQL().then(resp => {
+async function handlerWorkersInsert_Click(e){
+  if(Persona.sinErrores()){ 
+    try{
+      const resp = await Persona.ejecutaSQL();
       appPersonaSetData(resp.tablaPers);
-      appFetch({TipoQuery : 'startWorker'},rutaSQL).then(resp => {
-        appWorkerClear(resp);
-        appUserClear(resp);
-        document.querySelector('#grid').style.display = 'none';
-        document.querySelector('#edit').style.display = 'block';
-        Persona.close();
-      });
-    });
+
+      const rpta = await appAsynFetch({TipoQuery:'startWorker'},rutaSQL);
+      appWorkerClear(rpta);
+      appUserClear(rpta);
+
+      document.querySelector('#grid').style.display = 'none';
+      document.querySelector('#edit').style.display = 'block';
+      Persona.close();
+    } catch(err){
+      console.error('Error al cargar datos:', err);
+    }
   } else {
     alert("!!!Faltan llenar Datos!!!");
   }
@@ -344,12 +348,15 @@ function appPersonaSetData(data){
 
 function appPersonaEditar(){
   Persona.editar(document.querySelector('#lbl_ID').innerHTML,'S');
-  $('#btn_modPersUpdate').on('click',function(e) {
-    if(Persona.sinErrores()){ //sin errores
-      Persona.ejecutaSQL().then(resp => {
+  $('#btn_modPersUpdate').on('click',async function(e) {
+    if(Persona.sinErrores()){
+      try{
+        const resp = await Persona.ejecutaSQL();
         appPersonaSetData(resp.tablaPers);
         Persona.close();
-      });
+      } catch(err){
+        console.error('Error al cargar datos:', err);
+      }
     } else {
       alert("!!!Faltan llenar Datos!!!");
     }

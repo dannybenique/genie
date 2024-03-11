@@ -21,8 +21,6 @@
               <span>DUI</span> <a id="perfil_DNI" class="pull-right"></a></li>
             <li class="list-group-item">
               <span>Celular</span> <a id="perfil_Celular" class="pull-right"></a></li>
-            <li class="list-group-item">
-              <span>Agencia</span> <a id="perfil_Agencia" class="pull-right"></a></li>
           </ul>
         </div>
       </div>

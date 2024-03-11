@@ -68,6 +68,7 @@ function appFetch(datos,rutaSQL){
   return rpta;
 }
 
+//ejecutar ajax desde javascript vanilla
 async function appAsynFetch(datos, rutaSQL) {
   let data = new FormData();
   data.append('appSQL', JSON.stringify(datos));
@@ -78,6 +79,6 @@ async function appAsynFetch(datos, rutaSQL) {
     return rpta;
   } catch (err) {
       console.log(err);
-      return null; // Por ejemplo, devolver nulo o un objeto de error personalizado
+      return null;
   }
 }

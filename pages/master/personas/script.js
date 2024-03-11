@@ -1,14 +1,13 @@
 const rutaSQL = "pages/master/personas/sql.php";
 
 //=========================funciones para Personas============================
-function appPersonasGrid(){
+async function appPersonasGrid(){
   document.querySelector('#grdDatos').innerHTML = ('<tr><td colspan="6"><div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></td></tr>');
-  
-  let txtBuscar = document.querySelector("#txtBuscar").value.toUpperCase();
-  let datos = { TipoQuery: 'selPersonas', buscar:txtBuscar };
-  appFetch(datos,rutaSQL).then(resp => {
-    // console.log(resp);
-    let disabledDelete = (resp.rolID===resp.rootID) ? "" : "disabled";
+  const txtBuscar = document.querySelector("#txtBuscar").value.toUpperCase();
+  try{
+    const resp = await appAsynFetch({TipoQuery:'selPersonas', buscar:txtBuscar},rutaSQL);
+    
+    const disabledDelete = (resp.rolID===resp.rootID) ? (""):("disabled");
     document.querySelector("#chk_All").disabled = (resp.rolID===resp.rootID) ? false : true;
     if(resp.tabla.length>0){
       let fila = "";
@@ -26,7 +25,11 @@ function appPersonasGrid(){
       document.querySelector('#grdDatos').innerHTML = '<tr><td colspan="6" style="text-align:center;color:red;">Sin Resultados para '+txtBuscar+'</td></tr>';
     }
     document.querySelector('#grdCount').innerHTML = resp.tabla.length+"/"+resp.cuenta;
-  });
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
+  
+  
 }
 
 function appPersonasReset(){
@@ -44,16 +47,19 @@ function appPersonasBuscar(e){
 
 function appPersonaNuevo(){
   Persona.openBuscar('VerifyPersona',rutaSQL,true,false,false);
-  $('#btn_modPersInsert').on('click',function(e) {
-    if(Persona.sinErrores()){ //sin errores
-      Persona.ejecutaSQL().then(resp => {
+  $('#btn_modPersInsert').on('click',async function(e) {
+    if(Persona.sinErrores()){
+      try{
+        const resp = await Persona.ejecutaSQL();
         appPersonaSetData(resp.tablaPers);
         appLaboralClear();
         appConyugeClear();
         document.querySelector('#grid').style.display = 'none';
         document.querySelector('#edit').style.display = 'block';
         Persona.close();
-      });
+      } catch(err){
+        console.error('Error al cargar datos:', err);
+      }
     } else {
       alert("!!!Faltan llenar Datos!!!");
     }
@@ -64,12 +70,15 @@ function appPersonaNuevo(){
 
 function appPersonaEditar(){
   Persona.editar(document.querySelector("#lbl_ID").innerHTML,'P');
-  $('#btn_modPersUpdate').on('click',function(e) {
-    if(Persona.sinErrores()){ //sin errores
-      Persona.ejecutaSQL().then(resp => {
+  $('#btn_modPersUpdate').on('click',async function(e) {
+    if(Persona.sinErrores()){
+      try{
+        const resp = await Persona.ejecutaSQL();
         appPersonaSetData(resp.tablaPers);
         Persona.close();
-      });
+      } catch(err){
+        console.error('Error al cargar datos:', err);
+      }
     } else {
       alert("!!!Faltan llenar Datos!!!");
     }
@@ -78,27 +87,30 @@ function appPersonaEditar(){
   });
 }
 
-function appPersonaView(personaID){
-  let datos = {
-    TipoQuery : 'viewPersona',
-    personaID : personaID,
-    fullQuery : 2
-  }
-  
+async function appPersonaView(personaID){
   //tabs default en primer tab
   $('.nav-tabs li').removeClass('active');
   $('.tab-content .tab-pane').removeClass('active');
   $('a[href="#datosPersonal"]').closest('li').addClass('active');
   $('#datosPersonal').addClass('active');
   
-  appFetch(datos,rutaSQL).then(resp => {
+  try{
+    const resp = await appAsynFetch({
+      TipoQuery : 'viewPersona',
+      personaID : personaID,
+      fullQuery : 2
+    },rutaSQL);
+
+    //respuesta
     appPersonaSetData(resp.tablaPers); //pestaña Personales
     appLaboralSetData(resp.tablaLabo); //pestaña laborales
     appConyugeSetData(resp.tablaCony); //pestaña de Conyuge
 
     document.querySelector('#grid').style.display = 'none';
     document.querySelector('#edit').style.display = 'block';
-  });
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
 function appPersonaSetData(data){
@@ -112,21 +124,12 @@ function appPersonaSetData(data){
   document.querySelector("#lbl_Celular").innerHTML = (data.celular);
 
   //pestaña datos personales
-  if(data.tipoPersona==2){ //persona juridica
-    document.querySelector("#lbl_PersTipoNombres").innerHTML = ("Razon Social");
-    document.querySelector("#lbl_PersTipoProfesion").innerHTML = ("Rubro");
-    document.querySelector("#lbl_PersTipoApellidos").style.display = 'none';
-    document.querySelector("#lbl_PersTipoSexo").style.display = 'none';
-    document.querySelector("#lbl_PersTipoECivil").style.display = 'none';
-    document.querySelector("#lbl_PersTipoGIntruc").style.display = 'none';
-  }else{
-    document.querySelector("#lbl_PersTipoNombres").innerHTML = ("Nombres");
-    document.querySelector("#lbl_PersTipoProfesion").innerHTML = ("Profesion");
-    document.querySelector("#lbl_PersTipoApellidos").style.display = 'block';
-    document.querySelector("#lbl_PersTipoSexo").style.display = 'block';
-    document.querySelector("#lbl_PersTipoECivil").style.display = 'block';
-    document.querySelector("#lbl_PersTipoGIntruc").style.display = 'block';
-  }
+  document.querySelector("#lbl_PersTipoNombres").innerHTML = ("Nombres");
+  document.querySelector("#lbl_PersTipoProfesion").innerHTML = ("Profesion");
+  document.querySelector("#lbl_PersTipoApellidos").style.display = 'block';
+  document.querySelector("#lbl_PersTipoSexo").style.display = 'block';
+  document.querySelector("#lbl_PersTipoECivil").style.display = 'block';
+  document.querySelector("#lbl_PersTipoGIntruc").style.display = 'block';
   document.querySelector("#lbl_PersNombres").innerHTML = (data.nombres);
   document.querySelector("#lbl_PersApellidos").innerHTML = (data.ap_paterno+" "+data.ap_materno);
   document.querySelector("#lbl_PersTipoDNI").innerHTML = (data.tipoDUI);
@@ -164,36 +167,39 @@ function appPersonasBotonCancel(){
   document.querySelector('#edit').style.display = 'none';
 }
 
-function appPersonasBotonAuditoria(personaID){
-  let datos = {
-    TipoQuery: 'audiPersona',
-    personaID: personaID
-  }
+async function appPersonasBotonAuditoria(personaID){ //falta corregir
+  // try{
+  //   const resp = await appAsynFetch({
+  //     TipoQuery: 'audiPersona',
+  //     personaID: personaID
+  //   },rutaSQL);
 
-  appFetch(datos,rutaSQL).then(resp => {
-    document.querySelector("#lbl_modAuditoriaTitulo").innerHTML = ((resp.tablaPers.tipoPersona==2) ? (resp.tablaPers.nombres) : (resp.tablaPers.persona));
-    if(resp.tablaLog.length>0){
-      let fila = "";
-      resp.tablaLog.forEach((valor,key)=>{
-        fila += '<tr>';
-        fila += '<td>'+(valor.codigo)+'</td>';
-        fila += '<td>'+(valor.tabla)+'</td>';
-        fila += '<td>'+(valor.accion)+'</td>';
-        fila += '<td>'+(valor.campo)+'</td>';
-        fila += '<td>'+(valor.observac)+'</td>';
-        fila += '<td>'+(valor.usuario)+'</td>';
-        fila += '<td>'+(valor.sysIP)+'</td>';
-        fila += '<td style="text-align:center;">'+(valor.sysagencia)+'</td>';
-        fila += '<td style="text-align:right;">'+(valor.sysfecha)+'</td>';
-        fila += '<td style="text-align:right;">'+(valor.syshora)+'</td>';
-        fila += '</tr>';
-      });
-      document.querySelector('#grdAuditoriaBody').innerHTML = (fila);
-    }else{
-      document.querySelector('#grdAuditoriaBody').innerHTML = ('<tr><td colspan="10" style="text-align:center;color:red;">****** Sin Resultados ******</td></tr>');
-    }
-    $('#modalAuditoria').modal();
-  });
+  //   //respuesta
+  //   document.querySelector("#lbl_modAuditoriaTitulo").innerHTML = ((resp.tablaPers.tipoPersona==2) ? (resp.tablaPers.nombres) : (resp.tablaPers.persona));
+  //   if(resp.tablaLog.length>0){
+  //     let fila = "";
+  //     resp.tablaLog.forEach((valor,key)=>{
+  //       fila += '<tr>';
+  //       fila += '<td>'+(valor.codigo)+'</td>';
+  //       fila += '<td>'+(valor.tabla)+'</td>';
+  //       fila += '<td>'+(valor.accion)+'</td>';
+  //       fila += '<td>'+(valor.campo)+'</td>';
+  //       fila += '<td>'+(valor.observac)+'</td>';
+  //       fila += '<td>'+(valor.usuario)+'</td>';
+  //       fila += '<td>'+(valor.sysIP)+'</td>';
+  //       fila += '<td style="text-align:center;">'+(valor.sysagencia)+'</td>';
+  //       fila += '<td style="text-align:right;">'+(valor.sysfecha)+'</td>';
+  //       fila += '<td style="text-align:right;">'+(valor.syshora)+'</td>';
+  //       fila += '</tr>';
+  //     });
+  //     document.querySelector('#grdAuditoriaBody').innerHTML = (fila);
+  //   }else{
+  //     document.querySelector('#grdAuditoriaBody').innerHTML = ('<tr><td colspan="10" style="text-align:center;color:red;">****** Sin Resultados ******</td></tr>');
+  //   }
+  //   $('#modalAuditoria').modal();
+  // } catch(err){
+  //   console.error('Error al cargar datos:', err);
+  // }
 }
 
 function appLaboralSetData(data){

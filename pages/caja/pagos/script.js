@@ -4,34 +4,36 @@ var pago = null;
 var agenciaID = null;
 
 //=========================funciones para Personas============================
-function appPagosReset(){
+async function appPagosReset(){
   $(".form-group").removeClass("has-error");
-  appFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php").then(resp => {
+  document.querySelector("#lbl_matriAtraso").style.color = "#777";
+  document.querySelector('#lbl_matriAtraso').innerHTML = ("");
+  document.querySelector('#lbl_matriAlumno').innerHTML = ("");
+  document.querySelector('#lbl_matriTipoDUI').innerHTML = ("DUI");
+  document.querySelector('#lbl_matriNroDUI').innerHTML = ("");
+  document.querySelector('#lbl_matriFecha').innerHTML = ("");
+  document.querySelector('#lbl_matriCodigo').innerHTML = ("");
+  document.querySelector('#lbl_matriNivel').innerHTML = ("");
+  document.querySelector('#lbl_matriGrado').innerHTML = ("");
+  document.querySelector('#lbl_matriSeccion').innerHTML = ("");
+  document.querySelector('#lbl_matriSaldo').innerHTML = ("");
+
+  document.querySelector('#txt_DeudaCapital').value = ("");
+  document.querySelector('#txt_DeudaFecha').value = ("");
+  document.querySelector('#txt_DeudaTotalNeto').value = ("");
+  document.querySelector('#txt_DeudaImporte').value = ("");
+  document.querySelector('#cbo_DeudaMedioPago').innerHTML = ("");
+  try{
+    const resp = await appAsynFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php");
     pago = null;
     agenciaID = resp.agenciaID;
     menu = JSON.parse(resp.menu);
     
     document.querySelector("#btn_PAGAR").disabled = true;
     document.querySelector("#btn_NEW").style.display = (menu.caja.submenu.pagos.cmdInsert==1)?('inline'):('none');
-    document.querySelector("#lbl_matriAtraso").style.color = "#777";
-    
-    document.querySelector('#lbl_matriAtraso').innerHTML = ("");
-    document.querySelector('#lbl_matriAlumno').innerHTML = ("");
-    document.querySelector('#lbl_matriTipoDUI').innerHTML = ("DUI");
-    document.querySelector('#lbl_matriNroDUI').innerHTML = ("");
-    document.querySelector('#lbl_matriFecha').innerHTML = ("");
-    document.querySelector('#lbl_matriCodigo').innerHTML = ("");
-    document.querySelector('#lbl_matriNivel').innerHTML = ("");
-    document.querySelector('#lbl_matriGrado').innerHTML = ("");
-    document.querySelector('#lbl_matriSeccion').innerHTML = ("");
-    document.querySelector('#lbl_matriSaldo').innerHTML = ("");
-
-    document.querySelector('#txt_DeudaCapital').value = ("");
-    document.querySelector('#txt_DeudaFecha').value = ("");
-    document.querySelector('#txt_DeudaTotalNeto').value = ("");
-    document.querySelector('#txt_DeudaImporte').value = ("");
-    document.querySelector('#cbo_DeudaMedioPago').innerHTML = ("");
-  });
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
 function appPagosBotonNuevo(){
@@ -43,13 +45,13 @@ function appPagosBotonNuevo(){
   $('#modalMatric').on('shown.bs.modal', ()=> { document.querySelector("#modalMatric_TxtBuscar").focus(); });
 }
 
-function appPagosBotonPagar(){
+async function appPagosBotonPagar(){
   let importe = appConvertToNumero(document.querySelector("#txt_DeudaImporte").value);
   $(".form-group").removeClass("has-error");
   if(!isNaN(importe)){
     if(importe>0){
       if(confirm("¿Esta seguro de continuar con el PAGO?")){
-        let datos = {
+        const resp = await appAsynFetch({
           TipoQuery : 'insPago',
           agenciaID : agenciaID*1,
           socioID : pago.socioID,
@@ -59,22 +61,19 @@ function appPagosBotonPagar(){
           codprod : document.querySelector("#lbl_crediCodigo").innerHTML,
           medioPagoID : document.querySelector("#cbo_DeudaMedioPago").value*1,
           importe : importe*1
-        };
-        appFetch(datos,rutaSQL).then(resp => {
-          if (!resp.error) { 
-            if(confirm("¿Desea Imprimir el pago?")){
-              $("#modalPrint").modal("show");
-              let urlServer = appUrlServer()+"pages/caja/pagos/rpt.voucher.php?movimID="+resp.movimID;
-              $("#contenedorFrame").html('<object id="objPDF" type="text/html" data="'+urlServer+'" width="100%" height="500px"></object>');
-            }
-            appPagosReset();
+        },rutaSQL);
+        if (!resp.error) { 
+          if(confirm("¿Desea Imprimir el pago?")){
+            $("#modalPrint").modal("show");
+            let urlServer = appUrlServer()+"pages/caja/pagos/rpt.voucher.php?movimID="+resp.movimID;
+            $("#contenedorFrame").html('<object id="objPDF" type="text/html" data="'+urlServer+'" width="100%" height="500px"></object>');
           }
-        });
+          appPagosReset();
+        }
       }
     } else {
       alert("el IMPORTE debe ser mayor a cero 0.00");
       document.querySelector("#div_DeudaImporte").className = "form-group has-error";
-
     }
   } else {
     alert("el IMPORTE debe ser una cantidad valida");
@@ -96,14 +95,14 @@ function modalMatricBuscar(){
   }
 }
 
-function modalMatricGrid(){
+async function modalMatricGrid(){
   document.querySelector('#modalMatric_Wait').innerHTML = ('<div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></div>');
-  let txtBuscar = document.querySelector("#modalMatric_TxtBuscar").value;
-  let datos = { TipoQuery: 'selCreditos', buscar:txtBuscar };
-
-  appFetch(datos,rutaSQL).then(resp => {
-    document.querySelector('#modalMatric_Wait').innerHTML = "";
-    document.querySelector("#modalMatric_Grid").style.display = 'block';
+  document.querySelector('#modalMatric_Wait').innerHTML = "";
+  document.querySelector("#modalMatric_Grid").style.display = 'block';
+  const txtBuscar = document.querySelector("#modalMatric_TxtBuscar").value;
+  try{
+    const resp = await appAsynFetch({TipoQuery:'selCreditos', buscar:txtBuscar},rutaSQL);
+    //respuesta
     if(resp.prestamos.length>0){
       let fila = "";
       resp.prestamos.forEach((valor,key)=>{
@@ -119,24 +118,27 @@ function modalMatricGrid(){
     }else{
       document.querySelector('#modalMatric_GridBody').innerHTML = ('<tr><td colspan="5" style="text-align:center;color:red;">Sin Resultados para '+txtBuscar+'</td></tr>');
     }
-  });
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
-function appCreditoPagoView(prestamoID){
+async function appCreditoPagoView(prestamoID){
   $('#modalMatric').modal('hide');
-  let datos = {
-    TipoQuery : 'viewCredito',
-    prestamoID : prestamoID
-  };
-  
-  appFetch(datos,rutaSQL).then(resp => {
-    // console.log(resp);
+  try{
+    const resp = await appAsynFetch({
+      TipoQuery : 'viewCredito',
+      prestamoID : prestamoID
+    },rutaSQL);
+
     appCredi_Cabecera_SetData(resp.cabecera);
     appCredi_Detalle_SetData(resp.detalle);
     appLlenarDataEnComboBox(resp.comboTipoPago,"#cbo_DeudaMedioPago",0); //medios de pago
     $('#txt_DeudaFecha').datepicker("setDate",moment(resp.fecha).format("DD/MM/YYYY"));
     document.querySelector("#btn_PAGAR").disabled = false;
-  });
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
 function appCredi_Cabecera_SetData(data){

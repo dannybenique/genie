@@ -4,15 +4,16 @@ var viewTotalPorVencer = false;
 var menu = "";
 
 //=========================funciones para Personas============================
-function appMatriculasGrid(){
+async function appMatriculasGrid(){
   document.querySelector('#grdDatos').innerHTML = ('<tr><td colspan="10"><div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></td></tr>');
-  let txtBuscar = document.querySelector("#txtBuscar").value;
-  let datos = {
-    TipoQuery: 'matricula_Select',
-    buscar: txtBuscar
-  };
-
-  appFetch(datos,rutaSQL).then(resp => {
+  const txtBuscar = document.querySelector("#txtBuscar").value;
+  try{
+    const resp = await appAsynFetch({
+      TipoQuery: 'matricula_Select',
+      buscar: txtBuscar
+    },rutaSQL);
+  
+    //respuesta
     if(resp.tabla.length>0){
       let fila = "";
       resp.tabla.forEach((valor,key)=>{
@@ -29,19 +30,25 @@ function appMatriculasGrid(){
       });
       $('#grdDatos').html(fila);
     }else{
-      let res = (txtBuscar==="") ? ("") : ("para "+txtBuscar);
+      let res = (txtBuscar==="") ? (""):("para "+txtBuscar);
       $('#grdDatos').html('<tr><td colspan="10" style="text-align:center;color:red;">Sin Resultados '+(res)+'</td></tr>');
     }
     $('#grdCount').html(resp.tabla.length+"/"+resp.cuenta);
-  });
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
-function appMatriculasReset(){
-  appFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php").then(resp => {
-    menu = JSON.parse(resp.menu);
+async function appMatriculasReset(){
+  try{
+    const resp = await appAsynFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php");
+    
     document.querySelector("#txtBuscar").value = ("");
+    menu = JSON.parse(resp.menu);
     appMatriculasGrid();
-  });
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
 function appMatriculasBuscar(e){
@@ -60,19 +67,21 @@ function appMatriculasBotonCancel(){
   $('#edit').hide();
 }
 
-function appMatriculasView(matriculaID){
-  let datos = {
-    TipoQuery : 'matricula_View',
-    matriculaID : matriculaID
-  };
-  
-  appFetch(datos,rutaSQL).then(resp => {
-    console.log(resp);
+async function appMatriculasView(matriculaID){
+  try{
+    const resp = await appAsynFetch({
+      TipoQuery : 'matricula_View',
+      matriculaID : matriculaID
+    },rutaSQL);
+    
+    //respuesta
     appCabeceraSetData(resp.cabecera);
     appDetalleSetData(resp.detalle);
     document.querySelector('#grid').style.display = 'none';
     document.querySelector('#edit').style.display = 'block';
-  });
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
 }
 
 function appCabeceraSetData(data){

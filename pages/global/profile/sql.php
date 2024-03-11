@@ -15,21 +15,16 @@
           $user = $_SESSION['usr_data'];
           $user["menu"] = "";
           $user["rolROOT"] = 101;
-          //agencia
-          $qry = $db->query_all("select nombre from bn_bancos where id=".$user["agenciaID"]);
-          $agencia = reset($qry)["nombre"];
           //respuesta
           $rpta = array(
             "tablaPers" => $fn->getViewPersona($data->userID),
-            "agencia" => $agencia,
             "user" => $user
           );
           echo json_encode($rpta);
           break;
         case "updPassword": //cambiar password de usuario
-          //verificamos nivel de usuario
+          $sql = "update app_usuarios set passw=:passw where id=:id;";
           $params = [":passw"=>$data->pass,":id"=>$data->userID];
-          $sql = "update bn_usuarios set passw=:passw where id=:id;";
           $qry = $db->query_all($sql, $params);
           $user = ($qry) ? (array("error" => false,"resp" => "Se actualizo el passw")) : (array("error" => true,"resp" => "Fallo actualizacion"));
           

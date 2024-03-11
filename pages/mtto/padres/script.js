@@ -95,11 +95,12 @@ function appPadresBotonNuevo(){
   $('#btn_modPersAddToForm').on('click',handlerPadresAddToForm_Click);
 }
 
-function handlerPadresInsert_Click(e){
-  if(Persona.sinErrores()){ //sin errores
+async function handlerPadresInsert_Click(e){
+  if(Persona.sinErrores()){
     document.querySelector('#grid').style.display = 'none';
     document.querySelector('#edit').style.display = 'block';
-    Persona.ejecutaSQL().then(resp => {
+    try{
+      const resp = await Persona.ejecutaSQL();
       appPersonaSetData(resp.tablaPers);
       appLaboralClear();
       appConyugeClear();
@@ -107,7 +108,9 @@ function handlerPadresInsert_Click(e){
       Persona.close();
       e.stopImmediatePropagation();
       $('#btn_modPersInsert').off('click');
-    });
+    } catch(err){
+      console.error('Error al cargar datos:', err);
+    }
   } else {
     alert("!!!Faltan llenar Datos!!!");
   }
@@ -248,12 +251,15 @@ function appPersonaSetData(data){
 
 function appPersonaEditar(){
   Persona.editar(document.querySelector('#lbl_ID').innerHTML,'S');
-  $('#btn_modPersUpdate').on('click',function(e) {
-    if(Persona.sinErrores()){ //sin errores
-      Persona.ejecutaSQL().then(resp => {
+  $('#btn_modPersUpdate').on('click',async function(e) {
+    if(Persona.sinErrores()){
+      try{
+        const resp = await Persona.ejecutaSQL();
         appPersonaSetData(resp.tablaPers);
         Persona.close();
-      });
+      } catch(err){
+        console.error('Error al cargar datos:', err);
+      }
     } else {
       alert("!!!Faltan llenar Datos!!!");
     }
