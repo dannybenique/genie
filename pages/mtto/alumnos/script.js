@@ -9,7 +9,7 @@ async function appAlumnosGrid(){
   try{
     const disabledDelete = (menu.mtto.submenu.alumnos.cmdDelete===1) ? "" : "disabled";
     const resp = await appAsynFetch({ 
-      TipoQuery: 'selAlumnos', 
+      TipoQuery: 'alumno_sel', 
       buscar: txtBuscar,
       verTodos: document.querySelector("#hidViewAll").value 
     },rutaSQL);
@@ -70,7 +70,7 @@ async function appAlumnosBotonInsert(){
   
   if(datos!=""){
     try{
-      datos.TipoQuery = "insAlumno";
+      datos.TipoQuery = "alumno_ins";
       const resp = await appAsynFetch(datos,rutaSQL);
       if(!resp.error) {appAlumnosBotonCancel();}
     } catch(err){
@@ -84,7 +84,7 @@ async function appAlumnosBotonUpdate(){
 
   if(datos!=""){
     try{
-      datos.TipoQuery = "updAlumno";
+      datos.TipoQuery = "alumno_upd";
       const resp = await appAsynFetch(datos,rutaSQL);
       if(!resp.error) {appAlumnosBotonCancel();}
     } catch(err){
@@ -142,7 +142,7 @@ async function appAlumnosBotonBorrar(){
   if(arr.length>0){
     if(confirm("¿Esta seguro de continuar?")) {
       try{
-        const resp = await appAsynFetch({ TipoQuery:'delAlumnos', arr:arr },rutaSQL);
+        const resp = await appAsynFetch({ TipoQuery:'alumno_del', arr:arr },rutaSQL);
         if (!resp.error) { appAlumnosBotonCancel(); }
       } catch(err){
         console.error('Error al cargar datos:', err);
@@ -156,7 +156,7 @@ async function appAlumnosBotonBorrar(){
 async function appAlumnosBotonEstado(){
   try{
     const resp = await appAsynFetch({
-      TipoQuery : 'addAlumno', //quitar el soft delete (estado)
+      TipoQuery : 'alumno_add', //quitar el soft delete (estado)
       alumnoID : document.querySelector("#lbl_ID").innerHTML
     },rutaSQL);
     if(!resp.error){document.querySelector("#div_Estado").innerHTML = "";}
@@ -177,7 +177,7 @@ async function appAlumnoView(personaID){
 
   try{
     const resp = await appAsynFetch({
-      TipoQuery : 'viewAlumno',
+      TipoQuery : 'alumno_view',
       personaID : personaID,
       fullQuery : 2
     }, rutaSQL);
@@ -233,7 +233,7 @@ async function appAlumnoClear(){
   document.querySelector("#btnInsert").style.display = (menu.mtto.submenu.alumnos.cmdInsert==1)?('inline'):('none');
   document.querySelector("#btnUpdate").style.display = 'none';
   try{
-    const resp = await appAsynFetch({ TipoQuery : 'startAlumno' },rutaSQL); 
+    const resp = await appAsynFetch({ TipoQuery : 'alumno_start' },rutaSQL); 
     
     //pestaña de Alumno
     document.querySelector('#txt_AlumnoFechaIng').value = (moment(resp.fecha).format("DD/MM/YYYY"));
@@ -459,6 +459,51 @@ function appPersonaEditar(){
 }
 
 //otras funciones
+async function appLinkFamiliar(tipo){
+  try{
+    let familiarID = 0;
+    switch(tipo){
+      case 1: familiarID = document.querySelector("#hid_alumnoFamiPadreID").value; break; //padre
+      case 2: familiarID = document.querySelector("#hid_alumnoFamiMadreID").value; break; //madre
+      case 3: familiarID = document.querySelector("#hid_alumnoFamiApoderaID").value; break; //apoderado
+    }
+    const resp = await appAsynFetch({
+      TipoQuery : "familiar_view",
+      familiarID : familiarID,
+      tipo : tipo
+    },rutaSQL);
+
+    //formulario modal de familiares
+    document.querySelector("#lbl_modfamTitulo").innerHTML = "Datos Personales de "+resp.tipoFami.toUpperCase();
+    document.querySelector("#lbl_modfamNombres").innerHTML = resp.tablaPers.nombres;
+    document.querySelector("#lbl_modfamApellidos").innerHTML = resp.tablaPers.ap_paterno+" "+resp.tablaPers.ap_materno;
+    document.querySelector("#lbl_modfamNroDNI").innerHTML = resp.tablaPers.nroDUI;
+    document.querySelector("#lbl_modfamPaisNac").innerHTML = resp.tablaPers.paisnac;
+    document.querySelector("#lbl_modfamLugarNac").innerHTML = resp.tablaPers.lugarnac;
+    document.querySelector("#lbl_modfamFechaNac").innerHTML = moment(resp.tablaPers.fechanac).format("DD/MM/YYYY");
+    document.querySelector("#lbl_modfamEdad").innerHTML = moment().diff(moment(resp.tablaPers.fechanac),"years")+" años";
+    document.querySelector("#lbl_modfamSexo").innerHTML = resp.tablaPers.sexo;
+    document.querySelector("#lbl_modfamEcivil").innerHTML = resp.tablaPers.ecivil;
+    document.querySelector("#lbl_modfamCelular").innerHTML = resp.tablaPers.celular;
+    document.querySelector("#lbl_modfamTelefijo").innerHTML = resp.tablaPers.telefijo;
+    document.querySelector("#lbl_modfamEmail").innerHTML = resp.tablaPers.correo;
+    document.querySelector("#lbl_modfamGInstruccion").innerHTML = resp.tablaPers.ginstruc;
+    document.querySelector("#lbl_modfamProfesion").innerHTML = resp.tablaPers.profesion;
+    document.querySelector("#lbl_modfamOcupacion").innerHTML = resp.tablaPers.ocupacion;
+    document.querySelector("#lbl_modfamUbicacion").innerHTML = resp.tablaPers.region+" - "+resp.tablaPers.provincia+" - "+resp.tablaPers.distrito;
+    document.querySelector("#lbl_modfamDireccion").innerHTML = resp.tablaPers.direccion;
+    document.querySelector("#lbl_modfamReferencia").innerHTML = resp.tablaPers.referencia;
+    document.querySelector("#lbl_modfamMedidorluz").innerHTML = resp.tablaPers.medidorluz;
+    document.querySelector("#lbl_modfamMedidorAgua").innerHTML = resp.tablaPers.medidoragua;
+    document.querySelector("#lbl_modfamTipovivienda").innerHTML = resp.tablaPers.tipovivienda;
+    document.querySelector("#lbl_modfamObservac").innerHTML = resp.tablaPers.observPers;
+
+    $("#modalFamiliar").modal("show");
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
+}
+
 function appCheckOnOff(check,span,textbox){
   if(check.checked){
     $(span).css("background","#FFFFFF");
@@ -470,10 +515,10 @@ function appCheckOnOff(check,span,textbox){
   }
 }
 
-function appPermisoPersonas(){
-  let datos = { TipoQuery:'insNotifi', tabla:'tb_personas', personaID:$("#lbl_ID").html() }
-  appAjaxInsert(datos,"pages/global/notifi/sql.php").done(function(resp){
-    if(!resp.error){ $("#btn_PersPermiso").hide(); }
-    else { alert("!!!Hubo un error... "+(resp.mensaje)+"!!!"); }
-  });
+async function appPermisoPersonas(){ //falta corregir
+  // const datos = { TipoQuery:'insNotifi', tabla:'tb_personas', personaID:$("#lbl_ID").html() }
+  // appAjaxInsert(datos,"pages/global/notifi/sql.php").done(function(resp){
+  //   if(!resp.error){ $("#btn_PersPermiso").hide(); }
+  //   else { alert("!!!Hubo un error... "+(resp.mensaje)+"!!!"); }
+  // });
 }

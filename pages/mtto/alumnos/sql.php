@@ -71,7 +71,7 @@
         return $rs;
       }
       switch ($data->TipoQuery) {
-        case "selAlumnos":
+        case "alumno_sel":
           $tabla = array();
           $buscar = strtoupper($data->buscar);
           $whr = (($data->verTodos==1) ? "" : "and estado=1")." and id_colegio=".$web->colegioID." and (alumno LIKE :buscar or nro_dui LIKE :buscar) ";
@@ -101,7 +101,7 @@
           $rpta = array("tabla"=>$tabla,"cuenta"=>$rsCount,"rolID" => (int)$_SESSION["usr_data"]["rolID"]);
           echo json_encode($rpta);
           break;
-        case "insAlumno":
+        case "alumno_ins":
           //verificar padres
           $padreID = setPadreID($data->alumnoPadreID);
           $madreID = setPadreID($data->alumnoMadreID);
@@ -130,7 +130,7 @@
           $rpta = array("error"=>false, "insert"=>1);
           echo json_encode($rpta);
           break;
-        case "updAlumno":
+        case "alumno_upd":
           //verificar padres
           $padreID = setPadreID($data->alumnoPadreID);
           $madreID = setPadreID($data->alumnoMadreID);
@@ -153,7 +153,7 @@
           $rpta = array("error"=>false, "update"=>1);
           echo json_encode($rpta);
           break;
-        case "delAlumnos":
+        case "alumno_del": //borrar alumnos
           $params = array();
           for($i=0; $i<count($data->arr); $i++){
             $sql = "update app_alumnos set estado=0,sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id=:alumnoID";
@@ -169,30 +169,7 @@
           $rpta = array("error"=>false, "delete"=>$data->arr);
           echo json_encode($rpta);
           break;
-        case "viewAlumno":
-          switch($data->fullQuery){
-            case 0: //datos personales
-              $rpta = array(
-                'tablaAlumno'=> getViewAlumno($data->personaID),
-                'tablaPers'=>$fc->getViewPersona($data->personaID));
-              break;
-            case 1: //datos personales + laborales
-              $rpta = array(
-                'tablaAlumno'=> getViewAlumno($data->personaID),
-                'tablaPers'=>$fn->getViewPersona($data->personaID),
-                'tablaLabo'=>$fn->getAllLaborales($data->personaID));
-              break;
-            case 2: //datos personales + laborales + conyuge
-              $rpta = array(
-                'tablaAlumno'=> getViewAlumno($data->personaID),
-                'tablaPers'=>$fn->getViewPersona($data->personaID),
-                'tablaLabo'=>$fn->getAllLaborales($data->personaID),
-                'tablaCony'=>$fn->getViewConyuge($data->personaID));
-              break;
-          }
-          echo json_encode($rpta);
-          break;
-        case "addAlumno": //quitar el soft delete (estado)
+        case "alumno_add": //quitar el soft delete (estado)
           $sql = "update app_alumnos set estado=1,sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id=:alumnoID";
           $params = [
             ":alumnoID"=>$data->alumnoID,
@@ -204,6 +181,50 @@
 
           //respuesta
           $rpta = array("error"=>(($rs==null)?true:false));
+          echo json_encode($rpta);
+          break;
+        case "alumno_view":
+          switch($data->fullQuery){
+            case 0: //datos personales
+              $rpta = array(
+                'tablaAlumno' => getViewAlumno($data->personaID),
+                'tablaPers' => $fc->getViewPersona($data->personaID));
+              break;
+            case 1: //datos personales + laborales
+              $rpta = array(
+                'tablaAlumno' => getViewAlumno($data->personaID),
+                'tablaPers' => $fn->getViewPersona($data->personaID),
+                'tablaLabo' => $fn->getAllLaborales($data->personaID));
+              break;
+            case 2: //datos personales + laborales + conyuge
+              $rpta = array(
+                'tablaAlumno' => getViewAlumno($data->personaID),
+                'tablaPers' => $fn->getViewPersona($data->personaID),
+                'tablaLabo' => $fn->getAllLaborales($data->personaID),
+                'tablaCony' => $fn->getViewConyuge($data->personaID));
+              break;
+          }
+          echo json_encode($rpta);
+          break;
+        case "alumno_start":
+          //respuesta
+          $rpta = array(
+            "fecha" => $fn->getFechaActualDB(),
+            "colegio" => $web->colegioID);
+          echo json_encode($rpta);
+          break;
+        case "familiar_view":
+          $tipoFami = "";
+          switch($data->tipo){
+            case 1: $tipoFami = "Padre"; break;
+            case 2: $tipoFami = "Madre"; break;
+            case 3: $tipoFami = "Apoderado"; break;
+          }
+          
+          //respuesta
+          $rpta = array(
+            "tipoFami" => $tipoFami,
+            "tablaPers" => $fn->getViewPersona($data->familiarID));
           echo json_encode($rpta);
           break;
         case "VerifyAlumno":
@@ -316,13 +337,6 @@
             "persona" => $persona,
             "activo" => $activo,
             "mensajeNOadd" => "ya es APODERADO ACTIVO...");
-          echo json_encode($rpta);
-          break;
-        case "startAlumno":
-          //respuesta
-          $rpta = array(
-            "fecha" => $fn->getFechaActualDB(),
-            "colegio" => $web->colegioID);
           echo json_encode($rpta);
           break;
       }

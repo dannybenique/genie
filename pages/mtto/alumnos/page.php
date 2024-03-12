@@ -145,7 +145,7 @@
                         <td>
                           <input type="hidden" id="hid_alumnoFamiMadreID" value=""/>
                           <div style="line-height:1;">
-                            <span id="lbl_alumnoFamiMadreNombre" style="font-weight:bold;font-size:15px;"></span><br>
+                            <a href="javascript:appLinkFamiliar(2);" id="lbl_alumnoFamiMadreNombre" style="font-weight:bold;font-size:15px;"></a><br>
                             <span id="lbl_alumnoFamiMadreDNI" style="font-size:11px;"></span><br/>
                             <span id="lbl_alumnoFamiMadreDireccion" style="font-size:11px;"></span>
                           </div>
@@ -259,7 +259,86 @@
       </div>
     </form>
   </div>
-  <div class="modal fade" id="modalPers" role="dialog"></div>
+  <div class="modal fade" id="modalPers" role="dialog">
+  </div>
+  <div class="modal fade" id="modalFamiliar" role="dialog">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header" style="background:#f9f9f9;padding:8px;">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 id="lbl_modfamTitulo" class="modal-title" style="font-family:flexoregular;font-weight:bold;">Datos Personales de Familiar</h4>
+        </div>
+        <div class="modal-body">
+          <div class="box-body row">
+            <div class="col-md-5">
+              <div class="box-body">
+                <strong><i class="fa fa-address-card margin-r-5"></i> Basicos</strong>
+                <p class="text-muted">
+                  Nombres: <a id="lbl_modfamNombres"></a><br>
+                  Apellidos: <a id="lbl_modfamApellidos"></a><br></span><br>
+                  DNI: <a id="lbl_modfamNroDNI"></a><br>
+                  Pais Nac: <a id="lbl_modfamPaisNac"></a><br>
+                  Lugar Nac: <a id="lbl_modfamLugarNac"></a><br>
+                  Fecha Nac: <a id="lbl_modfamFechaNac"></a><br>
+                  Edad: <a id="lbl_modfamEdad"></a><br>
+                  Sexo: <a id="lbl_modfamSexo"></a><br>
+                  Estado Civil: <a id="lbl_modfamEcivil"></a>
+                </p>
+                <hr/>
+
+                <strong><i class="fa fa-phone margin-r-5"></i> Contacto</strong>
+                <p class="text-muted">
+                  Celular: <a id="lbl_modfamCelular"></a><br>
+                  Telefono Fijo: <a id="lbl_modfamTelefijo"></a><br>
+                  Correo: <a id="lbl_modfamEmail"></a><br>
+                </p>
+                <hr/>
+
+                <strong><i class="fa fa-graduation-cap margin-r-5"></i> Profesionales</strong>
+                <p class="text-muted">
+                  Grado Instruccion: <a id="lbl_modfamGInstruccion"></a><br>
+                  Profesion: <a id="lbl_modfamProfesion"></a><br>
+                  Ocupacion: <a id="lbl_modfamOcupacion"></a>
+                </p>
+              </div>
+            </div>
+            <div class="col-md-7">
+              <div class="box-body">
+                <strong><i class="fa fa-map-marker margin-r-5"></i> Ubicacion</strong>
+                <table class="table-responsive no-padding">
+                  <tr>
+                    <td style="width:65px;vertical-align:bottom;">Direccion:</td>
+                    <td><a id="lbl_modfamUbicacion" style="font:12px configcondensed_light;"></a><br>
+                        <a id="lbl_modfamDireccion"></a></td>
+                  </tr>
+                </table>
+                Referencia: <a id="lbl_modfamReferencia"></a><br>
+                Medidor de Luz: <a id="lbl_modfamMedidorluz"></a><br>
+                Medidor de Agua: <a id="lbl_modfamMedidorAgua"></a><br>
+                Tipo de Vivienda: <a id="lbl_modfamTipovivienda"></a>
+                <hr/>
+
+                <strong><i class="fa fa-book margin-r-5"></i> Observaciones</strong>
+                <p class="text-muted">
+                  <span id="lbl_modfamObservac"></span>
+                </p><br><br>
+                <div id="div_PersAuditoria">
+                  <strong><i class="fa fa-eye margin-r-5"></i> Auditoria</strong>
+                  <div style="font:10px flexolight;color:gray;">
+                    Fecha: <span id="lbl_modfamSysFecha"></span><br>
+                    Modif. por: <span id="lbl_modfamSysUser"></span>
+                  </div>
+                </div><br>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer" style="background:#f9f9f9;padding:8px;">
+          <button type="button" class="btn btn-default pull-right" data-dismiss="modal"><i class="fa fa-close"></i> Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
 
 <script src="pages/mtto/alumnos/script.js"></script>
