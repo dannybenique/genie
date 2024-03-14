@@ -40,10 +40,10 @@
           $('#modalPers').on('shown.bs.modal', function() { document.querySelector("#txt_modPersBuscar").focus(); });
         },
         buscar : async function(){
+          const nroDUI = document.querySelector("#txt_modPersBuscar").value.trim();
+          document.querySelector('#lbl_modPersWait').innerHTML = ('<div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></div>');
           try{
-            let nroDUI = document.querySelector("#txt_modPersBuscar").value.trim();
             if(nroDUI.length>=8){
-              document.querySelector('#lbl_modPersWait').innerHTML = ('<div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></div>');
               const resp = await appAsynFetch({
                 TipoQuery : Persona.queryBuscar,
                 nroDNI : nroDUI
@@ -77,15 +77,17 @@
                 document.querySelector('#btn_modPersAddToPersonas').style.display = ((Persona.addNewPers)?('block'):('none')); //permite añadir nuevas personas segun config
                 document.querySelector('#lbl_modPersPersona').innerHTML = ('No existe la persona identificada con nro <b>'+nroDUI+'</b> y deseo Agregarla');
               }
-            } else { alert("!!!El Nro de DNI debe ser de 08 digitos y el RUC de 11 digitos!!!"); }
+            } else { 
+              alert("!!!El Nro de DNI debe ser de 08 digitos y el RUC de 11 digitos!!!"); 
+            }
           } catch (err){
             console.error('Error al cargar datos:', err);
           }
         },
         nuevo : async function(){
+          document.querySelector('#lbl_modPersWait').innerHTML = ('<div class="progress progress-sm active"><div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" style="width:100%"></div></div>');
+          const nroDNI = document.querySelector("#txt_modPersBuscar").value.trim();
           try {
-            document.querySelector('#lbl_modPersWait').innerHTML = ('<div class="progress progress-sm active"><div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" style="width:100%"></div></div>');
-            const nroDNI = document.querySelector("#txt_modPersBuscar").value.trim();
             const resp = await appAsynFetch( { TipoQuery:'newPersona' }, Persona.rutaSQL);
             document.querySelector('#lbl_modPersWait').innerHTML = ("");
 
@@ -141,8 +143,8 @@
           }
         },
         editar : async function(personaID,tipoPers){
+          Persona.tipoPersona = tipoPers;
           try {
-            Persona.tipoPersona = tipoPers;
             const resp = await appAsynFetch({
               TipoQuery : 'selPersona',
               personaID : personaID
