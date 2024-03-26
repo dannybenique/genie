@@ -49,7 +49,7 @@
   </div>
   <div class="row" id="edit" style="display:none;">
     <form class="form-horizontal" id="frmPersona" autocomplete="off">
-      <div class="col-md-5">
+      <div class="col-md-4">
         <div class="box box-primary">
           <div class="box-header with-border">
             <h3 class="box-title" style="font-family:flexoregular;"><b>Matricula</b></h3>
@@ -79,7 +79,7 @@
           </div>
         </div>
       </div>
-      <div class="col-md-7">
+      <div class="col-md-8">
         <div class="box box-primary">
           <div class="box-body box-profile">
             <div class="box-body table-responsive no-padding">

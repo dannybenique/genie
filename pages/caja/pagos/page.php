@@ -32,7 +32,7 @@
         <div class="box-body">
           <div class="box-body">
             Alumno: <a id="lbl_matriAlumno"></a><br/>
-            <span id="lbl_matriTipoDUI">DUI</span>: <a id="lbl_matriNroDUI"></a><br/><br/>
+            DNI: <a id="lbl_matriNroDUI"></a><br/><br/>
             Matricula: <a id="lbl_matriFecha"></a><br/>
             Codigo: <a id="lbl_matriCodigo"></a><br/>
             Año Matr: <a id="lbl_matriYYYY"></a><br/><br/>
@@ -126,9 +126,9 @@
                 <div id="modalMatric_Grid">
                   <table class="table table-hover">
                     <tr>
-                      <th style="width:110px;">DUI</th>
-                      <th style="">Socio</th>
-                      <th style="">Producto</th>
+                      <th style="width:110px;">DNI</th>
+                      <th style="">Alumno</th>
+                      <th style="">Matricula</th>
                       <th style="width:100px;text-align:right;">Importe</th>
                       <th style="width:100px;text-align:right;">Saldo</th>
                     </tr>

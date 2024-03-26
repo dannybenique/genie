@@ -5,11 +5,13 @@ async function appDashBoard(){
   $("#appTotalMatriculas").html('<span class="wrap-loading" style="left:-8px;"><span class="loading loading-1"></span></span>');
   $("#appTotalAlumnos").html('<span class="wrap-loading" style="left:-8px;"><span class="loading loading-1"></span></span>');
   $("#appTotalPadres").html('<span class="wrap-loading" style="left:-8px;"><span class="loading loading-1"></span></span>');
+  $("#appTotalEmpleados").html('<span class="wrap-loading" style="left:-8px;"><span class="loading loading-1"></span></span>');
   $("#appConfigYearMatricula").html('<span class="wrap-loading" style="left:-8px;"><span class="loading loading-1"></span></span>');
   
   const resp = await appAsynFetch({ TipoQuery : 'dashboard' },rutaSQL);
   $("#appTotalAlumnos").html(resp.alumnos);
   $("#appTotalPadres").html(resp.padres);
+  $("#appTotalEmpleados").html(resp.empleados);
   $("#appConfigYearMatricula").html(resp.config.YearCurrentMatricula);
 
   //matriculas

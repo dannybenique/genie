@@ -1,7 +1,6 @@
 const rutaSQL = "pages/caja/pagos/sql.php";
 var menu = "";
 var pago = null;
-var agenciaID = null;
 
 //=========================funciones para Personas============================
 async function appPagosReset(){
@@ -9,7 +8,6 @@ async function appPagosReset(){
   document.querySelector("#lbl_matriAtraso").style.color = "#777";
   document.querySelector('#lbl_matriAtraso').innerHTML = ("");
   document.querySelector('#lbl_matriAlumno').innerHTML = ("");
-  document.querySelector('#lbl_matriTipoDUI').innerHTML = ("DUI");
   document.querySelector('#lbl_matriNroDUI').innerHTML = ("");
   document.querySelector('#lbl_matriFecha').innerHTML = ("");
   document.querySelector('#lbl_matriCodigo').innerHTML = ("");
@@ -26,7 +24,6 @@ async function appPagosReset(){
   try{
     const resp = await appAsynFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php");
     pago = null;
-    agenciaID = resp.agenciaID;
     menu = JSON.parse(resp.menu);
     
     document.querySelector("#btn_PAGAR").disabled = true;
@@ -37,7 +34,7 @@ async function appPagosReset(){
 }
 
 function appPagosBotonNuevo(){
-  document.querySelector("#modalMatric_Titulo").innerHTML = ("Verificar Creditos por Doc. Identidad");
+  document.querySelector("#modalMatric_Titulo").innerHTML = ("Verificar Matricula por Doc. Identidad");
   document.querySelector("#modalMatric_Grid").style.display = 'none';
   document.querySelector("#modalMatric_Wait").innerHTML = ("");
   document.querySelector("#modalMatric_TxtBuscar").value = ("");
@@ -53,7 +50,6 @@ async function appPagosBotonPagar(){
       if(confirm("¿Esta seguro de continuar con el PAGO?")){
         const resp = await appAsynFetch({
           TipoQuery : 'insPago',
-          agenciaID : agenciaID*1,
           socioID : pago.socioID,
           tasaMora : pago.tasaMora,
           prestamoID : pago.prestamoID,
@@ -101,15 +97,15 @@ async function modalMatricGrid(){
   document.querySelector("#modalMatric_Grid").style.display = 'block';
   const txtBuscar = document.querySelector("#modalMatric_TxtBuscar").value;
   try{
-    const resp = await appAsynFetch({TipoQuery:'selCreditos', buscar:txtBuscar},rutaSQL);
+    const resp = await appAsynFetch({TipoQuery:'matricula_select', buscar:txtBuscar},rutaSQL);
     //respuesta
-    if(resp.prestamos.length>0){
+    if(resp.matriculas.length>0){
       let fila = "";
-      resp.prestamos.forEach((valor,key)=>{
+      resp.matriculas.forEach((valor,key)=>{
         fila += '<tr>'+
                 '<td>'+(valor.nro_DUI)+'</td>'+
-                '<td>'+(valor.socio)+'</td>'+
-                '<td><a href="javascript:appCreditoPagoView('+(valor.ID)+');">'+(valor.codigo+' &raquo; '+valor.producto+'; '+valor.mon_abrevia+'; '+appFormatMoney(valor.tasa,2)+'%')+'</a></td>'+
+                '<td>'+(valor.alumno)+'</td>'+
+                '<td><a href="javascript:appCreditoPagoView('+(valor.ID)+');">'+(valor.codigo+' &raquo; '+valor.nivel+'; '+valor.grado+'; '+valor.seccion)+'</a></td>'+
                 '<td style="text-align:right;">'+(appFormatMoney(valor.importe,2))+'</td>'+
                 '<td style="text-align:right;">'+(appFormatMoney(valor.saldo,2))+'</td>'+
                 '</tr>';
@@ -123,12 +119,12 @@ async function modalMatricGrid(){
   }
 }
 
-async function appCreditoPagoView(prestamoID){
+async function appCreditoPagoView(matriculaID){
   $('#modalMatric').modal('hide');
   try{
     const resp = await appAsynFetch({
-      TipoQuery : 'viewCredito',
-      prestamoID : prestamoID
+      TipoQuery : 'matricula_view',
+      matriculaID : matriculaID
     },rutaSQL);
 
     appCredi_Cabecera_SetData(resp.cabecera);
@@ -143,8 +139,8 @@ async function appCreditoPagoView(prestamoID){
 
 function appCredi_Cabecera_SetData(data){
   document.querySelector("#txt_DeudaFecha").disabled = (data.rolUser==data.rolROOT) ? (false):(true);
-  document.querySelector("#lbl_crediAtraso").style.color = (data.atraso>0)?("#D00"):("#777");
-  document.querySelector('#lbl_crediAtraso').innerHTML = (data.atraso);
+  document.querySelector("#lbl_matriAtraso").style.color = (data.atraso>0)?("#D00"):("#777");
+  document.querySelector('#lbl_matriAtraso').innerHTML = (data.atraso);
 
   pago = {
     tasaMora : data.mora,
@@ -152,15 +148,14 @@ function appCredi_Cabecera_SetData(data){
     prestamoID : data.prestamoID,
     productoID : data.productoID
   }
-  document.querySelector('#lbl_crediAlumno').innerHTML = (data.socio);
-  document.querySelector('#lbl_crediTipoDUI').innerHTML = (data.dui);
-  document.querySelector('#lbl_crediNroDUI').innerHTML = (data.nro_dui);
-  document.querySelector('#lbl_crediFecha').innerHTML = (moment(data.fecha_otorga).format("DD/MM/YYYY"));
-  document.querySelector('#lbl_crediCodigo').innerHTML = (data.codigo);
-  document.querySelector('#lbl_crediNivel').innerHTML = (data.agencia);
-  document.querySelector('#lbl_crediGrado').innerHTML = (data.promotor);
-  document.querySelector('#lbl_crediSeccion').innerHTML = (data.analista);
-  document.querySelector('#lbl_crediSaldo').innerHTML = (appFormatMoney(data.saldo,2));
+  document.querySelector('#lbl_matriAlumno').innerHTML = (data.alumno);
+  document.querySelector('#lbl_matriNroDUI').innerHTML = (data.nro_dui);
+  document.querySelector('#lbl_matriFecha').innerHTML = (moment(data.fecha_otorga).format("DD/MM/YYYY"));
+  document.querySelector('#lbl_matriCodigo').innerHTML = (data.codigo);
+  document.querySelector('#lbl_matriNivel').innerHTML = (data.agencia);
+  document.querySelector('#lbl_matriGrado').innerHTML = (data.promotor);
+  document.querySelector('#lbl_matriSeccion').innerHTML = (data.analista);
+  document.querySelector('#lbl_matriSaldo').innerHTML = (appFormatMoney(data.saldo,2));
 }
 
 function appCredi_Detalle_SetData(data){

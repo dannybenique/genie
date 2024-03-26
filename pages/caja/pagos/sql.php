@@ -36,22 +36,22 @@
       }
       //****************sql****************
       switch ($data->TipoQuery) {
-        case "selCreditos":
+        case "matricula_select":
           $tabla = array();
           $buscar = strtoupper($data->buscar);
-          $sql = "select * from vw_prestamos_min where estado=1 and saldo>0 and id_coopac=:coopacID and nro_dui LIKE :buscar";
-          $params = [":coopacID"=>$web->coopacID,":buscar"=>'%'.$buscar.'%'];
+          $sql = "select p.id,p.nro_dui,fn_get_persona(p.tipo_persona, p.ap_paterno, p.ap_materno, p.nombres) AS alumno,m.id as id_matricula,m.codigo,m.importe,m.saldo,m.yyyy,n.nivel,n.grado,n.seccion from personas p join app_matriculas m on(m.id_alumno=p.id) join vw_niveles n on(m.id_seccion=n.id_seccion) where m.saldo>0 and id_colegio=:colegioID and nro_dui LIKE :buscar";
+          $params = [":colegioID"=>$web->colegioID,":buscar"=>'%'.$buscar.'%'];
           $qry = $db->query_all($sql,$params);
           if ($qry) {
             foreach($qry as $rs){
               $tabla[] = array(
-                "ID" => $rs["id"],
+                "ID" => $rs["id_matricula"],
                 "nro_DUI" => str_ireplace($buscar, '<span style="background:yellow;">'.$buscar.'</span>', $rs["nro_dui"]),
-                "socio" => $rs["socio"],
+                "alumno" => $rs["alumno"],
                 "codigo" => $rs["codigo"],
-                "producto" => $rs["producto"],
-                "mon_abrevia" => $rs["mon_abrevia"],
-                "tasa" => $rs["tasa"],
+                "nivel" => $rs["nivel"],
+                "grado" => $rs["grado"],
+                "seccion" => $rs["seccion"],
                 "importe" => $rs["importe"]*1,
                 "saldo" => $rs["saldo"]*1
               );
@@ -59,48 +59,31 @@
           }
 
           //respuesta
-          $rpta = array("prestamos"=>$tabla);
+          $rpta = array("matriculas"=>$tabla);
           echo json_encode($rpta);
           break;
-        case "viewCredito":
+        case "matricula_view":
           //cabecera
           $cabecera = 0;
-          $qry = $db->query_all("select p.*,extract(days from (now()-d.fecha)) as atraso from vw_prestamos_ext p join bn_prestamos_det d on (p.id=d.id_saldo) where p.id=:id and d.numero=(select min(numero) from bn_prestamos_det where id_saldo=:id and numero>0 and capital>pg_capital)",[":id"=>$data->prestamoID]);
+          $params = [":id"=>$data->matriculaID,":colegioID"=>$web->colegioID];
+          // $qry = $db->query_all("select p.*,extract(days from (now()-d.fecha)) as atraso from vw_prestamos_ext p join bn_prestamos_det d on (p.id=d.id_saldo) where p.id=:id and d.numero=(select min(numero) from bn_prestamos_det where id_saldo=:id and numero>0 and capital>pg_capital)",[":id"=>$data->prestamoID]);
+          $qry = $db->query_all("select p.id as id_persona,p.nro_dui,fn_get_persona(p.tipo_persona, p.ap_paterno, p.ap_materno, p.nombres) AS alumno, m.id as id_matricula,m.codigo,m.fecha_matricula,m.yyyy,m.importe,m.saldo,m.estado,n.nivel,n.grado,n.seccion from personas p join app_matriculas m on(m.id_alumno=p.id) join vw_niveles n on(m.id_seccion=n.id_seccion) where m.estado=1 and m.id_colegio=:colegioID and m.id=:id",$params);
           if($qry) {
             $rs = reset($qry);
             
             $cabecera = array(
-              "prestamoID" => $rs["id"],
+              "matriculaID" => $rs["id"],
               "codigo" => $rs["codigo"],
-              "socioID" => $rs["id_socio"],
-              "socio" => $rs["socio"],
-              "dui" => $rs["dui"],
+              "alumnoID" => $rs["id_persona"],
+              "alumno" => $rs["alumno"],
               "nro_dui" => $rs["nro_dui"],
-              "agencia" => $rs["agencia"],
-              "promotor" => $rs["promotor"],
-              "analista" => $rs["analista"],
-              "producto" => $rs["producto"],
-              "productoID" => $rs["id_producto"],
-              "tiposbs" => $rs["tiposbs"],
-              "destsbs" => $rs["destsbs"],
-              "clasifica" => $rs["clasifica"],
-              "condicion" => $rs["condicion"],
-              "moneda" => $rs["moneda"],
-              "mon_abrevia" => $rs["mon_abrevia"],
-              "importe" => $rs["importe"],
+              "nivel" => $rs["nivel"],
+              "grado" => $rs["grado"],
+              "seccion" => $rs["seccion"],
               "saldo" => $rs["saldo"],
-              "tasa" => $rs["tasa_cred"],
-              "mora" => $rs["tasa_mora"],
-              "desgr" => $rs["tasa_desgr"],
-              "nrocuotas" => $rs["nro_cuotas"],
-              "fecha_solicred" => $rs["fecha_solicred"],
-              "fecha_otorga" => $rs["fecha_otorga"],
-              "fecha_pricuota" => $rs["fecha_pricuota"],
-              "tipocred" => $rs["tipocred"],
-              "frecuencia" => $rs["frecuencia"],
-              "observac" => ($rs["observac"]),
+              "fecha_matricula" => $rs["fecha_matricula"],
               "estado" => ($rs["estado"]*1),
-              "atraso" => (($rs["atraso"]<0)?(0):($rs["atraso"] )),
+              // "atraso" => (($rs["atraso"]<0)?(0):($rs["atraso"] )),
               "rolUser" => $_SESSION['usr_data']['rolID'],
               "rolROOT" => 101
             );
@@ -108,25 +91,24 @@
           
           //detalle
           $detalle = 0;
-          $params = [":cabemora"=>$cabecera["mora"],":id"=>$data->prestamoID];
-          $qry = $db->query_all("select sum(capital-pg_capital) as capital,sum(interes-pg_interes) as interes,sum(round((extract(days from now()-fecha)::integer*(:cabemora*0.01/360)::float*(capital))::decimal,2)-pg_mora) as mora,sum(otros-pg_otros) as otros from bn_prestamos_det where extract(days from now()-fecha)>=0 and capital>pg_capital and numero>0 and id_saldo=:id;",$params);
-          if ($qry) {
-            foreach($qry as $rs){
-              $detalle = array(
-                "capital" => $rs["capital"]*1,
-                "interes" => $rs["interes"]*1,
-                "mora" => $rs["mora"]*1,
-                "otros" => $rs["otros"]*1
-              );
-            }
-          }
+          // $params = [":cabemora"=>$cabecera["mora"],":id"=>$data->prestamoID];
+          // $qry = $db->query_all("select sum(capital-pg_capital) as capital,sum(interes-pg_interes) as interes,sum(round((extract(days from now()-fecha)::integer*(:cabemora*0.01/360)::float*(capital))::decimal,2)-pg_mora) as mora,sum(otros-pg_otros) as otros from bn_prestamos_det where extract(days from now()-fecha)>=0 and capital>pg_capital and numero>0 and id_saldo=:id;",$params);
+          // if ($qry) {
+          //   foreach($qry as $rs){
+          //     $detalle = array(
+          //       "capital" => $rs["capital"]*1,
+          //       "interes" => $rs["interes"]*1,
+          //       "mora" => $rs["mora"]*1,
+          //       "otros" => $rs["otros"]*1
+          //     );
+          //   }
+          // }
 
           //respuesta
           $rpta = array(
             'cabecera'=> $cabecera,
             'detalle'=> $detalle,
             "comboTipoPago" => $fn->getComboBox("select id,nombre from sis_tipos where id_padre=13 order by id;"),
-            "comboMonedas" => $fn->getComboBox("select id,nombre from sis_tipos where id_padre=1 order by id;"),
             "fecha" => $fn->getFechaActualDB());
           echo json_encode($rpta);
           break;
