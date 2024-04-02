@@ -1,6 +1,7 @@
 const rutaSQL = "pages/caja/pagos/sql.php";
-var menu = "";
+var menu = null;
 var pago = null;
+var matriculas = null;
 
 //=========================funciones para Personas============================
 async function appPagosReset(){
@@ -11,23 +12,31 @@ async function appPagosReset(){
   document.querySelector('#lbl_matriNroDUI').innerHTML = ("");
   document.querySelector('#lbl_matriFecha').innerHTML = ("");
   document.querySelector('#lbl_matriCodigo').innerHTML = ("");
+  document.querySelector('#lbl_matriYYYY').innerHTML = ("");
   document.querySelector('#lbl_matriNivel').innerHTML = ("");
   document.querySelector('#lbl_matriGrado').innerHTML = ("");
   document.querySelector('#lbl_matriSeccion').innerHTML = ("");
   document.querySelector('#lbl_matriSaldo').innerHTML = ("");
 
-  document.querySelector('#txt_DeudaCapital').value = ("");
   document.querySelector('#txt_DeudaFecha').value = ("");
   document.querySelector('#txt_DeudaTotalNeto').value = ("");
   document.querySelector('#txt_DeudaImporte').value = ("");
   document.querySelector('#cbo_DeudaMedioPago').innerHTML = ("");
+  document.querySelector("#btn_PAGAR").style.display = 'none';
+  document.querySelector("#btn_NEW").style.display = 'none';
+
+  pago = null;
+  matriculas = null;
+  
   try{
     const resp = await appAsynFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php");
-    pago = null;
-    menu = JSON.parse(resp.menu);
     
-    document.querySelector("#btn_PAGAR").disabled = true;
-    document.querySelector("#btn_NEW").style.display = (menu.caja.submenu.pagos.cmdInsert==1)?('inline'):('none');
+    menu = JSON.parse(resp.menu);
+    if(menu.caja.submenu.pagos.cmdInsert){
+      document.querySelector("#btn_NEW").style.display = 'inline';
+      document.querySelector("#btn_PAGAR").style.display = 'inline';  
+      document.querySelector("#btn_PAGAR").disabled = true;
+    } 
   } catch(err){
     console.error('Error al cargar datos:', err);
   }
@@ -43,21 +52,21 @@ function appPagosBotonNuevo(){
 }
 
 async function appPagosBotonPagar(){
-  let importe = appConvertToNumero(document.querySelector("#txt_DeudaImporte").value);
   $(".form-group").removeClass("has-error");
+  const importe = appConvertToNumero(document.querySelector("#txt_DeudaImporte").value);
   if(!isNaN(importe)){
     if(importe>0){
       if(confirm("¿Esta seguro de continuar con el PAGO?")){
-        const resp = await appAsynFetch({
+        const datos = {
           TipoQuery : 'insPago',
-          socioID : pago.socioID,
-          tasaMora : pago.tasaMora,
-          prestamoID : pago.prestamoID,
+          alumnoID : pago.alumnoID,
+          matriculaID : pago.matriculaID,
           productoID : pago.productoID,
-          codprod : document.querySelector("#lbl_crediCodigo").innerHTML,
           medioPagoID : document.querySelector("#cbo_DeudaMedioPago").value*1,
-          importe : importe*1
-        },rutaSQL);
+          importe : importe
+        }
+        // console.log(datos);
+        const resp = await appAsynFetch(datos,rutaSQL);
         if (!resp.error) { 
           if(confirm("¿Desea Imprimir el pago?")){
             $("#modalPrint").modal("show");
@@ -79,31 +88,30 @@ async function appPagosBotonPagar(){
 
 function modalMatric_keyBuscar(e){
   let code = (e.keyCode ? e.keyCode : e.which);
-  if(code == 13) { modalMatricBuscar(); }
-}
-
-function modalMatricBuscar(){
-  document.querySelector("#modalMatric_Grid").style.display = 'none';
-  if(document.querySelector("#modalMatric_TxtBuscar").value.length>=3){ 
-    modalMatricGrid();
-  } else { 
-    document.querySelector('#modalMatric_Wait').innerHTML = ('<div class="callout callout-warning"><h4>Demasiado Corto</h4><p>El NRO de documento de Identidad debe tener como minimo <b>4 numeros</b></p></div>'); 
+  if(code == 13) { 
+    if(document.querySelector("#modalMatric_TxtBuscar").value.trim().length>=4){ 
+      modalMatricGrid();
+    } else { 
+      document.querySelector("#modalMatric_Grid").style.display = 'none';
+      document.querySelector('#modalMatric_Wait').innerHTML = ('<div class="callout callout-warning"><h4>Demasiado Corto</h4><p>El NRO de documento de Identidad debe tener como minimo <b>4 numeros</b></p></div>'); 
+    }
   }
 }
 
 async function modalMatricGrid(){
-  document.querySelector('#modalMatric_Wait').innerHTML = ('<div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></div>');
   document.querySelector('#modalMatric_Wait').innerHTML = "";
   document.querySelector("#modalMatric_Grid").style.display = 'block';
+  document.querySelector('#modalMatric_GridBody').innerHTML = ('<tr><td colspan="5"><div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></div></td></tr>');
   const txtBuscar = document.querySelector("#modalMatric_TxtBuscar").value;
   try{
     const resp = await appAsynFetch({TipoQuery:'matricula_select', buscar:txtBuscar},rutaSQL);
     //respuesta
     if(resp.matriculas.length>0){
       let fila = "";
-      resp.matriculas.forEach((valor,key)=>{
+      matriculas = resp.matriculas;
+      matriculas.forEach((valor,key)=>{
         fila += '<tr>'+
-                '<td>'+(valor.nro_DUI)+'</td>'+
+                '<td>'+(valor.html_nro_DUI)+'</td>'+
                 '<td>'+(valor.alumno)+'</td>'+
                 '<td><a href="javascript:appCreditoPagoView('+(valor.ID)+');">'+(valor.codigo+' &raquo; '+valor.nivel+'; '+valor.grado+'; '+valor.seccion)+'</a></td>'+
                 '<td style="text-align:right;">'+(appFormatMoney(valor.importe,2))+'</td>'+
@@ -121,46 +129,44 @@ async function modalMatricGrid(){
 
 async function appCreditoPagoView(matriculaID){
   $('#modalMatric').modal('hide');
+  
   try{
     const resp = await appAsynFetch({
       TipoQuery : 'matricula_view',
       matriculaID : matriculaID
     },rutaSQL);
 
-    appCredi_Cabecera_SetData(resp.cabecera);
-    appCredi_Detalle_SetData(resp.detalle);
+    appCredi_SetData(matriculas.find(matricula => matricula.ID===matriculaID));
     appLlenarDataEnComboBox(resp.comboTipoPago,"#cbo_DeudaMedioPago",0); //medios de pago
     $('#txt_DeudaFecha').datepicker("setDate",moment(resp.fecha).format("DD/MM/YYYY"));
+    document.querySelector("#btn_PAGAR").style.display = 'inline';
     document.querySelector("#btn_PAGAR").disabled = false;
   } catch(err){
     console.error('Error al cargar datos:', err);
   }
 }
 
-function appCredi_Cabecera_SetData(data){
+function appCredi_SetData(data){
   document.querySelector("#txt_DeudaFecha").disabled = (data.rolUser==data.rolROOT) ? (false):(true);
   document.querySelector("#lbl_matriAtraso").style.color = (data.atraso>0)?("#D00"):("#777");
   document.querySelector('#lbl_matriAtraso').innerHTML = (data.atraso);
-
   pago = {
-    tasaMora : data.mora,
-    socioID : data.socioID,
-    prestamoID : data.prestamoID,
+    alumnoID : data.alumnoID,
+    matriculaID : data.ID,
     productoID : data.productoID
   }
+  console.log(pago);
   document.querySelector('#lbl_matriAlumno').innerHTML = (data.alumno);
   document.querySelector('#lbl_matriNroDUI').innerHTML = (data.nro_dui);
-  document.querySelector('#lbl_matriFecha').innerHTML = (moment(data.fecha_otorga).format("DD/MM/YYYY"));
+  document.querySelector('#lbl_matriFecha').innerHTML = (moment(data.fecha_matricula).format("DD/MM/YYYY"));
   document.querySelector('#lbl_matriCodigo').innerHTML = (data.codigo);
-  document.querySelector('#lbl_matriNivel').innerHTML = (data.agencia);
-  document.querySelector('#lbl_matriGrado').innerHTML = (data.promotor);
-  document.querySelector('#lbl_matriSeccion').innerHTML = (data.analista);
+  document.querySelector('#lbl_matriYYYY').innerHTML = (data.yyyy);
+  document.querySelector('#lbl_matriNivel').innerHTML = (data.nivel);
+  document.querySelector('#lbl_matriGrado').innerHTML = (data.grado);
+  document.querySelector('#lbl_matriSeccion').innerHTML = (data.seccion);
   document.querySelector('#lbl_matriSaldo').innerHTML = (appFormatMoney(data.saldo,2));
-}
 
-function appCredi_Detalle_SetData(data){
-  let total = data.capital+data.interes+data.mora+data.otros;
-  document.querySelector('#txt_DeudaCapital').value = (appFormatMoney(data.capital,2));
+  let total = (data.atraso>0) ? (data.saldo_det):(0);
   document.querySelector('#txt_DeudaTotalNeto').value = (appFormatMoney(total,2));
   document.querySelector('#txt_DeudaImporte').value = (appFormatMoney(total,2));
 }

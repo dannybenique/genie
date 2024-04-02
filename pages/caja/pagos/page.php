@@ -15,7 +15,7 @@
 <!-- Main content -->
 <section class="content">
   <div class="row" id="edit">
-    <div class="col-md-4">
+    <div class="col-md-5">
       <div class="box box-primary">
         <div class="box-header with-border">
           <h3 class="box-title" style="font-family:flexoregular;"><b>Opciones</b></h3>
@@ -45,25 +45,11 @@
         </div>
       </div>
     </div>
-    <div class="col-md-8">
+    <div class="col-md-5">
       <div class="box box-success">
         <div class="box-header with-border">
           <h3 class="box-title" style="font-family:flexoregular;"><b>Deuda pendiente</b></h3>
         </div>
-        <div class="row">
-          <div class="col-md-6">
-            <div class="box-body">
-              <div class="box-body">
-                  <div class="form-group" style="margin-bottom:5px;">
-                    <div class="input-group">
-                      <span class="input-group-addon" style="background:#eeeeee;"><b>PAGO</b></span>
-                      <input id="txt_DeudaCapital" type="text" class="form-control" disabled="disabled"/>
-                    </div>
-                  </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6">
             <div class="box-body">
               <div class="box-body">
                 <div class="form-group" style="margin-bottom:10px;">
@@ -76,7 +62,7 @@
               <div class="box-body">
                 <div class="form-group" style="margin-bottom:5px;">
                   <div class="input-group">
-                    <span class="input-group-addon" style="background:#eeeeee;"><b>DEUDA NETA</b></span>
+                    <span class="input-group-addon" style="background:#eeeeee;"><b>DEUDA ACTUAL</b></span>
                     <input id="txt_DeudaTotalNeto" type="text" class="form-control" disabled="disabled"/>
                   </div>
                 </div>
@@ -97,8 +83,6 @@
                 <button type="button" id="btn_PAGAR" class="btn btn-success btn-sm pull-right" onclick="javascript:appPagosBotonPagar();"><i class="fa fa-flash"></i> Pagar Deuda</button>
               </div>
             </div>
-          </div>
-        </div>
       </div>
     </div>
   </div>
@@ -126,11 +110,11 @@
                 <div id="modalMatric_Grid">
                   <table class="table table-hover">
                     <tr>
-                      <th style="width:110px;">DNI</th>
+                      <th style="width:90px;">DNI</th>
                       <th style="">Alumno</th>
                       <th style="">Matricula</th>
-                      <th style="width:100px;text-align:right;">Importe</th>
-                      <th style="width:100px;text-align:right;">Saldo</th>
+                      <th style="width:90px;text-align:right;">Importe</th>
+                      <th style="width:90px;text-align:right;">Saldo</th>
                     </tr>
                     <tbody id="modalMatric_GridBody"></tbody>
                   </table>

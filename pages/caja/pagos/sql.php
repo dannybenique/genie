@@ -11,49 +11,38 @@
       $rpta = 0;
 
       function pago_Item($item,$importe){
-        $valor = (($item>0)
-                  ?(($importe>=$item)?($item):($importe))
-                  :(0));
-        return round($valor,2);
+        return ($item>0) ? (round(min($item,$importe),2)):(0);
       }
-      function reg_movim_det($tipo_movID,$prestamoID,$movimID,$productoID,$importe){
-        $db = $GLOBALS["db"];
-        
-        $qry = $db->query_all("select coalesce(max(id)+1,1) as code from bn_movim_det;");
-        $detalleID = reset($qry)["code"];
-        $qry = $db->query_all("select coalesce(max(item)+1,1) as item from bn_movim_det where id_movim=".$movimID);
-        $item = reset($qry)["item"];
-        $sql = "insert into bn_movim_det values(:id,:cabeceraID,:tipomovID,:item,:importe);";
-        $params = [
-          ":id"=>$detalleID,
-          ":cabeceraID"=>$movimID,
-          ":tipomovID"=>$tipo_movID,
-          ":item"=>$item,
-          ":importe"=>$importe
-        ];
-        $qry = $db->query_all($sql,$params);
-        $rs = reset($qry);
-      }
+      
       //****************sql****************
       switch ($data->TipoQuery) {
         case "matricula_select":
           $tabla = array();
           $buscar = strtoupper($data->buscar);
-          $sql = "select p.id,p.nro_dui,fn_get_persona(p.tipo_persona, p.ap_paterno, p.ap_materno, p.nombres) AS alumno,m.id as id_matricula,m.codigo,m.importe,m.saldo,m.yyyy,n.nivel,n.grado,n.seccion from personas p join app_matriculas m on(m.id_alumno=p.id) join vw_niveles n on(m.id_seccion=n.id_seccion) where m.saldo>0 and id_colegio=:colegioID and nro_dui LIKE :buscar";
           $params = [":colegioID"=>$web->colegioID,":buscar"=>'%'.$buscar.'%'];
+          $sql = "select p.id as id_alumno,p.nro_dui,fn_get_persona(p.tipo_persona, p.ap_paterno, p.ap_materno, p.nombres) AS alumno,m.id as id_matricula,m.fecha_matricula,m.codigo,m.importe,m.saldo,m.yyyy,n.nivel,n.grado,n.seccion,d.id_producto,d.saldo as saldo_det,extract(days from (now()-d.vencimiento)) as atraso from personas p join app_matriculas m on(m.id_alumno=p.id) join vw_niveles n on(m.id_seccion=n.id_seccion) join app_matriculas_det d on(m.id=d.id_matricula) where m.saldo>0 and d.saldo>0 and d.item=(select min(item) from app_matriculas_det where id_matricula=m.id and saldo>0) and id_colegio=:colegioID and nro_dui LIKE :buscar";
           $qry = $db->query_all($sql,$params);
           if ($qry) {
             foreach($qry as $rs){
               $tabla[] = array(
                 "ID" => $rs["id_matricula"],
-                "nro_DUI" => str_ireplace($buscar, '<span style="background:yellow;">'.$buscar.'</span>', $rs["nro_dui"]),
+                "nro_dui" => $rs["nro_dui"],
+                "html_nro_DUI" => str_ireplace($buscar, '<span style="background:yellow;">'.$buscar.'</span>', $rs["nro_dui"]),
+                "alumnoID" => $rs["id_alumno"],
                 "alumno" => $rs["alumno"],
                 "codigo" => $rs["codigo"],
+                "yyyy" => $rs["yyyy"],
                 "nivel" => $rs["nivel"],
                 "grado" => $rs["grado"],
                 "seccion" => $rs["seccion"],
+                "fecha_matricula" => $rs["fecha_matricula"],
+                "productoID" => $rs["id_producto"],
+                "saldo_det" => $rs["saldo_det"]*1,
+                "atraso" => (($rs["atraso"]<0)?(0):($rs["atraso"]*1)),
                 "importe" => $rs["importe"]*1,
-                "saldo" => $rs["saldo"]*1
+                "saldo" => $rs["saldo"]*1,
+                "rolUser" => $_SESSION['usr_data']['rolID'],
+                "rolROOT" => 101
               );
             }
           }
@@ -63,51 +52,8 @@
           echo json_encode($rpta);
           break;
         case "matricula_view":
-          //cabecera
-          $cabecera = 0;
-          $params = [":id"=>$data->matriculaID,":colegioID"=>$web->colegioID];
-          // $qry = $db->query_all("select p.*,extract(days from (now()-d.fecha)) as atraso from vw_prestamos_ext p join bn_prestamos_det d on (p.id=d.id_saldo) where p.id=:id and d.numero=(select min(numero) from bn_prestamos_det where id_saldo=:id and numero>0 and capital>pg_capital)",[":id"=>$data->prestamoID]);
-          $qry = $db->query_all("select p.id as id_persona,p.nro_dui,fn_get_persona(p.tipo_persona, p.ap_paterno, p.ap_materno, p.nombres) AS alumno, m.id as id_matricula,m.codigo,m.fecha_matricula,m.yyyy,m.importe,m.saldo,m.estado,n.nivel,n.grado,n.seccion from personas p join app_matriculas m on(m.id_alumno=p.id) join vw_niveles n on(m.id_seccion=n.id_seccion) where m.estado=1 and m.id_colegio=:colegioID and m.id=:id",$params);
-          if($qry) {
-            $rs = reset($qry);
-            
-            $cabecera = array(
-              "matriculaID" => $rs["id"],
-              "codigo" => $rs["codigo"],
-              "alumnoID" => $rs["id_persona"],
-              "alumno" => $rs["alumno"],
-              "nro_dui" => $rs["nro_dui"],
-              "nivel" => $rs["nivel"],
-              "grado" => $rs["grado"],
-              "seccion" => $rs["seccion"],
-              "saldo" => $rs["saldo"],
-              "fecha_matricula" => $rs["fecha_matricula"],
-              "estado" => ($rs["estado"]*1),
-              // "atraso" => (($rs["atraso"]<0)?(0):($rs["atraso"] )),
-              "rolUser" => $_SESSION['usr_data']['rolID'],
-              "rolROOT" => 101
-            );
-          }
-          
-          //detalle
-          $detalle = 0;
-          // $params = [":cabemora"=>$cabecera["mora"],":id"=>$data->prestamoID];
-          // $qry = $db->query_all("select sum(capital-pg_capital) as capital,sum(interes-pg_interes) as interes,sum(round((extract(days from now()-fecha)::integer*(:cabemora*0.01/360)::float*(capital))::decimal,2)-pg_mora) as mora,sum(otros-pg_otros) as otros from bn_prestamos_det where extract(days from now()-fecha)>=0 and capital>pg_capital and numero>0 and id_saldo=:id;",$params);
-          // if ($qry) {
-          //   foreach($qry as $rs){
-          //     $detalle = array(
-          //       "capital" => $rs["capital"]*1,
-          //       "interes" => $rs["interes"]*1,
-          //       "mora" => $rs["mora"]*1,
-          //       "otros" => $rs["otros"]*1
-          //     );
-          //   }
-          // }
-
           //respuesta
           $rpta = array(
-            'cabecera'=> $cabecera,
-            'detalle'=> $detalle,
             "comboTipoPago" => $fn->getComboBox("select id,nombre from sis_tipos where id_padre=13 order by id;"),
             "fecha" => $fn->getFechaActualDB());
           echo json_encode($rpta);
@@ -115,93 +61,67 @@
         case "insPago":
           $estado = 1;
           $tipo_operID = 124; //credito
-          $coopacID = $web->coopacID;
+          $colegioID = $web->colegioID;
           $clientIP = $fn->getClientIP();
           $userID = $_SESSION['usr_ID'];
           $importe = $data->importe;
 
-          //actualizamos cantidades en bn_prestamos_det
-          $pg_otros = 0;
-          $pg_mora = 0;
-          $pg_interes = 0;
+          //actualizamos saldos en app_matriculas_det
           $pg_capital = 0;
-          $pg_tot_otros = 0;
-          $pg_tot_mora = 0;
-          $pg_tot_interes = 0;
           $pg_tot_capital = 0;
-          $sql = "select id_saldo,numero,fecha,capital-pg_capital as capital,interes-pg_interes as interes,(extract(days from now()-fecha)::float*(:tasamora*0.01/360)*(capital-pg_capital))-pg_mora as mora,otros-pg_otros as otros ".
-                 "from bn_prestamos_det ".
-                 "where id_saldo=:id and numero>0 and (capital>pg_capital or interes>pg_interes or otros>pg_otros) ".
-                 "order by numero;";
-          $params = [":tasamora"=>$data->tasaMora,":id"=>$data->prestamoID];
-          $qry = $db->query_all($sql,$params);
-          if ($qry) {
-            $temp = "";
+          $params = [":id"=>$data->matriculaID];
+          $qry = $db->query_all("select id_matricula,item,vencimiento,saldo from app_matriculas_det where id_matricula=:id and saldo>0 order by item;",$params);
+          if($qry) {
             foreach($qry as $rs){
               if($importe>0){
-                $pg_otros = pago_Item(($rs["otros"]),$importe); $importe -= $pg_otros;
-                $pg_mora = pago_Item(($rs["mora"]),$importe); $importe -= $pg_mora;
-                $pg_interes = pago_Item(($rs["interes"]),$importe); $importe -= $pg_interes;
-                $pg_capital = pago_Item(($rs["capital"]),$importe); $importe -= $pg_capital;
-                $pg_tot_otros += $pg_otros;
-                $pg_tot_mora += $pg_mora;
-                $pg_tot_interes += $pg_interes;
+                $importe -= ($pg_capital = pago_Item(($rs["saldo"]),$importe));
                 $pg_tot_capital += $pg_capital;
-                $whr_otros = ($pg_otros>0)?(",pg_otros=pg_otros+".$pg_otros):("");
-                $whr_mora = ($pg_mora>0)?(",pg_mora=pg_mora+".$pg_mora):("");
-                $whr_interes = ($pg_interes>0)?(",pg_interes=pg_interes+".$pg_interes):("");
-                $whr_capital = ($pg_capital>0)?(",pg_capital=pg_capital+".$pg_capital):("");
-                $whr_atraso = ($rs["capital"]-$pg_capital<=0)?(",atraso=extract(days from now()-fecha)"):("");
-                $qrx = $db->query_all("update bn_prestamos_det set numero=".$rs["numero"].$whr_otros.$whr_mora.$whr_interes.$whr_capital.$whr_atraso." where id_saldo=".$data->prestamoID." and numero=".$rs["numero"].";");
-                $aa = reset($qrx);
-              }
+                $paramx = [":saldo"=>$pg_capital,":matriculaID"=>$data->matriculaID,":item"=>$rs["item"]];
+                $qrx = $db->query_all("update app_matriculas_det set saldo=(saldo-:saldo) where id_matricula=:matriculaID and item=:item;","paramx");
+                $xx = reset($qrx);
+              } else { break; }
             }
           }
-          //actualizamos saldo de bn_prestamos
-          if($pg_tot_capital>0) {
-            $params = [
-              ":id"=>$data->prestamoID,
-              ":capital"=>$pg_tot_capital,
-              ":sysIP"=>$clientIP,
-              ":userID"=>$userID
-            ];
-            $qry = $db->query_all("update bn_saldos set saldo=saldo-:capital,sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id=:id;",$params);
-            $rs = reset($qry);
-          }
+          
+          //actualizamos saldo de app_matriculas
+          $params = [":id"=>$data->matriculaID,":saldo"=>$data->importe,":sysIP"=>$clientIP,":userID"=>$userID];
+          $qry = $db->query_all("update app_matriculas set saldo=(saldo-:saldo),sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id=:id;",$params);
+          $rs = reset($qry);
 
 
-          /******agregamos bn_movim********/
+          /******agregamos app_movim********/
           /********************************/
-          $qry = $db->query_all("select coalesce(max(id)+1,1) as code from bn_movim;");
-          $movimID = reset($qry)["code"];
-          $qry = $db->query_all("select right('0000000'||cast(coalesce(max(right(codigo,7)::integer)+1,1) as text),7) as code from bn_movim where id_cajera=".$userID);
+          $qry = $db->query_all("select right('0000000'||cast(coalesce(max(right(codigo,7)::integer)+1,1) as text),7) as code from app_movim where id_cajera=".$userID);
           $codigo = $userID."-".reset($qry)["code"];
-          $sql = "insert into bn_movim values(:id,:coopacID,:agenciaID,:operID,:pagoID,:monedaID,:socioID,:saldoID,:productoID,:cajeraID,now(),:codigo,:importe,:estado,:sysIP,:userID,now(),:observac)";
+          $sql = "insert into app_movim(id_colegio,id_matricula,id_tipo_oper,id_tipo_pago,id_tipo_mov,id_cajera,fecha,codigo,total,estado,sys_ip,sys_user,sys_fecha,observac) values(:colegioID,:matriculaID,:operID,:pagoID,:movID,:cajeraID,now(),:codigo,:total,:estado,:sysIP,:sysUSER,now(),:observac) returning id;";
           $params = [
-            ":id"=>$movimID,
-            ":coopacID"=>$coopacID,
-            ":agenciaID"=>$data->agenciaID,
+            ":colegioID"=>$colegioID,
+            ":matriculaID"=>$data->matriculaID,
             ":operID"=>$tipo_operID,
             ":pagoID"=>$data->medioPagoID,
-            ":monedaID"=>$data->monedaID,
-            ":socioID"=>$data->socioID,
-            ":saldoID"=>$data->prestamoID,
-            ":productoID"=>$data->productoID,
+            ":movID"=>10, //tipo de movimiento
             ":cajeraID"=>$userID,
             ":codigo"=>$codigo,
-            ":importe"=>$data->importe,
+            ":total"=>$data->importe,
             ":estado"=>$estado,
             ":sysIP"=>$clientIP,
-            ":userID"=>$userID,
+            ":sysUSER"=>$userID,
             ":observac"=>''
           ];
           $qry = $db->query_all($sql,$params);
           $rs = reset($qry);
-          //agregamos bn_movim_det
-          if($pg_tot_otros>0) {reg_movim_det(13,$data->prestamoID,$movimID,$data->productoID,$pg_tot_otros); }
-          if($pg_tot_mora>0) {reg_movim_det(12,$data->prestamoID,$movimID,$data->productoID,$pg_tot_mora); }
-          if($pg_tot_interes>0) {reg_movim_det(11,$data->prestamoID,$movimID,$data->productoID,$pg_tot_interes); }
-          if($pg_tot_capital>0) {reg_movim_det(10,$data->prestamoID,$movimID,$data->productoID,$pg_tot_capital); }
+          $movimID = $rs["id"];
+
+          //agregamos app_movim_det
+          $sql = "insert into app_movim_det(id_movim,item,id_producto,importe) values(:movimID,:item,:productoID,:importe) returning id;";
+          $params = [
+            ":movimID"=>$movimID,
+            ":item"=>1,
+            ":productoID"=>$data->productoID,
+            ":importe"=>$data->importe
+          ];
+          $qry = $db->query_all($sql,$params);
+          $rs = reset($qry);
 
           //respuesta
           $rpta = array("error" => false,"movimID"=>$movimID,"ingresados" => 1);

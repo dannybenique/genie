@@ -320,7 +320,7 @@ async function comboSecciones(){
   //loader
   document.querySelector("#cbo_SolMatriSecciones").disabled = true;
   try{
-    const datos = await appAsynFetch({
+    const resp = await appAsynFetch({
       TipoQuery : "comboNivel",
       tipoID  : 4, //secciones
       padreID : document.querySelector("#cbo_SolMatriGrados").value
