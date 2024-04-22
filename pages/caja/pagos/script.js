@@ -149,7 +149,7 @@ async function appCreditoPagoView(matriculaID){
 function appCredi_SetData(data){
   document.querySelector("#txt_DeudaFecha").disabled = (data.rolUser==data.rolROOT) ? (false):(true);
   document.querySelector("#lbl_matriAtraso").style.color = (data.atraso>0)?("#D00"):("#777");
-  document.querySelector('#lbl_matriAtraso').innerHTML = (data.atraso);
+  document.querySelector('#lbl_matriAtraso').innerHTML = (data.atraso)+" dia"+((data.atraso>1)?"s":"");
   pago = {
     alumnoID : data.alumnoID,
     matriculaID : data.ID,
