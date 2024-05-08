@@ -1,16 +1,18 @@
 <?php
   class database{
-    private static $instance;
+    private static $instance = null;
     private $conn;
 
     private function __construct(){ //constructor
-      $host   = "129.213.27.61";
-      $port   = "5432";
-      $dbname = "genie";
-      $user   = "postgres";
-      $pass   = "Perikl3$.";
       try {
-        $this->conn = new PDO("pgsql:host=$host;port=$port;dbname=$dbname", $user, $pass);
+        $host   = "129.213.27.61";
+        $port   = "5432";
+        $dbname = "genie";
+        $user   = "postgres";
+        $pass   = "1pharr0w.";
+        $dsn = "pgsql:host=$host;port=$port;dbname=$dbname";
+        
+        $this->conn = new PDO($dsn, $user, $pass);
         $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
       } catch (PDOException $e) {
         die("Error de conexión: " . $e->getMessage());
@@ -18,7 +20,7 @@
     }
 
     public static function getInstance() {
-      if (!self::$instance) { self::$instance = new database(); }
+      if (self::$instance===null) { self::$instance = new database(); }
       return self::$instance;
     }
     
@@ -39,7 +41,7 @@
       }
     }
 
-    public function queryXX($sql, $params = []) {
+    public function query($sql, $params = []) {
       try {
         $stmt = $this->conn->prepare($sql);
         $stmt->execute($params);
@@ -49,14 +51,6 @@
       }
     }
 
-    //comandos SQL
-    public function query_params($sql,$params) { return pg_query_params($this->conn,$sql,$params); }
-    public function send_query($sql){ return pg_send_query($this->conn,$sql); }
-    public function fetch_array($rs){ return pg_fetch_array($rs); }
-    public function get_result(){ return pg_get_result($this->conn); }
-    public function result_error_field($rs){ return pg_result_error_field($rs,PGSQL_DIAG_SQLSTATE); }
-    public function num_rows($rs){ return pg_num_rows($rs);   }
-    public function get_encoding(){return pg_client_encoding($this->conn);}
     public function close() { $this->conn = null; }
   }
   $db = database::getInstance();
