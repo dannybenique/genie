@@ -1,23 +1,18 @@
-$(document).on('submit','#frmLogin',function(event){
-  event.preventDefault();
+import { SHA1 } from "../../../libs/webtoolkit/webtoolkit.sha1.js"
 
-  let datos = {
-    login : document.querySelector('#txt_UserName').value,
-    passw : SHA1(document.querySelector("#txt_UserPass").value).toString().toUpperCase()
-  }
+$(document).on('submit','#frmLogin', btn_submit);
 
-  $.ajax({
-    url:'includes/sess_login.php',
-    type:'POST',
-    dataType:'json',
-    data:{"frmLogin":JSON.stringify(datos)},
-    beforeSend:function() {
-      $('#botonOK').val('Validando....');
-    }
-  })
-  .done(function(resp){
-    console.log(resp);
-    if (resp.error===0) { //sin errores
+async function btn_submit(event){
+  try {
+    event.preventDefault();
+    let data = new FormData();
+    data.append('frmLogin', JSON.stringify({
+      login : document.querySelector('#txt_UserName').value,
+      passw : SHA1(document.querySelector("#txt_UserPass").value).toString().toUpperCase()
+    }));
+    const ruta = await fetch('includes/sess_login.php', { method: 'POST', body: data });
+    const resp = await ruta.json();
+    if(!resp.error) { //sin errores
       location.href = 'interfaz.php';
     } else {
       $('.login_WarningText').fadeIn('fast');
@@ -27,13 +22,12 @@ $(document).on('submit','#frmLogin',function(event){
         document.querySelector('#txt_UserPass').value="";
         $('#txt_UserName').focus();
         document.querySelector('#botonOK').value="ACCESAR";
-      },2000);
+      }, 2000);
     }
-  })
-  .fail(function(resp){
-    // console.log("fail:.... "+resp);
+  } catch(err) {
+    console.log(err);
     $('#pn_Warning').slideDown('fast');
-    setTimeout(function() { $('#pn_Warning').slideUp('fast'); },2000);
+    setTimeout(function() { $('#pn_Warning').slideUp('fast'); }, 2000);
     document.querySelector('#botonOK').value="ACCESAR";
-  });
-});
+  }
+};

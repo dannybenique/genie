@@ -5,7 +5,7 @@
 *
 **/
 
-function SHA1 (msg) {
+export function SHA1 (msg) {
     function rotate_left(n,s) {
         var t4 = ( n<<s ) | (n>>>(32-s));
         return t4;
