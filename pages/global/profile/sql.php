@@ -20,6 +20,7 @@
             "tablaPers" => $fn->getViewPersona($data->userID),
             "user" => $user
           );
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "updPassword": //cambiar password de usuario
@@ -30,16 +31,19 @@
           
           //respuesta
           $rpta  = $user;
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
       }
       $db->close();
     } else{
       $resp = array("error"=>true,"mensaje"=>"ninguna variable en POST");
+      header('Content-Type: application/json');
       echo json_encode($resp);
     }
   } else {
     $resp = array("error"=>true,"mensaje"=>"Caducó la sesion.");
+    header('Content-Type: application/json');
     echo json_encode($resp);
   }
 ?>

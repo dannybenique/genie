@@ -32,6 +32,7 @@
             }
           }
           $rpta = array("movs"=>$tabla);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "viewMovim":
@@ -51,16 +52,19 @@
           
           //respuesta
           $rpta = array('mov'=> $tipo);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
       }
       $db->close();
     } else{
       $resp = array("error"=>true,"mensaje"=>"ninguna variable en POST");
+      header('Content-Type: application/json');
       echo json_encode($resp);
     }
   } else {
     $resp = array("error"=>true,"mensaje"=>"Caducó la sesion.");
+    header('Content-Type: application/json');
     echo json_encode($resp);
   }
 ?>

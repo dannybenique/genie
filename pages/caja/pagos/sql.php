@@ -49,6 +49,7 @@
 
           //respuesta
           $rpta = array("matriculas"=>$tabla);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "matricula_view":
@@ -56,6 +57,7 @@
           $rpta = array(
             "comboTipoPago" => $fn->getComboBox("select id,nombre from sis_tipos where id_padre=13 order by id;"),
             "fecha" => $fn->getFechaActualDB());
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "insPago":
@@ -125,16 +127,19 @@
 
           //respuesta
           $rpta = array("error" => false,"movimID"=>$movimID,"ingresados" => 1);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
       }
       $db->close();
     } else{
       $resp = array("error"=>true,"mensaje"=>"ninguna variable en POST");
+      header('Content-Type: application/json');
       echo json_encode($resp);
     }
   } else {
     $resp = array("error"=>true,"mensaje"=>"Caducó la sesion.");
+    header('Content-Type: application/json');
     echo json_encode($resp);
   }
 ?>

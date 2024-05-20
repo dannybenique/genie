@@ -73,6 +73,7 @@
 
           //respuesta
           $rpta = array("tabla"=>$tabla,"cuenta"=>$rsCount,"rolID" => (int)$_SESSION["usr_data"]["rolID"]);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "insPadre":
@@ -90,6 +91,7 @@
 
           //respuesta
           $rpta = array("error"=>false, "insert"=>1);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "updPadre":
@@ -104,6 +106,7 @@
           
           //respuesta
           $rpta = array("error"=>false, "update"=>1);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "delPadres":
@@ -120,6 +123,7 @@
           }
           //respuesta
           $rpta = array("error"=>false, "delete"=>$data->arr);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "viewPadre":
@@ -140,6 +144,7 @@
                 'tablaCony'=>$fn->getViewConyuge($data->personaID));
               break;
           }
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "VerifyPadre":
@@ -170,16 +175,19 @@
             "persona" => $persona,
             "activo" => $activo,
             "mensajeNOadd" => "ya es PADRE ACTIVO...");
+            header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
       }
       $db->close();
     } else{
       $resp = array("error"=>true,"data"=>$tabla,"mensaje"=>"ninguna variable en POST");
+      header('Content-Type: application/json');
       echo json_encode($resp);
     }
   } else {
     $resp = array("error"=>true,"mensaje"=>"Caducó la sesion.");
+    header('Content-Type: application/json');
     echo json_encode($resp);
   }
 ?>

@@ -48,6 +48,7 @@
             }
           }
           $rpta = array("prestamos"=>$tabla);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "viewCredito":
@@ -114,6 +115,7 @@
             "comboTipoPago" => $fn->getComboBox("select id,nombre from sis_tipos where id_padre=13 order by id;"),
             "comboMonedas" => $fn->getComboBox("select id,nombre from sis_tipos where id_padre=1 order by id;"),
             "fecha" => $db->fetch_array($db->query("select now() as fecha;"))["fecha"]);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "insPago":
@@ -190,16 +192,19 @@
           }
 
           $rpta = array("error" => false,"movimID"=>$movimID,"ingresados" => 1);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
       }
       $db->close();
     } else{
       $resp = array("error"=>true,"mensaje"=>"ninguna variable en POST");
+      header('Content-Type: application/json');
       echo json_encode($resp);
     }
   } else {
     $resp = array("error"=>true,"mensaje"=>"Caducó la sesion.");
+    header('Content-Type: application/json');
     echo json_encode($resp);
   }
 ?>

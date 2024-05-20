@@ -9,6 +9,7 @@
       
       switch ($data->TipoQuery) {
         case "selConyuge":
+          header('Content-Type: application/json');
           echo json_encode($fn->getViewConyuge($data->personaID));
           break;
         case "execConyuge":
@@ -32,6 +33,7 @@
 
           //respuesta
           $rpta = array("error"=>false,$data->commandSQL=>1,"sql"=>$sql,"tablaCony"=>$fn->getViewConyuge($data->personaID));
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "delConyuge":
@@ -41,6 +43,7 @@
 
           //respuesta
           $rpta = array("error"=>false,"sql"=>$sql);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "VerifyConyuge":
@@ -68,16 +71,19 @@
             "persona" => $persona,
             "activo" => $activo
           );
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
       }
       $db->close();
     } else {
       $resp = array("error"=>true,"mensaje"=>"ninguna variable en POST");
+      header('Content-Type: application/json');
       echo json_encode($resp);
     }
   } else {
     $resp = array("error"=>true,"mensaje"=>"Caducó la sesion.");
+    header('Content-Type: application/json');
     echo json_encode($resp);
   }
 ?>

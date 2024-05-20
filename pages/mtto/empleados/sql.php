@@ -103,6 +103,7 @@
 
           //respuesta
           $rpta = array("tabla"=>$tabla,"cuenta"=>$rsCount,"rolID" => (int)$_SESSION["usr_data"]["rolID"]);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "insWorker":
@@ -146,6 +147,7 @@
 
           //respuesta
           $rpta = array("error"=>false, "insert"=>1);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "updWorker":
@@ -202,6 +204,7 @@
 
           //respuesta
           $rpta = array("error"=>false, "update"=>1);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "delWorkers":
@@ -219,6 +222,7 @@
 
           //respuesta
           $rpta = array("error"=>false, "delete"=>$data->arr);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "addWorker": //quitar el soft delete (estado)
@@ -233,6 +237,7 @@
 
           //respuesta
           $rpta = array("error"=>(($rs==null)?true:false));
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "viewWorker":
@@ -242,6 +247,7 @@
             'tablaWorker' => getViewWorker($data->personaID),
             'tablaUser' => getViewUser($data->personaID)
           );
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "VerifyWorker":
@@ -279,6 +285,7 @@
             // "fecha" => $fn->getFechaActualDB(),
             // "colegioID" => $web->colegioID
           );
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "startWorker":
@@ -288,6 +295,7 @@
             "comboRoles" => $fn->getComboBox("select id,nombre from sis_tipos where id_padre=2 order by id;"),
             "fecha" => $fn->getFechaActualDB(),
             "colegio" => $web->colegioID);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "selSisMenu":
@@ -301,6 +309,7 @@
 
           //respuesta
           $rpta = array("menu"=>$menu);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "selUserPass":
@@ -317,6 +326,7 @@
 
           //respuesta
           $rpta = $tabla;
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "changeUserPass":
@@ -333,15 +343,18 @@
 
           //respuesta
           $rpta = array("error"=>false, "update"=>1);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
       }
       $db->close();
     } else{
       $resp = array("error"=>true,"data"=>$tabla,"mensaje"=>"ninguna variable en POST");
+      header('Content-Type: application/json');
       echo json_encode($resp);
     }
   } else {
     $resp = array("error"=>true,"mensaje"=>"Caducó la sesion.");
+    header('Content-Type: application/json');
     echo json_encode($resp);
   }
 ?>

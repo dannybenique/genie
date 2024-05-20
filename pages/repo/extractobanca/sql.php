@@ -30,6 +30,7 @@
             }
           }
           $rpta = array("socios"=>$socios);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "viewSocio":
@@ -69,6 +70,7 @@
 
           //respuesta
           $rpta = array('socio'=> $socio, 'prods'=> $prods);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "viewMovimAportes":
@@ -98,6 +100,7 @@
 
           //respuesta
           $rpta = array('producto'=>$producto,'movim'=> $movim);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "viewMovimCreditos":
@@ -140,16 +143,19 @@
 
           //respuesta
           $rpta = array('producto'=>$producto,'movim'=> $movim);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
       }
       $db->close();
     } else{
       $resp = array("error"=>true,"mensaje"=>"ninguna variable en POST");
+      header('Content-Type: application/json');
       echo json_encode($resp);
     }
   } else {
     $resp = array("error"=>true,"mensaje"=>"Caducó la sesion.");
+    header('Content-Type: application/json');
     echo json_encode($resp);
   }
 ?>

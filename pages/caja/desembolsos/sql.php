@@ -64,6 +64,7 @@
 
           //respuesta
           $rpta = array("tabla"=>$tabla,"cuenta"=>$rsCount["cuenta"]);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         
@@ -101,6 +102,7 @@
             'tablaPagos'=> getPagos($todos = false),
             'tablaPers'=>$fn->getViewPersona($alumnoID)
           );
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "desemb_Delete":
@@ -115,6 +117,7 @@
           }
           //respuesta
           $rpta = array("error"=>false, "delete"=>$data->arr);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "desemb_Execute":
@@ -196,22 +199,26 @@
           }
           
           //respuesta
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "desemb_AddPago":
           $rpta = array('tablaPagos'=> getPagos($todos = true));
 
           //respuesta
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
       }
       $db->close();
     } else{
       $resp = array("error"=>true,"data"=>$tabla,"mensaje"=>"ninguna variable en POST");
+      header('Content-Type: application/json');
       echo json_encode($resp);
     }
   } else {
     $resp = array("error"=>true,"mensaje"=>"Caducó la sesion.");
+    header('Content-Type: application/json');
     echo json_encode($resp);
   }
 ?>

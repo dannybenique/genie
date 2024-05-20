@@ -36,6 +36,7 @@
       } else {
         $rpta = array("error" => 1,"data" => "credenciales sin acceso");
       }
+      header('Content-Type: application/json');
       echo json_encode($rpta);
     } catch(PDOException $e){
       die("error... ".$e->getMessage());
@@ -43,6 +44,7 @@
     $db->close();
   } else{
     $resp = array("error"=>true,"resp"=>"ninguna variable en POST");
+    header('Content-Type: application/json');
     echo json_encode($resp);
   }
 ?>

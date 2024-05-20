@@ -22,6 +22,7 @@
             "config" => $config, //configuracion de colegio
             "colegioID" => $web->colegioID
           );
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "config_update":
@@ -35,16 +36,19 @@
 
           //respuesta
           $rpta = array("error" => false);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
       }
       $db->close();
     } else{
       $resp = array("error"=>true,"mensaje"=>"ninguna variable en POST");
+      header('Content-Type: application/json');
       echo json_encode($resp);
     }
   } else {
     $resp = array("error"=>true,"mensaje"=>"Caducó la sesion.");
+    header('Content-Type: application/json');
     echo json_encode($resp);
   }
 ?>

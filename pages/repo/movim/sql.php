@@ -41,6 +41,7 @@
             }
           }
           $rpta = array("movim"=>$tabla);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "viewMovim":
@@ -89,6 +90,7 @@
 
           //respuesta
           $rpta = array('cab'=> $cabecera, 'deta'=> $detalle);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "StartMovim":
@@ -110,16 +112,19 @@
             "comboMonedas" => $fn->getComboBox("select id,nombre from sis_tipos where id_padre=1"),
             "fecha" => $fn->getFechaActualDB(),
             "coopac" => $web->coopacID);
-            echo json_encode($rpta);
+          header('Content-Type: application/json');
+          echo json_encode($rpta);
           break;
       }
       $db->close();
     } else{
       $resp = array("error"=>true,"mensaje"=>"ninguna variable en POST");
+      header('Content-Type: application/json');
       echo json_encode($resp);
     }
   } else {
     $resp = array("error"=>true,"mensaje"=>"Caducó la sesion.");
+    header('Content-Type: application/json');
     echo json_encode($resp);
   }
 ?>

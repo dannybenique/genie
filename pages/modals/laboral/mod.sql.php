@@ -9,6 +9,7 @@
       
       switch ($data->TipoQuery) {
         case "selLaboral":
+          header('Content-Type: application/json');
           echo json_encode($fn->getEditLaboral($data->ID));
           break;
         case "newLaboral":
@@ -23,6 +24,7 @@
             "comboProvincias" => ($fn->getComboBox("select id,nombre from sis_ubigeo where id_padre=1014 order by nombre;")),
             "comboDistritos" => ($fn->getComboBox("select id,nombre from sis_ubigeo where id_padre=1401 order by nombre;"))
           );
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "execLaboral":
@@ -52,6 +54,7 @@
 
           //respuesta
           $rpta = array("error"=>false, $data->commandSQL=>1, "sql"=>$sql, "tablaLabo"=>$fn->getAllLaborales($data->personaID));
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "ersLaboral": //borrar un registro de forma logica
@@ -61,6 +64,7 @@
           
           //respuesta
           $rpta = array("error"=>false, $data->commandSQL=>1, "sql"=>$sql, "tablaLabo"=>$fn->getAllLaborales($data->personaID));
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "comboUbigeo":
@@ -75,16 +79,19 @@
               $rpta = array( "distritos" => $distritos );
               break;
           }
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
       }
       $db->close();
     } else {
       $resp = array("error"=>true,"mensaje"=>"ninguna variable en POST");
+      header('Content-Type: application/json');
       echo json_encode($resp);
     }
   } else {
     $resp = array("error"=>true,"mensaje"=>"Caducó la sesion.");
+    header('Content-Type: application/json');
     echo json_encode($resp);
   }
 ?>

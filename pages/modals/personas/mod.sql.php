@@ -41,6 +41,7 @@
 
       switch ($data->TipoQuery) {
         case "selPersona":
+          header('Content-Type: application/json');
           echo json_encode($fn->getEditPersona($data->personaID));
           break;
         case "newPersona":
@@ -61,6 +62,7 @@
             "comboProvincias" => ($fn->getComboBox("select id,nombre from sis_ubigeo where id_padre=1014 order by nombre;")),
             "comboDistritos" => ($fn->getComboBox("select id,nombre from sis_ubigeo where id_padre=1401 order by nombre;"))
           );
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "insPersona":
@@ -71,8 +73,10 @@
             
             //respuesta
             $rpta = array("error"=>false, $data->commandSQL=>1, "sql"=>$sql, "tablaPers"=>$fn->getViewPersona($rs["nro"])); 
+            header('Content-Type: application/json');
             echo json_encode($rpta);
           } catch(Exception $e) {
+            header('Content-Type: application/json');
             echo json_encode($e->getMessage());
           }
           break;
@@ -97,8 +101,10 @@
             
             //respuesta
             $rpta = array("error"=>false, $data->commandSQL=>1, "sql"=>$sql, "tablaPers"=>$fn->getViewPersona($rs["nro"])); 
+            header('Content-Type: application/json');
             echo json_encode($rpta);
           } catch(Exception $e) {
+            header('Content-Type: application/json');
             echo json_encode($e->getMessage());
           }
           break;
@@ -115,6 +121,7 @@
               $rpta = array( "distritos" => $distritos );
               break;
           }
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         
@@ -136,6 +143,7 @@
 
           //respuesta
           $rpta = array("persona"=>$persona,"activo"=>$activo);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "VerifyAhorros":
@@ -156,6 +164,7 @@
 
           //respuesta
           $rpta = array("persona"=>$persona,"activo"=>$activo);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "VerifySuplentes":
@@ -173,6 +182,7 @@
 
           //respuesta
           $rpta = array("persona"=>$persona,"activo"=>$activo);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "VerifyCajaProveedor":
@@ -190,6 +200,7 @@
 
           //respuesta
           $rpta = array("persona"=>$persona,"activo"=>$activo);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "VerifyWorker":
@@ -213,6 +224,7 @@
 
           //respuesta
           $rpta = array("persona"=>$persona,"activo"=>$activo);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "VerifyPreventa":
@@ -230,6 +242,7 @@
 
           //respuesta
           $rpta = array("persona"=>$persona,"activo"=>$activo);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         /*case "apiPeru"://consulta el ruc o DNI
@@ -242,16 +255,19 @@
 
           //respuesta
           $rpta = $retu;
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;*/
       }
       $db->close();
     } else {
       $resp = array("error"=>true,"mensaje"=>"ninguna variable en POST");
+      header('Content-Type: application/json');
       echo json_encode($resp);
     }
   } else {
     $resp = array("error"=>true,"mensaje"=>"Caducó la sesion.");
+    header('Content-Type: application/json');
     echo json_encode($resp);
   }
 ?>

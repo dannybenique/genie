@@ -38,6 +38,7 @@
             }
           }
           $rpta = array("tabla"=>$tabla,"cuenta"=>$rsCount["cuenta"]);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "execSolMatri":
@@ -70,6 +71,7 @@
           }
           
           //respuesta
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "delSolMatri":
@@ -89,6 +91,7 @@
 
           //respuesta
           $rpta = array("error"=>false, "delete"=>$data->arr);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "newSolMatri":
@@ -112,6 +115,7 @@
             "rolUser" => $_SESSION['usr_data']['rolID'],
             "rolROOT" => 101
           );
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "viewSolMatri":
@@ -144,6 +148,7 @@
           
           //respuesta
           $rpta = array('tablaSolMatri'=> $tabla,'tablaPers'=>$fn->getViewPersona($alumnoID));
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "viewApruebaSolMatri":
@@ -169,6 +174,7 @@
 
           //respuesta
           $rpta = $tabla;
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "aprobarSolMatri":
@@ -201,6 +207,7 @@
           }
           
           //respuesta
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "VerifySolMatri":
@@ -231,6 +238,7 @@
             "persona"=>$persona,
             "activo"=>$activo,
             "mensajeNOadd" => "");
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "comboNivel":
@@ -246,16 +254,19 @@
               $rpta = array( "secciones" => $secciones );
               break;
           }
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
       }
       $db->close();
     } else {
       $resp = array("error"=>true,"data"=>$tabla,"mensaje"=>"ninguna variable en POST");
+      header('Content-Type: application/json');
       echo json_encode($resp);
     }
   } else {
     $resp = array("error"=>true,"mensaje"=>"Caducó la sesion.");
+    header('Content-Type: application/json');
     echo json_encode($resp);
   }
 ?>

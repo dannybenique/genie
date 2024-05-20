@@ -43,6 +43,7 @@
 
           //respuesta
           $rpta = array("tabla"=>$tabla,"cuenta"=>$rsCount["cuenta"]);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "matricula_View": //visualiza el credito de la matricula
@@ -90,16 +91,19 @@
           }
           //respuesta
           $rpta = array('cabecera'=>$cabecera, "detalle"=>$detalle);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
       }
       $db->close();
     } else{
       $resp = array("error"=>true,"data"=>$tabla,"mensaje"=>"ninguna variable en POST");
+      header('Content-Type: application/json');
       echo json_encode($resp);
     }
   } else {
     $resp = array("error"=>true,"mensaje"=>"Caducó la sesion.");
+    header('Content-Type: application/json');
     echo json_encode($resp);
   }
 ?>

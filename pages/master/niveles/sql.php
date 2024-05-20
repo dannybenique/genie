@@ -69,6 +69,7 @@
         case "nivel_select":
           //respuesta
           $rpta = array("niveles"=>obtenerNiveles($data->nivelID),"colniv"=>obtenerColNiv($data->nivelID));
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "insNivel": //corregir
@@ -92,11 +93,13 @@
 
           //respuesta
           $rpta = array("error" => false,"ingresados" => 1);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "nivel_refresh":
           //respuesta
           $rpta = array("niveles"=>obtenerNiveles($data->nivelID));
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "nivel_send":
@@ -112,6 +115,7 @@
 
           //respuesta
           $rpta = array("error" => false,"borrados" => count($data->arr));
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "nivel_start":
@@ -119,6 +123,7 @@
           $rpta = array(
             "comboNiveles" => $fn->getComboBox("select id,nombre from app_niveles where id_padre is null order by id;"),
             "colegio" => $web->colegioID);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "colniv_edit":
@@ -141,6 +146,7 @@
           }
 
           //respuesta
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "colniv_update":
@@ -156,11 +162,13 @@
 
           //respuesta
           $rpta = array("error" => false, "colniv"=>obtenerColNiv($data->nivelID));
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "colniv_refresh":
           //respuesta
           $rpta = array("colniv"=>obtenerColNiv($data->nivelID));
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "colniv_delete":
@@ -176,16 +184,19 @@
 
           //respuesta
           $rpta = array("error" => false,"borrados" => count($data->arr));
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
       }
       $db->close();
     } else{
       $resp = array("error"=>true,"mensaje"=>"ninguna variable en POST");
+      header('Content-Type: application/json');
       echo json_encode($resp);
     }
   } else {
     $resp = array("error"=>true,"mensaje"=>"Caducó la sesion.");
+    header('Content-Type: application/json');
     echo json_encode($resp);
   }
 ?>

@@ -31,6 +31,7 @@
             }
           }
           $rpta = array("productos"=>$tabla);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "editProducto":
@@ -47,6 +48,7 @@
           }
 
           //respuesta
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "insProducto":
@@ -70,6 +72,7 @@
 
           //respuesta
           $rpta = array("error" => false,"ingresados" => 1);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "updProducto":
@@ -86,6 +89,7 @@
 
           //respuesta
           $rpta = array("error" => false,"actualizados" => 1, "sql" => $sql);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "delProductos":
@@ -102,6 +106,7 @@
 
           //respuesta
           $rpta = array("error" => false,"borrados" => count($data->arr));
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "startProducto":
@@ -109,16 +114,19 @@
           $rpta = array(
             "fecha" => $fn->getFechaActualDB(),
             "colegio" => $web->colegioID);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
       }
       $db->close();
     } else{
       $resp = array("error"=>true,"mensaje"=>"ninguna variable en POST");
+      header('Content-Type: application/json');
       echo json_encode($resp);
     }
   } else {
     $resp = array("error"=>true,"mensaje"=>"Caducó la sesion.");
+    header('Content-Type: application/json');
     echo json_encode($resp);
   }
 ?>

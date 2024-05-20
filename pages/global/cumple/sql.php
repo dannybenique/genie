@@ -23,12 +23,14 @@
       }
     }
     //print_r(json_encode($eventos,JSON_UNESCAPED_UNICODE));
+    header('Content-Type: application/json');
     echo json_encode($eventos);
     //var_dump($sql);
 
     $db->close();
   } else{
     $resp = array("error"=>true,"resp"=>"ninguna variable en GET");
+    header('Content-Type: application/json');
     echo json_encode($resp);
   }
 ?>

@@ -35,6 +35,7 @@
 
           //respuesta
           $rpta = array("tabla"=>$tabla,"cuenta"=>$rsCount["cuenta"]);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "viewBilletaje":
@@ -76,6 +77,7 @@
             "rolROOT" => 101, //rol de ROOT
             "tabla" => $tabla
           );
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "newBilletaje":
@@ -92,6 +94,7 @@
             "mon_abrevia" => $monAbrevia,
             "usuario" => $nombreCorto
           );
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "delBilletaje":
@@ -109,6 +112,7 @@
 
           //respuesta
           $rpta = array("error"=>false, "delete"=>$data->arr);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "insBilletaje":
@@ -147,6 +151,7 @@
           
           //respuesta
           $rpta = array("error"=>false, "billetajeID"=>$billID);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "updBilletaje":
@@ -177,6 +182,7 @@
           
           //respuesta
           $rpta = array("error"=>false, "billetajeID"=>$billID);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "StartBilletaje":
@@ -198,16 +204,19 @@
             "comboAgencias" => $fn->getComboBox("select id,nombre from bn_bancos where estado=1 and id_padre=".$web->coopacID),
             "comboMonedas" => $fn->getComboBox("select id,nombre from sis_tipos where id_padre=1")
           );
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
       }
       $db->close();
     } else{
       $resp = array("error"=>true,"data"=>$tabla,"mensaje"=>"ninguna variable en POST");
+      header('Content-Type: application/json');
       echo json_encode($resp);
     }
   } else {
     $resp = array("error"=>true,"mensaje"=>"Caducó la sesion.");
+    header('Content-Type: application/json');
     echo json_encode($resp);
   }
 ?>

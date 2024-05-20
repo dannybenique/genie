@@ -33,6 +33,7 @@
             }
           }
           $rpta = array("tipos"=>$tabla,"sql"=>$sql);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "viewTipo":
@@ -54,22 +55,25 @@
           $rpta = array(
             'comboTipos' => $fn->getComboBox("select id,nombre from sis_tipos where id_padre is null order by id;"),
             'tipo'=> $tipo );
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "startTipos":
           //respuesta
-          $rpta = array(
-            'comboTipos' => $fn->getComboBox("select id,nombre from sis_tipos where id_padre is null order by id;"));
+          $rpta = array( 'comboTipos' => $fn->getComboBox("select id,nombre from sis_tipos where id_padre is null order by id;"));
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
       }
       $db->close();
     } else{
       $resp = array("error"=>true,"mensaje"=>"ninguna variable en POST");
+      header('Content-Type: application/json');
       echo json_encode($resp);
     }
   } else {
     $resp = array("error"=>true,"mensaje"=>"Caducó la sesion.");
+    header('Content-Type: application/json');
     echo json_encode($resp);
   }
 ?>

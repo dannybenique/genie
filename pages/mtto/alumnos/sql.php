@@ -99,6 +99,7 @@
 
           //respuesta
           $rpta = array("tabla"=>$tabla,"cuenta"=>$rsCount,"rolID" => (int)$_SESSION["usr_data"]["rolID"]);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "alumno_ins":
@@ -128,6 +129,7 @@
 
           //respuesta
           $rpta = array("error"=>false, "insert"=>1);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "alumno_upd":
@@ -151,6 +153,7 @@
           
           //respuesta
           $rpta = array("error"=>false, "update"=>1);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "alumno_del": //borrar alumnos
@@ -167,6 +170,7 @@
           }
           //respuesta
           $rpta = array("error"=>false, "delete"=>$data->arr);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "alumno_add": //quitar el soft delete (estado)
@@ -181,6 +185,7 @@
 
           //respuesta
           $rpta = array("error"=>(($rs==null)?true:false));
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "alumno_view":
@@ -204,6 +209,7 @@
                 'tablaCony' => $fn->getViewConyuge($data->personaID));
               break;
           }
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "alumno_start":
@@ -211,6 +217,7 @@
           $rpta = array(
             "fecha" => $fn->getFechaActualDB(),
             "colegio" => $web->colegioID);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "familiar_view":
@@ -225,6 +232,7 @@
           $rpta = array(
             "tipoFami" => $tipoFami,
             "tablaPers" => $fn->getViewPersona($data->familiarID));
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "VerifyAlumno":
@@ -253,6 +261,7 @@
             "persona" => $persona,
             "activo" => $activo,
             "mensajeNOadd" => "ya es ALUMNO ACTIVO...");
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "VerifyPadre":
@@ -281,6 +290,7 @@
             "persona" => $persona,
             "activo" => $activo,
             "mensajeNOadd" => "ya es PADRE ACTIVO...");
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "VerifyMadre":
@@ -309,6 +319,7 @@
             "persona" => $persona,
             "activo" => $activo,
             "mensajeNOadd" => "ya es MADRE ACTIVO...");
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "VerifyApodera":
@@ -337,16 +348,19 @@
             "persona" => $persona,
             "activo" => $activo,
             "mensajeNOadd" => "ya es APODERADO ACTIVO...");
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
       }
       $db->close();
     } else{
       $resp = array("error"=>true,"data"=>$tabla,"mensaje"=>"ninguna variable en POST");
+      header('Content-Type: application/json');
       echo json_encode($resp);
     }
   } else {
     $resp = array("error"=>true,"mensaje"=>"Caducó la sesion.");
+    header('Content-Type: application/json');
     echo json_encode($resp);
   }
 ?>

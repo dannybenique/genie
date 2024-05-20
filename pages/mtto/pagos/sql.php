@@ -34,6 +34,7 @@
             }
           }
           $rpta = array("pagos"=>$tabla);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "editPago":
@@ -61,6 +62,7 @@
           }
 
           //respuesta
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "insPago":
@@ -82,6 +84,7 @@
 
           //respuesta
           $rpta = array("error" => false,"ingresados" => 1);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "updPago":
@@ -100,6 +103,7 @@
 
           //respuesta
           $rpta = array("error" => false,"actualizados" => 1, "sql" => $sql);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "delPagos":
@@ -115,6 +119,7 @@
 
           //respuesta
           $rpta = array("error" => false,"borrados" => count($data->arr));
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "pagos_cambioMontoBloque"://cambia el importe de los registros en bloque
@@ -150,6 +155,7 @@
           }
           //respuesta
           $rpta = array("error" => false,"pagos"=>$tabla);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "pagos_cambioVencimientoBloque"://cambia el año de vencimiento de los registros seleccionados
@@ -185,6 +191,7 @@
           }
           //respuesta
           $rpta = array("error" => false,"pagos"=>$tabla);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "pagos_bloquear":
@@ -222,6 +229,7 @@
           }
           //respuesta
           $rpta = array("error" => false,"ingresados" => 1,"pagos"=>$tabla);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "startPago":
@@ -229,16 +237,19 @@
           $rpta = array(
             "comboTipoProd" => $fn->getComboBox("select id,nombre from app_productos where estado=1 and id not in(select id_producto from app_colprod);")
           );
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
       }
       $db->close();
     } else{
       $resp = array("error"=>true,"mensaje"=>"ninguna variable en POST");
+      header('Content-Type: application/json');
       echo json_encode($resp);
     }
   } else {
     $resp = array("error"=>true,"mensaje"=>"Caducó la sesion.");
+    header('Content-Type: application/json');
     echo json_encode($resp);
   }
 ?>

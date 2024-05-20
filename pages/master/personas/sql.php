@@ -13,6 +13,7 @@
       switch ($data->TipoQuery) {
         case "selPersonas":
           $rpta = $fn->getAllPersonas($data->buscar,0);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "viewPersona":
@@ -32,6 +33,7 @@
                 'tablaCony'=>$fn->getViewConyuge($data->personaID));
               break;
           }
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "audiPersona": //auditoria de personas
@@ -57,6 +59,7 @@
             }
           }
           $rpta = array("tablaPers"=>$tablaPers,"tablaLog"=>$tablaLog);
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
         case "VerifyPersona":
@@ -80,16 +83,19 @@
             "persona" => $persona,
             "activo" => $activo,
             "mensajeNOadd" => "ya fue ingresada...");
+          header('Content-Type: application/json');
           echo json_encode($rpta);
           break;
       }
       $db->close();
     } else{
       $resp = array("error"=>true,"data"=>$tabla,"mensaje"=>"ninguna variable en POST");
+      header('Content-Type: application/json');
       echo json_encode($resp);
     }
   } else {
     $resp = array("error"=>true,"mensaje"=>"Caducó la sesion.");
+    header('Content-Type: application/json');
     echo json_encode($resp);
   }
 ?>
