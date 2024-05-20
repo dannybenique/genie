@@ -1,4 +1,5 @@
 const rutaSQL = "pages/master/productos/sql.php";
+
 var menu = "";
 
 //=========================funciones para Personas============================
@@ -111,6 +112,7 @@ async function appProductoInsert(){
 async function appProductoUpdate(){
   try{
     const datos = modGetDataToDataBase();
+    console.log(datos);
     if(datos!=""){
       datos.TipoQuery = 'updProducto';
       const resp = await appAsynFetch(datos,rutaSQL);

@@ -8,10 +8,10 @@
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <link rel="shortcut icon" href="favicon.png" />
     <link rel="icon" type="image/vnd.microsoft.icon" href="favicon.png" />
-    <link type="text/css" rel="stylesheet" href="app/css/fonts.css" />
-    <link type="text/css" rel="stylesheet" href="app/css/login.css" />
+    <link type="text/css" rel="stylesheet" href="./app/css/fonts.css" />
+    <link type="text/css" rel="stylesheet" href="./app/css/login.css" />
 
-    <script type="text/javascript" src="libs/jquery/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="./libs/jquery/jquery-3.3.1.min.js"></script>
     <script type="module" src="./app/js/login/login.js"></script>
   </head>
   <body>

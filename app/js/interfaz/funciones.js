@@ -58,7 +58,7 @@ function appLlenarDataEnComboBox(data,miComboBox,valorSelect){
   document.querySelector(miComboBox).innerHTML = (fila);
 }
 
-//ejecutar ajax desde javascript vanilla
+//ejecutar ajax desde vanilla javascript
 function appFetch(datos,rutaSQL){
   let data = new FormData();
   data.append('appSQL',JSON.stringify(datos));
@@ -68,13 +68,13 @@ function appFetch(datos,rutaSQL){
   return rpta;
 }
 
-//ejecutar ajax desde javascript vanilla
-async function appAsynFetch(datos, rutaSQL) {
+//ejecutar ajax desde vanilla javascript
+async function appAsynFetch(datos, rutaSQL, method='POST') {
   let data = new FormData();
   data.append('appSQL', JSON.stringify(datos));
 
   try {
-    const resp = await fetch(rutaSQL, { method: 'POST', body: data });
+    const resp = (method=='GET') ? await fetch(rutaSQL, { method: method}) : await fetch(rutaSQL, { method: method, body: data });
     const rpta = await resp.json();
     return rpta;
   } catch (err) {
