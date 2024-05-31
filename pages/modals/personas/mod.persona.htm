@@ -56,31 +56,8 @@
                       <option value="1">NATURAL</option>
                       <option value="2">JURIDICA</option>
                     </select>
-                    <script type="text/javascript">
-                      $("#cbo_modPersTipoPers").change(function(){
-                        if(this.options[this.selectedIndex].value==2){ //persona juridica
-                          document.querySelector("#div_modPersApePaterno").style.display = 'none';
-                          document.querySelector("#div_modPersApeMaterno").style.display = 'none';
-                          document.querySelector("#div_modPersGinstruc").style.display = 'none';
-                          document.querySelector("#div_modPersSexoEcivil").style.display = 'none';
-                          $("#cbo_modPersDocumento").prop('disabled','disabled');
-                          document.querySelector("#txt_modPersNombres").placeholder = 'RAZON SOCIAL';
-                          document.querySelector("#txt_modPersApePaterno").value = ("");
-                          document.querySelector("#txt_modPersApeMaterno").value = ("");
-                          $("#cbo_modPersGinstruc").get(0).selectedIndex=0;
-                          $("#cbo_modPersEcivil").get(0).selectedIndex=0;
-                          $("#cbo_modPersSexo").get(0).selectedIndex=0;
-                          document.querySelector("#cbo_modPersDocumento").value = (502);
-                        } else {
-                          document.querySelector("#txt_modPersNombres").placeholder = 'NOMBRES';
-                          document.querySelector("#div_modPersApePaterno").style.display = 'block';
-                          document.querySelector("#div_modPersApeMaterno").style.display = 'block';
-                          document.querySelector("#div_modPersGinstruc").style.display = 'block';
-                          document.querySelector("#div_modPersSexoEcivil").style.display = 'block';
-                          document.querySelector("#cbo_modPersDocumento").removeAttribute('disabled');
-                          document.querySelector("#cbo_modPersDocumento").value = (501);
-                        }
-                      });
+                    <script>
+                      $("#cbo_modPersTipoPers").on('change',Persona.handler_modPersChange);
                     </script>
                   </div>
                 </div>
@@ -116,7 +93,7 @@
                 <div id="div_PersCelular" class="form-group" style="margin-bottom:5px;">
                   <div class="input-group">
                     <span class="input-group-addon" title="Celular" style="background:#eeeeee;"><i class="fa fa-phone" style="width:15px;"></i></span>
-                    <input id="txt_modPersCelular" type="text" class="form-control" placeholder="Nro. Celular" onblur="appSetTexto('#lbl_celular','#txt_PersCelular',false);"/>
+                    <input id="txt_modPersCelular" type="text" class="form-control" placeholder="Nro. Celular" />
                   </div>
                 </div>
                 <div class="form-group" style="margin-bottom:5px;">

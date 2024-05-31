@@ -57,14 +57,14 @@ function appPersonaNuevo(){
         document.querySelector('#grid').style.display = 'none';
         document.querySelector('#edit').style.display = 'block';
         Persona.close();
+        e.stopImmediatePropagation();
+        $('#btn_modPersInsert').off('click');
       } catch(err){
         console.error('Error al cargar datos:', err);
       }
     } else {
       alert("!!!Faltan llenar Datos!!!");
     }
-    e.stopImmediatePropagation();
-    $('#btn_modPersInsert').off('click');
   });
 }
 

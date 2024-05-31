@@ -1,4 +1,4 @@
-<?php if(isset($menu->mtto->submenu->empleados)){?>
+<?php if (isset($menu->mtto->submenu->empleados)) { ?>
 <!-- encriptar con sha1 -->
 <script type="text/javascript" src="libs/webtoolkit/webtoolkit.sha1.js"></script>
 
@@ -52,10 +52,10 @@
                   <th style="width:30px;"><i class="fa fa-lock"></i></th>
                   <th style="width:80px;">Codigo</th>
                   <th style="width:110px;" title="Documento Unico de Identidad = DNI, RUC">DUI</th>
-                  <th style="">Empleado <i class="fa fa-sort"></i></th>
-                  <th style="">Nombre Corto</th>
-                  <th style="">Cargo</th>
-                  <th style=""></th>
+                  <th>Empleado <i class="fa fa-sort"></i></th>
+                  <th>Nombre Corto</th>
+                  <th>Cargo</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody id="grdDatos"></tbody>
@@ -69,10 +69,10 @@
     <form class="form-horizontal" id="frmPersona" autocomplete="off">
       <div class="col-md-3">
         <div class="box box-widget widget-user-2">
-          <div class="widget-user-header"  style="background:#f9f9f9;">
+          <div class="widget-user-header" style="background:#f9f9f9;">
             <div class="widget-user-image">
-              <input type="hidden" id="hid_PersUrlFoto" value=""/>
-              <img class="profile-user-img img-circle" src="" id="img_Foto" alt="persona"/>
+              <input type="hidden" id="hid_PersUrlFoto" value="" />
+              <img class="profile-user-img img-circle" src="" id="img_Foto" alt="persona" />
             </div>
             <div style="min-height:70px;">
               <h4 class="widget-user-username" id="lbl_Apellidos"></h4>
@@ -81,10 +81,10 @@
           </div>
           <div class="no-padding">
             <ul class="list-group">
-              <li class="list-group-item" ><b>ID</b> <a class="pull-right" id="lbl_ID" style="font:14px flexoregular;"></a></li>
+              <li class="list-group-item"><b>ID</b> <a class="pull-right" id="lbl_ID" style="font:14px flexoregular;"></a></li>
               <li class="list-group-item"><b id="lbl_TipoDNI">DNI</b> <a class="pull-right" id="lbl_DNI" style="font:14px flexoregular;"></a></li>
               <li class="list-group-item"><b>Celular</b><a class="pull-right" id="lbl_Celular" style="font:14px flexoregular;"></a></li>
-              <li class="list-group-item" ><b>Codigo</b> <a class="pull-right" id="lbl_Codigo" style="font:14px flexoregular;"></a></li>
+              <li class="list-group-item"><b>Codigo</b> <a class="pull-right" id="lbl_Codigo" style="font:14px flexoregular;"></a></li>
             </ul>
           </div>
           <div class="box-body">
@@ -110,7 +110,7 @@
                   <div class="box-body">
                     <strong><i class="fa fa-address-card margin-r-5"></i> Basicos</strong>
                     <p class="text-muted">
-                      <input type="hidden" id="hid_PersID" value=""/>
+                      <input type="hidden" id="hid_PersID" value="" />
                       <span id="lbl_PersTipoNombres">Nombres</span>: <a id="lbl_PersNombres"></a><br>
                       <span id="lbl_PersTipoApellidos">Apellidos: <a id="lbl_PersApellidos"></a><br></span><br>
                       <span id="lbl_PersTipoDNI"></span>: <a id="lbl_PersNroDNI"></a><br>
@@ -121,7 +121,7 @@
                       <span id="lbl_PersTipoSexo">Sexo: <a id="lbl_PersSexo"></a><br></span>
                       <span id="lbl_PersTipoECivil">Estado Civil: <a id="lbl_PersEcivil"></a></span>
                     </p>
-                    <hr/>
+                    <hr />
 
                     <strong><i class="fa fa-phone margin-r-5"></i> Contacto</strong>
                     <p class="text-muted">
@@ -129,7 +129,7 @@
                       Telefono Fijo: <a id="lbl_PersTelefijo"></a><br>
                       Correo: <a id="lbl_PersEmail"></a><br>
                     </p>
-                    <hr/>
+                    <hr />
 
                     <strong><i class="fa fa-graduation-cap margin-r-5"></i> Profesionales</strong>
                     <p class="text-muted">
@@ -142,18 +142,19 @@
                 <div class="col-md-7">
                   <div class="box-body">
                     <strong><i class="fa fa-map-marker margin-r-5"></i> Ubicacion</strong>
-                      <table class="table-responsive no-padding">
-                        <tr>
-                          <td style="width:65px;vertical-align:bottom;">Direccion:</td>
-                          <td><a id="lbl_PersUbicacion" style="font:12px configcondensed_light;"></a><br>
-                              <a id="lbl_PersDireccion"></a></td>
-                        </tr>
-                      </table>
-                      Referencia: <a id="lbl_PersReferencia"></a><br>
-                      Medidor de Luz: <a id="lbl_PersMedidorluz"></a><br>
-                      Medidor de Agua: <a id="lbl_PersMedidorAgua"></a><br>
-                      Tipo de Vivienda: <a id="lbl_PersTipovivienda"></a>
-                    <hr/>
+                    <table class="table-responsive no-padding">
+                      <tr>
+                        <td style="width:65px;vertical-align:bottom;">Direccion:</td>
+                        <td><a id="lbl_PersUbicacion" style="font:12px configcondensed_light;"></a><br>
+                          <a id="lbl_PersDireccion"></a>
+                        </td>
+                      </tr>
+                    </table>
+                    Referencia: <a id="lbl_PersReferencia"></a><br>
+                    Medidor de Luz: <a id="lbl_PersMedidorluz"></a><br>
+                    Medidor de Agua: <a id="lbl_PersMedidorAgua"></a><br>
+                    Tipo de Vivienda: <a id="lbl_PersTipovivienda"></a>
+                    <hr />
 
                     <strong><i class="fa fa-book margin-r-5"></i> Observaciones</strong>
                     <p class="text-muted">
@@ -179,7 +180,7 @@
                     <div class="form-group" style="margin-bottom:5px;">
                       <div class="input-group">
                         <span class="input-group-addon" style="width:120px;background:#eeeeee;"><b>Codigo</b></span>
-                        <input id="txt_WorkerCodigo" type="text" class="form-control" placeholder="Codigo..." maxlength="4" disabled="disabled" style="width:105px;text-align:center;"/>
+                        <input id="txt_WorkerCodigo" type="text" class="form-control" placeholder="Codigo..." maxlength="4" disabled="disabled" style="width:105px;text-align:center;" />
                       </div>
                     </div>
                     <div class="form-group" style="margin-bottom:5px;">
@@ -191,13 +192,13 @@
                     <div id="div_WorkerNombreCorto" class="form-group" style="margin-bottom:5px;">
                       <div class="input-group">
                         <span class="input-group-addon" style="width:120px;background:#eeeeee;"><b>Nombre Corto</b></span>
-                        <input id="txt_WorkerNombreCorto" type="text" class="form-control" placeholder="nombre corto..." maxlength="30" style="width:200px;"/>
+                        <input id="txt_WorkerNombreCorto" type="text" class="form-control" placeholder="nombre corto..." maxlength="30" style="width:200px;" />
                       </div>
                     </div>
                     <div id="div_WorkerCorreo" class="form-group" style="margin-bottom:5px;">
                       <div class="input-group">
                         <span class="input-group-addon" style="width:120px;background:#eeeeee;" title="Correo Institucional"><b>Correo Inst.</b></span>
-                        <input id="txt_WorkerCorreo" type="text" class="form-control" placeholder="correo..." maxlength="50" style="width:200px;"/>
+                        <input id="txt_WorkerCorreo" type="text" class="form-control" placeholder="correo..." maxlength="50" style="width:200px;" />
                       </div>
                     </div>
                     <div class="form-group" style="margin-bottom:5px;">
@@ -241,19 +242,19 @@
                     <div id="div_UserLogin" class="form-group" style="margin-bottom:5px;">
                       <div class="input-group">
                         <span class="input-group-addon" style="width:100px;background:#eeeeee;"><b>Login</b></span>
-                        <input id="txt_UserLogin" type="email" class="form-control" placeholder="login..." maxlength="50" autocomplete="off"/>
+                        <input id="txt_UserLogin" type="email" class="form-control" placeholder="login..." maxlength="50" autocomplete="off" />
                       </div>
                     </div>
                     <div id="div_UserPassword" class="form-group" style="margin-bottom:5px;">
                       <div class="input-group">
                         <span class="input-group-addon" style="width:100px;background:#eeeeee;"><b>Password</b></span>
-                        <input id="txt_UserPassword" type="password" class="form-control" maxlength="20" autocomplete="off"/>
+                        <input id="txt_UserPassword" type="password" class="form-control" maxlength="20" autocomplete="off" />
                       </div>
                     </div>
                     <div id="div_UserRePassword" class="form-group" style="margin-bottom:20px;">
                       <div class="input-group">
                         <span class="input-group-addon" style="width:100px;background:#eeeeee;"><b>Repass</b></span>
-                        <input id="txt_UserRePassword" type="password" class="form-control" maxlength="20" autocomplete="off"/>
+                        <input id="txt_UserRePassword" type="password" class="form-control" maxlength="20" autocomplete="off" />
                       </div>
                     </div>
                     <div class="form-group" style="margin-bottom:20px;">
@@ -272,7 +273,7 @@
                       <button id="btn_UserPerfilCaja" type="button" class="btn btn-primary btn-xs" onclick="javascript:appUserPerfilMenu(2);"><i class="fa fa-user"></i> Caja</button>
                     </div>
                     <div id="div_UserMenu" class="box-body table-responsive no-padding" style="border:1px solid #ccc;">
-                        <ul id="appTreeView" class="ztree"></ul>
+                      <ul id="appTreeView" class="ztree"></ul>
                     </div>
                   </div>
                 </div>
@@ -334,9 +335,9 @@
   </div>
 </section>
 
-<script src="pages/mtto/empleados/script.js"></script>
+<script src="./pages/mtto/empleados/script.js"></script>
 <script>
-  $(document).ready(function(){
+  document.addEventListener('DOMContentLoaded', () => {
     Persona.addModalToParentForm('modalPers');
     appWorkersReset();
   });

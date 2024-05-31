@@ -3,21 +3,10 @@ var menu = "";
 var zTreeObj = null;
 var zMnuEmpleado = null;
 var zSetting = { 
-  check : {
-    enable : true
-  },
-  view : {
-    addDiyDom : null,
-    showIcon : showIconForTree
-  },
-  callback: {
-    beforeDrag : beforeDrag
-  },
-  edit: {
-    enable : true,
-    showRemoveBtn : true,
-    showRenameBtn : true
-  }
+  check : { enable : true },
+  view : { addDiyDom : null, showIcon : showIconForTree },
+  callback: { beforeDrag : beforeDrag },
+  edit: { enable : true, showRemoveBtn : true, showRenameBtn : true }
 };
 
 //=========================funciones============================

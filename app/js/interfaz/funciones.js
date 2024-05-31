@@ -40,15 +40,6 @@ function appConvertToNumero(numFormateado){
   return Number(numFormateado.split(",").join(""));
 }
 
-//establecer un texto de un textbox o combobox a un label
-function appSetTexto(miTarget,miSource,esCombo){
-  if(esCombo){
-    $(miTarget).html($(miSource+" option:selected").text());
-  } else{
-    $(miTarget).html($(miSource).val());
-  }
-}
-
 //llenar un combobox con la data YA extraida de la DB
 function appLlenarDataEnComboBox(data,miComboBox,valorSelect){
   let fila = "";

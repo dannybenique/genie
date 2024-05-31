@@ -117,14 +117,14 @@ async function handlerAlumnosInsert_Click(e){
       appPersonaSetData(resp.tablaPers);
       appAlumnoClear();
       Persona.close();
+      e.stopImmediatePropagation();
+      $('#btn_modPersInsert').off('click');
     } catch(err){
       console.error('Error al cargar datos:', err);
     }
   } else {
-    alert("!!!Faltan llenar Datos!!!");
+    alert("!!!Faltan llenar Datos en Personas!!!");
   }
-  e.stopImmediatePropagation();
-  $('#btn_modPersInsert').off('click');
 }
 
 function handlerAlumnosAddToForm_Click(e){
@@ -273,14 +273,14 @@ async function handlerFamiPadreInsert_Click(e){
       const resp = await Persona.ejecutaSQL();
       appFamiPadreSetData(resp.tablaPers);
       Persona.close();
+      e.stopImmediatePropagation();
+      $('#btn_modPersInsert').off('click');
     } catch(err){
       console.error('Error al cargar datos:', err);
     }
   } else {
     alert("!!!Faltan llenar Datos!!!");
   }
-  e.stopImmediatePropagation();
-  $('#btn_modPersInsert').off('click');
 }
 
 function handlerFamiPadreAddToForm_Click(e){
@@ -302,19 +302,21 @@ async function handlerFamiMadreInsert_Click(e){
   if(Persona.sinErrores()){
     try{
       const resp = await Persona.ejecutaSQL();
+      console.log(resp);
       appFamiMadreSetData(resp.tablaPers);
       Persona.close();
+      e.stopImmediatePropagation();
+      $('#btn_modPersInsert').off('click');
     } catch(err){
       console.error('Error al cargar datos:', err);
     }
   } else {
     alert("!!!Faltan llenar Datos!!!");
   }
-  e.stopImmediatePropagation();
-  $('#btn_modPersInsert').off('click');
 }
 
 function handlerFamiMadreAddToForm_Click(e){
+  console.log(Persona);
   appFamiMadreSetData(Persona.tablaPers);
   Persona.close();
   e.stopImmediatePropagation();
@@ -335,14 +337,14 @@ async function handlerFamiApoderaInsert_Click(e){
       const resp = await Persona.ejecutaSQL();
       appFamiApoderaSetData(resp.tablaPers);
       Persona.close();
+      e.stopImmediatePropagation();
+      $('#btn_modPersInsert').off('click');
     } catch(err){
       console.error('Error al cargar datos:', err);
     }
   } else {
     alert("!!!Faltan llenar Datos!!!");
   }
-  e.stopImmediatePropagation();
-  $('#btn_modPersInsert').off('click');
 }
 
 function handlerFamiApoderaAddToForm_Click(e){

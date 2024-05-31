@@ -1,5 +1,3 @@
-import { SHA1 } from "../../../libs/webtoolkit/webtoolkit.sha1.js"
-
 $(document).on('submit','#frmLogin', btn_submit);
 
 async function btn_submit(event){

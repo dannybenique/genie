@@ -5,7 +5,7 @@
 *
 **/
 
-export function SHA1 (msg) {
+function SHA1 (msg) {
     function rotate_left(n,s) {
         var t4 = ( n<<s ) | (n>>>(32-s));
         return t4;
@@ -152,3 +152,5 @@ export function SHA1 (msg) {
     var temp = cvt_hex(H0) + cvt_hex(H1) + cvt_hex(H2) + cvt_hex(H3) + cvt_hex(H4);
     return temp.toLowerCase();
 }
+
+// export { SHA1 };
