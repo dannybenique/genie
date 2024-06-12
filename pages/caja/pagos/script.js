@@ -87,8 +87,7 @@ async function appPagosBotonPagar(){
 }
 
 function modalMatric_keyBuscar(e){
-  let code = (e.keyCode ? e.keyCode : e.which);
-  if(code == 13) { 
+  if(e.keyCode === 13) {
     if(document.querySelector("#modalMatric_TxtBuscar").value.trim().length>=4){ 
       modalMatricGrid();
     } else { 

@@ -68,8 +68,7 @@ async function appWorkersReset(){
 }
 
 function appWorkersBuscar(e){
-  let code = (e.keyCode ? e.keyCode : e.which);
-  if(code == 13) { appWorkersGrid(); }
+  if(e.keyCode === 13) { appWorkersGrid(); }
 }
 
 function appWorkersBotonCancel(){
@@ -108,14 +107,6 @@ async function appWorkersBotonUpdate(){
   }
 }
 
-function appWorkersBotonNuevo(){
-  Persona.openBuscar('VerifyWorker',rutaSQL,true,true,false);
-  $('#btn_modPersInsert').off('click');
-
-  $('#btn_modPersInsert').on('click',handlerWorkersInsert_Click);
-  $('#btn_modPersAddToForm').on('click',handlerWorkersAddToForm_Click);
-}
-
 function appWorkersBotonViewAll(){ //mostrar inclusive los empleados eliminados
   document.querySelector("#icoViewAll").classList.toggle("fa-toggle-on");
   document.querySelector("#icoViewAll").classList.toggle("fa-toggle-off");
@@ -123,6 +114,11 @@ function appWorkersBotonViewAll(){ //mostrar inclusive los empleados eliminados
   appWorkersGrid();
 }
 
+function appWorkersBotonNuevo(){
+  Persona.openBuscar('VerifyWorker',rutaSQL,true,true,false);
+  $('#btn_modPersInsert').off('click').on('click',handlerWorkersInsert_Click);
+  $('#btn_modPersAddToForm').off('click').on('click',handlerWorkersAddToForm_Click);
+}
 async function handlerWorkersInsert_Click(e){
   if(Persona.sinErrores()){ 
     try{
@@ -145,7 +141,6 @@ async function handlerWorkersInsert_Click(e){
   e.stopImmediatePropagation();
   $('#btn_modPersInsert').off('click');
 }
-
 function handlerWorkersAddToForm_Click(e){
   appPersonaSetData(Persona.tablaPers); //pestaña Personales
   appUserClear({"comboRoles":Persona.tablaPers.comboRoles});
@@ -337,7 +332,7 @@ function appPersonaSetData(data){
 
 function appPersonaEditar(){
   Persona.editar(document.querySelector('#lbl_ID').innerHTML,'S');
-  $('#btn_modPersUpdate').on('click',async function(e) {
+  $('#btn_modPersUpdate').off('click').on('click',async function(e) {
     if(Persona.sinErrores()){
       try{
         const resp = await Persona.ejecutaSQL();
@@ -541,32 +536,4 @@ function getTreeNodes(nodes) {
 
 function beforeDrag(treeId, treeNodes) { 
   return false; 
-}
-
-
-
-
-//permisos para personas
-function appPermisoPersonas(){
-  let datos = { TipoQuery:'insNotifi', tabla:'tb_personas', personaID:$("#lbl_ID").html() }
-  appAjaxInsert(datos,"pages/global/notifi/sql.php").done(function(resp){
-    if(!resp.error){ $("#btn_PersPermiso").hide(); }
-    else { alert("!!!Hubo un error... "+(resp.mensaje)+"!!!"); }
-  });
-}
-
-function appPermisoLaboral(){
-  let datos = { TipoQuery:'OneNotificacion', tabla:'tb_personas_labo', personaID:$("#lbl_ID").html() }
-  appAjaxInsert(datos).done(function(resp){
-    if(resp.error==false){ $("#btn_LaboPermiso").hide(); }
-    else { alert("!!!Hubo un error... "+(resp.mensaje)+"!!!"); }
-  });
-}
-
-function appPermisoConyuge(){
-  let datos = { TipoQuery:'OneNotificacion', tabla:'tb_personas_cony', personaID:$("#lbl_ID").html() }
-  appAjaxInsert(datos).done(function(resp){
-    if(resp.error==false){ $("#btn_ConyPermiso").hide(); }
-    else { alert("!!!Hubo un error... "+(resp.mensaje)+"!!!"); }
-  });
 }

@@ -25,10 +25,10 @@
         <div class="box-header no-padding">
           <div class="mailbox-controls">
             <div class="btn-group">
-              <button type="button" class="btn btn-default btn-sm" onclick="javascript:appPersonasBorrar();"><i class="fa fa-trash"></i></button>
-              <button type="button" class="btn btn-default btn-sm" onclick="javascript:appPersonaNuevo();"><i class="fa fa-plus"></i></button>
+              <button type="button" class="btn btn-default btn-sm" onclick="javascript:appPersonaBoton_Borrar();"><i class="fa fa-trash"></i></button>
+              <button type="button" class="btn btn-default btn-sm" onclick="javascript:appPersonaBoton_Nuevo();"><i class="fa fa-plus"></i></button>
             </div>
-            <button type="button" class="btn btn-default btn-sm" onclick="javascript:appPersonasReset();"><i class="fa fa-refresh"></i></button>
+            <button type="button" class="btn btn-default btn-sm" onclick="javascript:appPersonaBoton_Reset();"><i class="fa fa-refresh"></i></button>
             <div class="btn-group">
               <input type="text" id="txtBuscar" name="txtBuscar" class="form-control input-sm pull-right" placeholder="DNI, persona..." onkeypress="javascript:appPersonasBuscar(event);" style="text-transform:uppercase;" autocomplete="off">
               <span class="fa fa-search form-control-feedback"></span>
@@ -40,10 +40,9 @@
               <thead>
                 <tr>
                   <th style="width:25px;"><input type="checkbox" id="chk_All" onclick="toggleAll(this,'chk_Borrar');" /></th>
-                  <th style="width:25px;"><i class="fa fa-paperclip" title="Auditoria"></i></th>
-                  <th style="width:110px;">DNI / RUC</th>
-                  <th style="">Persona <i class="fa fa-sort"></i></th>
-                  <th style="">Direccion</th>
+                  <th style="width:85px;">DNI</th>
+                  <th>Persona <i class="fa fa-sort"></i></th>
+                  <th>Direccion</th>
                 </tr>
               </thead>
               <tbody id="grdDatos"></tbody>
@@ -75,7 +74,7 @@
             </ul>
           </div>
           <div class="box-body">
-            <button type="button" class="btn btn-default" onclick="javascript:appPersonasBotonCancel();"><i class="fa fa-angle-double-left"></i> Regresar</button>
+            <button type="button" class="btn btn-default" onclick="javascript:appPersonasBoton_Cancel();"><i class="fa fa-angle-double-left"></i> Regresar</button>
           </div>
         </div>
       </div>
@@ -166,8 +165,8 @@
                         <th style="width:20px;" title="Eliminar"><i class="fa fa-trash"></i></th>
                         <th style="width:105px;">Condicion</th>
                         <th style="width:105px;">RUC</th>
-                        <th style="">Empresa</th>
-                        <th style="">Cargo</th>
+                        <th>Empresa</th>
+                        <th>Cargo</th>
                         <th style="width:105px;text-align:right;">Ingreso</th>
                       </tr>
                     </thead>
@@ -304,7 +303,7 @@
                     <th style="width:150px;">tabla</th>
                     <th style="width:40px;">accion</th>
                     <th style="width:85px;">campo</th>
-                    <th style="">observac.</th>
+                    <th>observac.</th>
                     <th style="width:130px;">usuario</th>
                     <th style="width:100px;">sysIP</th>
                     <th style="width:50px;">sysAg</th>
@@ -335,7 +334,7 @@
     Persona.addModalToParentForm('modalPers');
     Laboral.addModalToParentForm('modalLabo');
     Conyuge.addModalToParentForm('modalCony');
-    appPersonasReset();
+    appPersonaBoton_Reset();
   });
 </script>
 <?php } ?>

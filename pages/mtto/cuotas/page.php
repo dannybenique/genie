@@ -1,4 +1,4 @@
-<?php if(isset($menu->mtto->submenu->pagos)){?>
+<?php if(isset($menu->mtto->submenu->cuotas)){?>
 <!-- bootstrap datepicker -->
 <link rel="stylesheet" href="libs/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
 <script src="libs/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
@@ -6,10 +6,10 @@
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-  <h1><i class="fa fa-gear"></i> <b>Pagos</b></h1>
+  <h1><i class="fa fa-gear"></i> <b>Cuotas</b></h1>
   <ol class="breadcrumb">
     <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-    <li class="active">pagos</li>
+    <li class="active">cuotas</li>
   </ol>
 </section>
 <!-- Main content -->
@@ -105,7 +105,7 @@
   </div>
 </section>
 
-<script src="pages/mtto/pagos/script.js"></script>
+<script src="pages/mtto/cuotas/script.js"></script>
 <script>
   $(document).ready(function(){
     appPagosReset();

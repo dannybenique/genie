@@ -41,27 +41,25 @@ function appNotificacionesData(resp){
   }
 }
 
-async function inicioAPP(){
-  //const user = JSON.parse(localStorage.getItem("user"));
+$(document).ready(async function() {
   try{
     const resp = await appAsynFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php");
     
-    resp.menu = JSON.parse(resp.menu);
-    document.querySelector("#ifaz_menu_imagen").src = (resp.urlfoto);
-    document.querySelector("#ifaz_menu_nombrecorto").innerHTML = (resp.nombrecorto);
-    document.querySelector("#ifaz_menu_login").innerHTML = (resp.login);
-    document.querySelector("#ifaz_barra_imagen").src = (resp.urlfoto);
-    document.querySelector("#ifaz_barra_nombrecorto").innerHTML = (resp.nombrecorto);
-    document.querySelector("#ifaz_perfil_imagen").src = (resp.urlfoto);
-    document.querySelector("#ifaz_perfil_nombrecorto").innerHTML = (resp.nombrecorto);
-    document.querySelector("#ifaz_perfil_cargo").innerHTML = (resp.cargo);
-    /*if(resp.rolID>102){ 
-      //oncontextmenu="return false;" ondragstart="return false;" onselectstart="return false;"
-      $(document.body).attr("oncontextmenu","return false;");
-      $(document.body).attr("onselectstart","return false;");
-      $(document.body).attr("ondragstart","return false;");
-    }*/
+    $("#ifaz_menu_imagen").attr("src",resp.urlfoto);
+    $("#ifaz_menu_nombrecorto").text(resp.nombrecorto);
+    $("#ifaz_menu_login").text(resp.login);
+    $("#ifaz_barra_imagen").attr("src",resp.urlfoto);
+    $("#ifaz_barra_nombrecorto").text(resp.login);
+    $("#ifaz_perfil_imagen").attr("src",resp.urlfoto);
+    $("#ifaz_perfil_nombrecorto").text(resp.nombrecorto);
+    $("#ifaz_perfil_cargo").text(resp.cargo);
+    if(resp.rolID>102){ 
+      var elements = $("body");
+      elements.on("contextmenu", function() { return false; }); // Deshabilitar el menú contextual
+      elements.on("dragstart", function() { return false; }); // Deshabilitar el arrastre
+      elements.on("selectstart", function() { return false; }); // Deshabilitar la selección de texto
+    }
   } catch(err){
     console.error('Error al cargar datos:', err);
   }
-}
+});

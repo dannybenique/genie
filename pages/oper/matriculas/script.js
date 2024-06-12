@@ -52,8 +52,7 @@ async function appMatriculasReset(){
 }
 
 function appMatriculasBuscar(e){
-  let code = (e.keyCode ? e.keyCode : e.which);
-  if(code == 13) { load_flag = 0; $('#grdDatosBody').html(""); appMatriculasGrid(); }
+  if(e.keyCode === 13) { load_flag = 0; $('#grdDatosBody').html(""); appMatriculasGrid(); }
 }
 
 function appMatriculasRefresh(){

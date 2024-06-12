@@ -41,8 +41,8 @@
                 <tr>
                   <th style="width:25px;"><input type="checkbox" id="chk_All" onclick="toggleAll(this,'chk_Borrar');" /></th>
                   <th style="width:110px;">DNI</th>
-                  <th style="">Persona <i class="fa fa-sort-asc"></i></th>
-                  <th style="">Direccion</th>
+                  <th>Persona <i class="fa fa-sort-asc"></i></th>
+                  <th>Direccion</th>
                 </tr>
               </thead>
               <tbody id="grdDatos"></tbody>
@@ -169,8 +169,8 @@
                         <th style="width:20px;" title="Eliminar"><i class="fa fa-trash"></i></th>
                         <th style="width:105px;">Condicion</th>
                         <th style="width:105px;">RUC</th>
-                        <th style="">Empresa</th>
-                        <th style="">Cargo</th>
+                        <th>Empresa</th>
+                        <th>Cargo</th>
                         <th style="width:105px;text-align:right;">Ingreso</th>
                       </tr>
                     </thead>

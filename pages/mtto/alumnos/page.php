@@ -113,18 +113,15 @@
                 <ul class="todo-list">
                   <li>
                     <table style="width:100%;">
-                      <tr>
-                        <td style="width:90px;" class="no-padding">
-                          <div class="pull-left" style="width:100%;">
-                            <a href="javascript:appFamiPadreAdd();" class="btn btn-app" style="margin:0;">
-                              <i class="fa fa-edit"></i> Padre
-                            </a>
-                          </div>
-                        </td>
+                      <tr><td style="width:90px;" class="no-padding">
+                            <div class="pull-left" style="width:100%;">
+                              <a href="javascript:appFamiPadreAdd();" class="btn btn-app" style="margin:0;">
+                                <i class="fa fa-edit"></i> Padre
+                              </a>
+                            </div></td>
                         <td>
-                          <input type="hidden" id="hid_alumnoFamiPadreID" value=""/>
                           <div style="line-height:1;">
-                            <span id="lbl_alumnoFamiPadreNombre" style="font-weight:bold;font-size:15px;"></span><br/>
+                            <a href="javascript:appLinkFamiliar(1);" id="lbl_alumnoFamiPadreNombre" style="font-weight:bold;font-size:15px;"></a><br>
                             <span id="lbl_alumnoFamiPadreDNI" style="font-size:11px;"></span><br/>
                             <span id="lbl_alumnoFamiPadreDireccion" style="font-size:11px;"></span>
                           </div>
@@ -134,16 +131,13 @@
                   </li>
                   <li>
                     <table style="width:100%;">
-                      <tr>
-                        <td style="width:90px;" class="no-padding">
-                          <div class="pull-left" style="width:100%;">
-                            <a href="javascript:appFamiMadreAdd();" class="btn btn-app" style="margin:0;">
-                              <i class="fa fa-edit"></i> Madre
-                            </a>
-                          </div>
-                        </td>
+                      <tr><td style="width:90px;" class="no-padding">
+                            <div class="pull-left" style="width:100%;">
+                              <a href="javascript:appFamiMadreAdd();" class="btn btn-app" style="margin:0;">
+                                <i class="fa fa-edit"></i> Madre
+                              </a>
+                            </div></td>
                         <td>
-                          <input type="hidden" id="hid_alumnoFamiMadreID" value=""/>
                           <div style="line-height:1;">
                             <a href="javascript:appLinkFamiliar(2);" id="lbl_alumnoFamiMadreNombre" style="font-weight:bold;font-size:15px;"></a><br>
                             <span id="lbl_alumnoFamiMadreDNI" style="font-size:11px;"></span><br/>
@@ -155,18 +149,15 @@
                   </li>
                   <li>
                     <table style="width:100%;">
-                      <tr>
-                        <td style="width:90px;" class="no-padding">
-                          <div class="pull-left" style="width:100%;">
-                            <a href="javascript:appFamiApoderaAdd();" class="btn btn-app" style="margin:0;">
-                              <i class="fa fa-edit"></i> Apoderado
-                            </a>
-                          </div>
-                        </td>
+                      <tr><td style="width:90px;" class="no-padding">
+                            <div class="pull-left" style="width:100%;">
+                              <a href="javascript:appFamiApoderaAdd();" class="btn btn-app" style="margin:0;">
+                                <i class="fa fa-edit"></i> Apoderado
+                              </a>
+                            </div></td>
                         <td>
-                          <input type="hidden" id="hid_alumnoFamiApoderaID" value=""/>
                           <div style="line-height:1;">
-                            <span id="lbl_alumnoFamiApoderaNombre" style="font-weight:bold;font-size:15px;"></span><br>
+                            <a href="javascript:appLinkFamiliar(3);" id="lbl_alumnoFamiApoderaNombre" style="font-weight:bold;font-size:15px;"></a><br>
                             <span id="lbl_alumnoFamiApoderaDNI" style="font-size:11px;"></span><br/>
                             <span id="lbl_alumnoFamiApoderaDireccion" style="font-size:11px;"></span>
                           </div>

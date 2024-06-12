@@ -33,7 +33,7 @@
                 <tr>
                   <th style="width:60px;">ID</th>
                   <th style="width:30px;text-align:center;"><i class="fa fa-info-circle" title=""></i></th>
-                  <th style="">Nombre</th>
+                  <th>Nombre</th>
                   <th style="width:100px;">Codigo</th>
                   <th style="width:60px;" title="Abreviatura">Ab</th>
                   <th style="width:60px;text-align:center;">Tipo</th>

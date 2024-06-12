@@ -1,7 +1,6 @@
 <?php
   class funciones{
-    //Obtiene la IP del cliente
-    public function getClientIP() {
+    public function getClientIP() { //Obtiene la IP del cliente
       $ipaddress = '';
       if (getenv('HTTP_CLIENT_IP')) $ipaddress = getenv('HTTP_CLIENT_IP');
       else if(getenv('HTTP_X_FORWARDED_FOR')) $ipaddress = getenv('HTTP_X_FORWARDED_FOR');

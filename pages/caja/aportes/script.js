@@ -98,8 +98,7 @@ async function appAportesBotonExec(){
 }
 
 function modalAporte_keyBuscar(e){
-  let code = (e.keyCode ? e.keyCode : e.which);
-  if(code == 13) { modalAporteBuscar(); }
+  if(e.keyCode === 13) { modalAporteBuscar(); }
 }
 
 function modalAporteBuscar(){

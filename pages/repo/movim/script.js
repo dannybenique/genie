@@ -65,8 +65,7 @@ async function appMovimReset(){
 }
 
 function appMovimBuscar(e){
-  let code = (e.keyCode ? e.keyCode : e.which);
-  if(code == 13) { appMovimGrid(); }
+  if(e.keyCode === 13) { appMovimGrid(); }
 }
 
 async function appMovimView(voucherID){

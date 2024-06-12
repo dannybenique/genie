@@ -45,17 +45,17 @@
 
 @font-face {
     font-family: 'helveticaneue_bold';
-    src: url('../fonts/helveticaneue-bd-webfont.eot');
-    src: url('../fonts/helveticaneue-bd-webfont.eot?#iefix') format('embedded-opentype'),
-         url('../fonts/helveticaneue-bd-webfont.ttf') format('truetype');
+    src: url('../fonts/helveticaneue-bold-webfont.eot');
+    src: url('../fonts/helveticaneue-bold-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/helveticaneue-bold-webfont.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'helveticaneue_medio';
-    src: url('../fonts/helveticaneue-webfont.woff2') format('woff2'),
-         url('../fonts/helveticaneue-webfont.woff') format('woff');
+    src: url('../fonts/helveticaneue-medio-webfont.woff2') format('woff2'),
+         url('../fonts/helveticaneue-medio-webfont.woff') format('woff');
     font-weight: normal;
     font-style: normal;
 }

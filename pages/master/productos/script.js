@@ -50,8 +50,7 @@ async function appProductosReset(){
 }
 
 function appProductosBuscar(e){
-  let code = (e.keyCode ? e.keyCode : e.which);
-  if(code == 13) { appProductosGrid(); }
+  if(e.keyCode === 13) { appProductosGrid(); }
 }
 
 async function appProductoNuevo(){

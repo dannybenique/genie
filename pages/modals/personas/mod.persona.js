@@ -13,7 +13,7 @@
     addRepLista : false, //permite añadir repetidos en lista
     tablaPers : 0,
     addModalToParentForm(contenedor) { $("#"+contenedor).load(this.rutaHTML); },
-    close() { $("#modalPers").modal("hide"); },
+    close() { $("#modalPers").modal("hide");},
     keyBuscar(e) { if(e.keyCode === 13) { this.buscar(); } },
     calcularEdad() {
       const hoy = moment(); //fecha hoy
@@ -93,7 +93,6 @@
     datosToForm(data){
       this.commandSQL = "UPD";
       this.personaID = data.ID;
-      //$('#hid_modPersPermisoID').val(data.permisoPersona.ID);
       $('#hid_modPersUrlFoto').val(data.urlfoto);
       $('#cbo_modPersTipoPers').val(data.tipoPersona);
       $("#txt_modPersNombres").val(data.nombres);
@@ -145,6 +144,7 @@
       $("#modPersGridDatosTabla").show();
 
       if (resp.persona) { //existe en Personas
+        this.personaID = resp.tablaPers.ID;
         this.tablaPers = resp.tablaPers;
         $("#btn_modPersAddToPersonas").hide();
 
@@ -287,9 +287,11 @@
     async apidni(){
       try {
         const nroDoc = $("#txt_modPersDocumento").val();
-        const resp = await fetch("https://dniruc.apisperu.com/api/v1/"+(((nroDoc.length==8)?("dni/"):((nroDoc.length==11)?("ruc/"):("")))+(nroDoc))+"?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImRhbm55YmVuaXF1ZUBtc24uY29tIn0.ts3qFRsLtLxqnoOMvwYEeOu470tyTUGWQbsuH4ZTC7I");
-        const rpta = await resp.json();
+        const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImRhbm55YmVuaXF1ZUBnbWFpbC5jb20ifQ.1iMQ1t-FQywEPw1BiFGUYtkvjlpLLY556RpOcqGaUEY';
+        const temp = await fetch('https://dniruc.apisperu.com/api/v1/dni/'+nroDoc+'?token='+token);
+        const rpta = await temp.json();
         
+        console.log(rpta);
         if(rpta.success){
           $("#txt_modPersNombres").val(rpta.nombres);
           $("#txt_modPersApePaterno").val(rpta.apellidoPaterno);
@@ -310,7 +312,6 @@
       
       try {
         const resp = await fetch(this.rutaSQL, { method:'POST', body:exec });
-        
         if(!resp.ok){ throw new Error('respuesta de la Red no fue positiva');}
         return await resp.json();
       } catch(err){

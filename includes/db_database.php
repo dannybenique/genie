@@ -41,17 +41,13 @@
       }
     }
 
-    public function query($sql, $params = []) {
-      try {
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute($params);
-        return $stmt;
-      } catch (PDOException $e) {
-        die("Error en la consulta: " . $e->getMessage());
-      }
-    }
-
     public function close() { $this->conn = null; }
+    
+    public function enviarRespuesta($resp){
+      header('Content-Type: application/json');
+      echo json_encode($resp);
+      exit;
+    }
   }
   $db = database::getInstance();
 ?>

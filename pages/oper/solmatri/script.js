@@ -54,8 +54,7 @@ async function appSolMatriReset(){
 }
 
 function appSolMatriBuscar(e){
-  let code = (e.keyCode ? e.keyCode : e.which);
-  if(code == 13) { load_flag = 0; $('#grdDatosBody').html(""); appSolMatriGrid(); }
+  if(e.keyCode === 13) { load_flag = 0; $('#grdDatosBody').html(""); appSolMatriGrid(); }
 }
 
 function appSolMatriBotonCancel(){

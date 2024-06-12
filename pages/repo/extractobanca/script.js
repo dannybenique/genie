@@ -22,8 +22,7 @@ function appBotonBuscar(){
 }
 
 function modalSocio_keyBuscar(e){
-  let code = (e.keyCode ? e.keyCode : e.which);
-  if(code == 13) { modalSocioBuscar(); }
+  if(e.keyCode === 13) { modalSocioBuscar(); }
 }
 
 function modalSocioBuscar(){

@@ -96,8 +96,7 @@ async function appPagosBotonPagar(){
 }
 
 function modalCredi_keyBuscar(e){
-  let code = (e.keyCode ? e.keyCode : e.which);
-  if(code == 13) {
+  if(e.keyCode === 13) {
     document.querySelector("#modalCredi_Grid").style.display = 'none';
     if(document.querySelector("#"+e.srcElement.id).value.length>=3){ 
       modalCrediGrid();

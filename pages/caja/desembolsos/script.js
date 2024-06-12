@@ -61,8 +61,7 @@ async function appDesembReset(){
 }
 
 function appDesembBuscar(e){
-  let code = (e.keyCode ? e.keyCode : e.which);
-  if(code == 13) { load_flag = 0; $('#grdDatos').html(""); appDesembGrid(); }
+  if(e.keyCode === 13) { load_flag = 0; $('#grdDatos').html(""); appDesembGrid(); }
 }
 
 function appDesembBotonCancel(){

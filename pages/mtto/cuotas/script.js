@@ -1,4 +1,4 @@
-const rutaSQL = "pages/mtto/pagos/sql.php";
+const rutaSQL = "pages/mtto/cuotas/sql.php";
 var menu = "";
 
 //=========================funciones para Personas============================
@@ -41,8 +41,8 @@ async function appPagosReset(){
   try{
     const resp = await appAsynFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php");
     menu = JSON.parse(resp.menu);
-    document.querySelector("#btn_DEL").style.display = (menu.mtto.submenu.pagos.cmdDelete==1)?('inline'):('none');
-    document.querySelector("#btn_NEW").style.display = (menu.mtto.submenu.pagos.cmdInsert==1)?('inline'):('none');
+    document.querySelector("#btn_DEL").style.display = (menu.mtto.submenu.cuotas.cmdDelete==1)?('inline'):('none');
+    document.querySelector("#btn_NEW").style.display = (menu.mtto.submenu.cuotas.cmdInsert==1)?('inline'):('none');
     document.querySelector("#txtBuscar").value = ("");
     appPagosGrid();
   } catch(err){
@@ -51,12 +51,11 @@ async function appPagosReset(){
 }
 
 function appPagosBuscar(e){
-  let code = (e.keyCode ? e.keyCode : e.which);
-  if(code == 13) { appPagosGrid(); }
+  if(e.keyCode === 13) { appPagosGrid(); }
 }
 
 async function appPagoNuevo(){
-  document.querySelector("#btnInsert").style.display = (menu.mtto.submenu.pagos.cmdInsert==1)?('inline'):('none');
+  document.querySelector("#btnInsert").style.display = (menu.mtto.submenu.cuotas.cmdInsert==1)?('inline'):('none');
   document.querySelector("#btnUpdate").style.display = 'none';
 
   try{
@@ -74,7 +73,7 @@ async function appPagoNuevo(){
 }
 
 async function appPagoView(pagoID){
-  document.querySelector("#btnUpdate").style.display = (menu.mtto.submenu.pagos.cmdUpdate==1)?('inline'):('none');
+  document.querySelector("#btnUpdate").style.display = (menu.mtto.submenu.cuotas.cmdUpdate==1)?('inline'):('none');
   document.querySelector("#btnInsert").style.display = 'none';
   $(".form-group").removeClass("has-error");
 

@@ -50,8 +50,7 @@ async function appTiposReset(){
 }
 
 function appTiposBuscar(e){
-  let code = (e.keyCode ? e.keyCode : e.which);
-  if(code == 13) { appTiposGrid(); }
+  if(e.keyCode === 13) { appTiposGrid(); }
 }
 
 function appTiposCancel(){

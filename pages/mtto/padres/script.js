@@ -49,8 +49,7 @@ async function appPadresReset(){
 }
 
 function appPadresBuscar(e){
-  let code = (e.keyCode ? e.keyCode : e.which);
-  if(code == 13) { appPadresGrid(); }
+  if(e.keyCode === 13) { appPadresGrid(); }
 }
 
 function appPadresBotonCancel(){
@@ -89,10 +88,8 @@ async function appPadresBotonUpdate(){
 
 function appPadresBotonNuevo(){
   Persona.openBuscar('VerifyPadre',rutaSQL,true,true,false);
-  $('#btn_modPersInsert').off('click');
-  
-  $('#btn_modPersInsert').on('click',handlerPadresInsert_Click);
-  $('#btn_modPersAddToForm').on('click',handlerPadresAddToForm_Click);
+  $('#btn_modPersInsert').off('click').on('click',handlerPadresInsert_Click);
+  $('#btn_modPersAddToForm').off('click').on('click',handlerPadresAddToForm_Click);
 }
 
 async function handlerPadresInsert_Click(e){
@@ -251,7 +248,7 @@ function appPersonaSetData(data){
 
 function appPersonaEditar(){
   Persona.editar(document.querySelector('#lbl_ID').innerHTML,'S');
-  $('#btn_modPersUpdate').on('click',async function(e) {
+  $('#btn_modPersUpdate').off('click').on('click',async function(e) {
     if(Persona.sinErrores()){
       try{
         const resp = await Persona.ejecutaSQL();
@@ -299,7 +296,7 @@ function appLaboralClear(){
 
 function appLaboralNuevo(){
   Laboral.nuevo(document.querySelector('#lbl_ID').innerHTML);
-  $('#btn_modLaboInsert').on('click',function(e) {
+  $('#btn_modLaboInsert').off('click').on('click',function(e) {
     if(Laboral.sinErrores()){
       Laboral.ejecutaSQL().then(resp => {
         appLaboralSetData(resp.tablaLabo);
@@ -315,7 +312,7 @@ function appLaboralNuevo(){
 
 function appLaboralEditar(laboralID){
   Laboral.editar(laboralID);
-  $('#btn_modLaboUpdate').on('click',function(e) {
+  $('#btn_modLaboUpdate').off('click').on('click',function(e) {
     if(Laboral.sinErrores()){ 
       Laboral.ejecutaSQL().then(resp => {
         appLaboralSetData(resp.tablaLabo);
@@ -391,7 +388,7 @@ function appConyugeClear(){
 
 function appConyugeNuevo(){
   Conyuge.nuevo(document.querySelector('#lbl_ID').innerHTML,rutaSQL);
-  $('#btn_modConyInsert').on('click',function(e) {
+  $('#btn_modConyInsert').off('click').on('click',function(e) {
     if(Conyuge.sinErrores()){ //guardamos datos del conyuge
       Conyuge.ejecutaSQL().then(resp => {
         appConyugeSetData(resp.tablaCony);
@@ -407,7 +404,7 @@ function appConyugeNuevo(){
 
 function appConyugeEditar(){
   Conyuge.editar(document.querySelector('#lbl_ID').innerHTML);
-  $('#btn_modConyUpdate').on('click',function(e) {
+  $('#btn_modConyUpdate').off('click').on('click',function(e) {
     if(Conyuge.sinErrores()){ 
       Conyuge.ejecutaSQL().then(resp => {
         appConyugeSetData(resp.tablaCony);
