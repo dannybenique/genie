@@ -38,11 +38,10 @@
             <table class="table table-hover" id="grd">
               <thead>
                 <tr>
-                  <th>Nivel &raquo; Grado</th>
                   <th style="width:25px;"><input type="checkbox" id="chk_All" onclick="javascript:toggleAll(this,'chk_Borrar');" /></th>
-                  <th style="text-align:center;width:80px;">Seccion</th>
+                  <th style="width:180px;">Nivel &raquo; Grado &raquo; Seccion</th>
+                  <th style="width:50px;text-align:right;" title="Capacidad">Cap</th>
                   <th title="Nombre con el que se reconocera">Alias</th>
-                  <th style="width:50px;" title="Capacidad">Cap</th>
                   <th></th>
                 </tr>
               </thead>

@@ -29,11 +29,10 @@ function fn_LlenarGridColNiv(data){
     data.forEach((valor,key)=>{
       rowspan = (gradoID!=valor.gradoID) ? (data.filter((xx)=>xx.gradoID===valor.gradoID).length) : 0;
       fila += '<tr>'+
-              ((gradoID!=valor.gradoID) ? ('<td rowspan='+rowspan+'>'+(valor.nivel)+' &raquo; '+(valor.grado)+'</td>'):(''))+
               '<td><input type="checkbox" name="chk_ColNivBorrar" value="'+(valor.seccionID)+'" '+(disabledDelete)+'/></td>'+
-              '<td style="text-align:center;"><a href="javascript:appColNivEdit('+(valor.seccionID)+');"><span data-toggle="tooltip" class="badge bg-green">'+(valor.seccion)+'</span></a></td>'+
+              '<td><a href="javascript:appColNivEdit('+(valor.seccionID)+');">'+(valor.nivel)+' &raquo; '+(valor.grado)+' &raquo; '+(valor.seccion)+'</a></td>'+
+              '<td style="text-align:right;">'+(valor.capacidad)+'</td>'+
               '<td>'+(valor.alias)+'</td>'+
-              '<td style="text-align:center;">'+(valor.capacidad)+'</td>'+
               '<td></td>'+
               '</tr>';
       gradoID = valor.gradoID;
