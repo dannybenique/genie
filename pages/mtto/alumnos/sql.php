@@ -102,25 +102,24 @@
       break;
     case "alumno_ins":
       //verificar padres
-      $padreID = setPadreID($data->alumnoPadreID);
-      $madreID = setPadreID($data->alumnoMadreID);
-      $apoderaID = setPadreID($data->alumnoApoderaID);
+      $padreID = setPadreID($data->padreID);
+      $madreID = setPadreID($data->madreID);
+      $apoderaID = setPadreID($data->apoderaID);
       
       //ingresar datos del alumno
-      $qry = $db->query_all("select right('000000'||cast(coalesce(max(right(codigo,6)::integer)+1,1) as text),6) as code from app_alumnos where id_colegio=".$web->colegioID.";");
-      $codigo = ($qry) ? (reset($qry)["code"]) : (null);
+      $codigo = $fn->getValorCampo("select right('000000'||cast(coalesce(max(right(codigo,6)::integer)+1,1) as text),6) as code from app_alumnos where id_colegio=".$web->colegioID, "code");
       $sql = "insert into app_alumnos values(:alumnoID,:codigo,:padreID,:madreID,:apoderaID,:colegioID,:fecha,:estado,:sysIP,:userID,now());";
       $params = [
-        ":alumnoID"=>$data->alumnoID,
-        ":codigo"=>$codigo,
-        ":padreID"=>($data->alumnoPadreID!="") ? ($data->alumnoPadreID) : (null),
-        ":madreID"=>($data->alumnoMadreID!="") ? ($data->alumnoMadreID) : (null),
-        ":apoderaID"=>($data->alumnoApoderaID!="") ? ($data->alumnoApoderaID) : (null),
-        ":colegioID"=>$web->colegioID,
-        ":fecha"=>$data->alumnoFecha,
-        ":estado"=>1,
-        ":sysIP"=>$fn->getClientIP(),
-        ":userID"=>$_SESSION['usr_ID']
+        ":alumnoID" => $data->ID,
+        ":codigo" => $codigo,
+        ":padreID" => $data->padreID,
+        ":madreID" => $data->madreID,
+        ":apoderaID" => $data->apoderaID,
+        ":colegioID" => $web->colegioID,
+        ":fecha" => $data->fecha,
+        ":estado" => 1,
+        ":sysIP" => $fn->getClientIP(),
+        ":userID" => $_SESSION['usr_ID']
       ];
       $qry = $db->query_all($sql,$params);
       $rs = ($qry) ? (reset($qry)) : (null);
@@ -131,20 +130,20 @@
       break;
     case "alumno_upd":
       //verificar padres
-      $padreID = setPadreID($data->alumnoPadreID);
-      $madreID = setPadreID($data->alumnoMadreID);
-      $apoderaID = setPadreID($data->alumnoApoderaID);
+      $padreID = setPadreID($data->padreID);
+      $madreID = setPadreID($data->madreID);
+      $apoderaID = setPadreID($data->apoderaID);
 
       //actualizar datos del alumno
       $sql = "update app_alumnos set id_padre=:padreID,id_madre=:madreID,id_apoderado=:apoderaID,sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id=:alumnoID and id_colegio=:colegioID;";
       $params = [
-        ":alumnoID"=>$data->alumnoID,
-        ":colegioID"=>$web->colegioID,
-        ":padreID"=>($data->alumnoPadreID!="") ? ($data->alumnoPadreID) : (null),
-        ":madreID"=>($data->alumnoMadreID!="") ? ($data->alumnoMadreID) : (null),
-        ":apoderaID"=>($data->alumnoApoderaID!="") ? ($data->alumnoApoderaID) : (null),
-        ":sysIP"=>$fn->getClientIP(),
-        ":userID"=>$_SESSION['usr_ID']];
+        ":alumnoID" => $data->ID,
+        ":colegioID" => $web->colegioID,
+        ":padreID" => $data->padreID,
+        ":madreID" => $data->madreID,
+        ":apoderaID" => $data->apoderaID,
+        ":sysIP" => $fn->getClientIP(),
+        ":userID" => $_SESSION['usr_ID']];
       $qry = $db->query_all($sql,$params);
       $rs = ($qry) ? (reset($qry)) : (null);
       
@@ -221,7 +220,7 @@
       $rpta = array( "tipoFami" => $tipoFami, "tablaPers" => $fn->getViewPersona($data->familiarID) );
       $db->enviarRespuesta($rpta);
       break;
-    case "VerifyAlumno":
+    case "verifica_Alumno":
       $tablaPers = ""; //almacena los datos de la persona
       $persona = false; //indica que existe en personas
       $activo = false; //indica que encontro en tabla de alumnos
@@ -249,7 +248,7 @@
         "mensajeNOadd" => "ya es ALUMNO ACTIVO...");
       $db->enviarRespuesta($rpta);
       break;
-    case "VerifyPadre":
+    case "verifica_Padre":
       $tablaPers = ""; //almacena los datos de la persona
       $persona = false; //indica que existe en personas
       $activo = false; //indica que encontro en tabla de alumnos
@@ -277,7 +276,7 @@
         "mensajeNOadd" => "ya es PADRE ACTIVO...");
       $db->enviarRespuesta($rpta);
       break;
-    case "VerifyMadre":
+    case "verifica_Madre":
       $tablaPers = ""; //almacena los datos de la persona
       $persona = false; //indica que existe en personas
       $activo = false; //indica que encontro en tabla de alumnos
@@ -305,7 +304,7 @@
         "mensajeNOadd" => "ya es MADRE ACTIVO...");
       $db->enviarRespuesta($rpta);
       break;
-    case "VerifyApodera":
+    case "verifica_Apodera":
       $tablaPers = ""; //almacena los datos de la persona
       $persona = false; //indica que existe en personas
       $activo = false; //indica que encontro en tabla de alumnos

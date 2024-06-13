@@ -107,7 +107,7 @@ async function appAlumnosBotonUpdate(){
 }
 
 function appAlumnosBotonNuevo(){
-  Persona.openBuscar('VerifyAlumno',rutaSQL,true,true,false);
+  Persona.openBuscar('verifica_Alumno',rutaSQL,true,true,false);
   $('#btn_modPersInsert').off('click').on('click',handlerAlumnosInsert_Click);
   $('#btn_modPersAddToForm').off('click').on('click',handlerAlumnosAddToForm_Click);
 }
@@ -268,7 +268,7 @@ async function appAlumnoClear(){
 
 //familiar padre
 function appFamiPadreAdd(){
-  Persona.openBuscar('VerifyPadre',rutaSQL,true,true,false);
+  Persona.openBuscar('verifica_Padre',rutaSQL,true,true,false);
   $('#btn_modPersInsert').off('click').on('click',handlerFamiPadreInsert_Click);
   $('#btn_modPersAddToForm').off('click').on('click',handlerFamiPadreAddToForm_Click);
 }
@@ -307,7 +307,7 @@ function appFamiPadreSetData(data){
 
 //familiar madre
 function appFamiMadreAdd(){
-  Persona.openBuscar('VerifyMadre',rutaSQL,true,true,false);
+  Persona.openBuscar('verifica_Madre',rutaSQL,true,true,false);
   $('#btn_modPersInsert').off('click').on('click',handlerFamiMadreInsert_Click);
   $('#btn_modPersAddToForm').off('click').on('click',handlerFamiMadreAddToForm_Click);
 }
@@ -345,7 +345,7 @@ function appFamiMadreSetData(data){
 
 //familiar apoderado
 function appFamiApoderaAdd(){
-  Persona.openBuscar('VerifyApodera',rutaSQL,true,true,false);
+  Persona.openBuscar('verifica_Apodera',rutaSQL,true,true,false);
   $('#btn_modPersInsert').off('click').on('click',handlerFamiApoderaInsert_Click);
   $('#btn_modPersAddToForm').off('click').on('click',handlerFamiApoderaAddToForm_Click);
 }
@@ -389,13 +389,13 @@ function appAlumnoGetDatosToDatabase(){
   
   if(!EsError){
     datos = {
-      alumnoID : document.querySelector("#lbl_ID").innerHTML,
-      alumnoCodigo  : "",
-      alumnoFecha   : appConvertToFecha(document.querySelector("#txt_AlumnoFechaIng").value,""),
-      alumnoPadreID : alumno.padre.ID,
-      alumnoMadreID : alumno.madre.ID,
-      alumnoApoderaID : alumno.apodera.ID,
-      alumnoObservac : ""
+      ID : alumno.ID,
+      codigo  : "",
+      fecha   : appConvertToFecha(document.querySelector("#txt_AlumnoFechaIng").value,""),
+      padreID : (alumno.padre==null) ? (null):(alumno.padre.ID),
+      madreID : (alumno.madre==null) ? (null):(alumno.madre.ID),
+      apoderaID : (alumno.apodera==null) ? (null):(alumno.apodera.ID),
+      observac : ""
     }
   }
   return datos;

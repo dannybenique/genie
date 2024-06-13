@@ -6,7 +6,7 @@ async function appPagosGrid(){
   document.querySelector('#grdDatos').innerHTML = ('<tr><td colspan="9"><div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></td></tr>');
   try{
     const txtBuscar = document.querySelector("#txtBuscar").value;
-    const resp = await appAsynFetch({ TipoQuery: 'selPagos', buscar:txtBuscar },rutaSQL);
+    const resp = await appAsynFetch({ TipoQuery: 'pago_sel', buscar:txtBuscar },rutaSQL);
     fnPagosLlenarGrid(resp.pagos);
   } catch(err){
     console.error('Error al cargar datos:', err);
@@ -18,7 +18,7 @@ function fnPagosLlenarGrid(data){
     let fila = "";
     data.forEach((valor,key)=>{
       fila += '<tr style="'+((valor.bloqueo) ? ("color:#aaa;"):(""))+'">'+
-              '<td style="text-align:center;"><a href="javascript:appPagosBloquear('+(valor.ID)+');"><i '+((valor.bloqueo)?('class="fa fa-lock" style="color:#aaa;"'):('class="fa fa-unlock" style="color:#555;"'))+' title="Bloqueo"></i></a></td>'+
+              '<td style="text-align:center;"><a href="javascript:appPagosBloquear('+(valor.ID)+');"><i '+((valor.bloqueo)?('class="fa fa-lock" style="color:#aaa;"'):('class="fa fa-unlock" '))+' title="Bloqueo"></i></a></td>'+
               '<td>'+((valor.bloqueo)?(""):('<input type="checkbox" name="chk_Borrar" value="'+(valor.ID)+'"/>'))+'</td>'+
               '<td style="text-align:center;">'+(valor.codigo)+'</td>'+
               '<td style="text-align:center;">'+((valor.obliga)?('<i class="fa fa-exclamation" style='+((valor.bloqueo) ? ("color:#aaa;"):("color:#FF0084;"))+' title="Obligatorio"></i>'):(''))+'</td>'+
@@ -59,7 +59,7 @@ async function appPagoNuevo(){
   document.querySelector("#btnUpdate").style.display = 'none';
 
   try{
-    const resp = await appAsynFetch({ TipoQuery:'startPago' },rutaSQL);
+    const resp = await appAsynFetch({ TipoQuery:'pago_start' },rutaSQL);
     $(".form-group").removeClass("has-error");
     $("#txt_Fecha").datepicker("setDate",moment().format("DD/MM/YYYY"));
     document.querySelector("#txt_Importe").value = ("");
@@ -79,7 +79,7 @@ async function appPagoView(pagoID){
 
   try {
     const resp = await appAsynFetch({
-      TipoQuery : 'editPago',
+      TipoQuery : 'pago_edit',
       productoID : pagoID
     }, rutaSQL);
     
@@ -99,7 +99,7 @@ async function appPagoView(pagoID){
 async function appPagoInsert(){
   const datos = modGetDataToDataBase();
   if(datos!=""){
-    datos.TipoQuery = 'insPago';
+    datos.TipoQuery = 'pago_ins';
     try{
       const resp = await appAsynFetch(datos,rutaSQL);
       if(!resp.error) {appPagoCancel();}
@@ -114,7 +114,7 @@ async function appPagoInsert(){
 async function appPagoUpdate(){
   const datos = modGetDataToDataBase();
   if(datos!=""){
-    datos.TipoQuery = 'updPago';
+    datos.TipoQuery = 'pago_upd';
     try{
       const resp = await appAsynFetch(datos,rutaSQL);
       if(!resp.error) {appPagoCancel();}
@@ -132,7 +132,7 @@ async function appPagosBorrar(){
   if(arr.length>0){
     if(confirm("¿Esta seguro de continuar?")) {
       try{
-        const resp = await appAsynFetch({ TipoQuery:'delPagos', arr:arr },rutaSQL);
+        const resp = await appAsynFetch({ TipoQuery:'pago_del', pagos:arr },rutaSQL);
         if (!resp.error) { appPagoCancel(); }
       } catch(err){
         console.error('Error al cargar datos:', err);
@@ -143,36 +143,41 @@ async function appPagosBorrar(){
   }
 }
 
-async function appPagosCambiarImporteBatch(){
+async function appPagosCambiarImporteBatch(){ //cambiar el importe de todos loa elegidos
   let arr = Array.from(document.querySelectorAll('[name="chk_Borrar"]:checked')).map(function(obj){return obj.attributes[2].nodeValue});
   if(arr.length>0){
-    const res = appConvertToNumero(prompt("Ingrese cantidad para cambiar en bloque"));
-    if(res>0){
+    const result = parseFloat(prompt("Ingrese cantidad para cambiar en bloque"));
+    if(!isNaN(result)){
       try{
+        // const result = appConvertToNumero(res);
         const resp = await appAsynFetch({
-          TipoQuery : "pagos_cambioMontoBloque",
+          TipoQuery : "cambio_MontoEnBloque",
           buscar : document.querySelector("#txtBuscar").value,
-          importe : res
+          importe : result,
+          pagos : arr
         }, rutaSQL);
         if(!resp.error) {fnPagosLlenarGrid(resp.pagos); }
       } catch(err){
         console.error('Error al cargar datos:', err);
       }
+    } else{
+      alert("NO es un monto valido")
     }
   } else {
     alert("NO eligio ninguno");
   }
 }
 
-async function appPagosCambiarVcmtoBatch(){
+async function appPagosCambiarVcmtoBatch(){ //cambiar el año de vencimiento de todos loa elegidos
   let arr = Array.from(document.querySelectorAll('[name="chk_Borrar"]:checked')).map(function(obj){return obj.attributes[2].nodeValue});
   if(arr.length>0){
     const result = parseInt(prompt("Ingrese el año de vencimiento para cambiar en bloque"),10);
     if(!isNaN(result) && result>=2020){
       const resp = await appAsynFetch({
-        TipoQuery : "pagos_cambioVencimientoBloque",
+        TipoQuery : "cambio_VcmtoBloque",
         buscar : document.querySelector("#txtBuscar").value,
-        yyyy : result
+        yyyy : result,
+        pagos : arr
       }, rutaSQL);
       //respuesta
       if(!resp.error) { fnPagosLlenarGrid(resp.pagos); }
