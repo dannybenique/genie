@@ -73,6 +73,12 @@ function appAlumnosBotonViewAll(){ //mostrar inclusive los alumnos eliminados
 }
 
 function appAlumnosBotonCancel(){
+  alumno = {
+    ID : null,
+    padre : null,
+    madre : null,
+    apodera : null
+  };
   appAlumnosGrid();
   document.querySelector("#grid").style.display = 'block';
   document.querySelector("#edit").style.display = 'none';
@@ -185,12 +191,10 @@ async function appAlumnoView(personaID){
   document.querySelector("#btnInsert").style.display = 'none';
 
   try{
-    const resp = await appAsynFetch({
-      TipoQuery : 'alumno_view',
-      personaID : personaID,
-      fullQuery : 2
-    }, rutaSQL);
+    const resp = await appAsynFetch({ TipoQuery:'alumno_view', personaID:personaID }, rutaSQL);
+    
     //respuesta
+    alumno.ID = personaID;
     appAlumnoSetData(resp.tablaAlumno);  //pestaña Alumno
     appPersonaSetData(resp.tablaPers); //pestaña Personales
     
@@ -210,20 +214,9 @@ function appAlumnoSetData(data){
   document.querySelector('#txt_AlumnoFechaIng').value = (moment(data.fecha).format("DD/MM/YYYY"));
   document.querySelector("#txt_AlumnoCodigo").value = (data.codigo);
 
-  document.querySelector("#hid_alumnoFamiPadreID").value = data.pdID
-  document.querySelector("#lbl_alumnoFamiPadreNombre").innerHTML = data.pd_nombre
-  document.querySelector("#lbl_alumnoFamiPadreDNI").innerHTML = data.pd_nrodni
-  document.querySelector("#lbl_alumnoFamiPadreDireccion").innerHTML = data.pd_direccion
-
-  document.querySelector("#hid_alumnoFamiMadreID").value = data.mdID
-  document.querySelector("#lbl_alumnoFamiMadreNombre").innerHTML = data.md_nombre
-  document.querySelector("#lbl_alumnoFamiMadreDNI").innerHTML = data.md_nrodni
-  document.querySelector("#lbl_alumnoFamiMadreDireccion").innerHTML = data.md_direccion
-
-  document.querySelector("#hid_alumnoFamiApoderaID").value = data.apID
-  document.querySelector("#lbl_alumnoFamiApoderaNombre").innerHTML = data.ap_nombre
-  document.querySelector("#lbl_alumnoFamiApoderaDNI").innerHTML = data.ap_nrodni
-  document.querySelector("#lbl_alumnoFamiApoderaDireccion").innerHTML = data.ap_direccion
+  appFamiPadreSetData(alumno.padre=data.padre);
+  appFamiMadreSetData(alumno.madre=data.madre);
+  appFamiApoderaSetData(alumno.apodera=data.apodera);
 
   document.querySelector("#lbl_AlumnoSysFecha").innerHTML = (moment(data.sys_fecha).format("DD/MM/YYYY"));
   document.querySelector("#lbl_AlumnoSysUser").innerHTML = (data.usermod);
@@ -267,6 +260,9 @@ async function appAlumnoClear(){
 
 
 //familiar padre
+function appFamiPadreDel(){
+  appFamiPadreSetData(alumno.padre=null);
+}
 function appFamiPadreAdd(){
   Persona.openBuscar('verifica_Padre',rutaSQL,true,true,false);
   $('#btn_modPersInsert').off('click').on('click',handlerFamiPadreInsert_Click);
@@ -299,13 +295,17 @@ function handlerFamiPadreAddToForm_Click(e){
   $('#btn_modPersAddToForm').off('click');
 }
 function appFamiPadreSetData(data){
-  document.querySelector("#lbl_alumnoFamiPadreNombre").innerHTML = data.ap_paterno + " " + data.ap_materno + ", " + data.nombres;
-  document.querySelector("#lbl_alumnoFamiPadreDNI").innerHTML = "DNI: " + data.nroDUI
-  document.querySelector("#lbl_alumnoFamiPadreDireccion").innerHTML = "Direccion: " + data.direccion
+  document.querySelector("#lbl_alumnoFamiPadreNombre").innerHTML = (data!=null) ? (data.persona) : ("");
+  document.querySelector("#lbl_alumnoFamiPadreDNI").innerHTML = (data!=null) ? ("DNI: " + data.nroDUI) : ("");
+  document.querySelector("#lbl_alumnoFamiPadreDireccion").innerHTML = (data!=null) ? ("Direccion: " + data.direccion) : ("");
+  document.querySelector("#appFamiPadre_botonDel").innerHTML = (data!=null) ? ('<a href="javascript:appFamiPadreDel();" class="btn" style="margin:0;"><i class="fa fa-minus-circle"></i></a>') : ("");
 }
 
 
 //familiar madre
+function appFamiMadreDel(){
+  appFamiMadreSetData(alumno.madre=null);
+}
 function appFamiMadreAdd(){
   Persona.openBuscar('verifica_Madre',rutaSQL,true,true,false);
   $('#btn_modPersInsert').off('click').on('click',handlerFamiMadreInsert_Click);
@@ -338,12 +338,16 @@ function handlerFamiMadreAddToForm_Click(e){
   $('#btn_modPersAddToForm').off('click');
 }
 function appFamiMadreSetData(data){
-  document.querySelector("#lbl_alumnoFamiMadreNombre").innerHTML = data.ap_paterno + " " + data.ap_materno + ", " + data.nombres;
-  document.querySelector("#lbl_alumnoFamiMadreDNI").innerHTML = "DNI: " + data.nroDUI
-  document.querySelector("#lbl_alumnoFamiMadreDireccion").innerHTML = "Direccion: " + data.direccion
+  document.querySelector("#lbl_alumnoFamiMadreNombre").innerHTML = (data!=null) ? (data.persona) : ("");
+  document.querySelector("#lbl_alumnoFamiMadreDNI").innerHTML = (data!=null) ? ("DNI: " + data.nroDUI) : ("");
+  document.querySelector("#lbl_alumnoFamiMadreDireccion").innerHTML = (data!=null) ? ("Direccion: " + data.direccion) : ("");
+  document.querySelector("#appFamiMadre_botonDel").innerHTML = (data!=null) ? ('<a href="javascript:appFamiMadreDel();" class="btn" style="margin:0;"><i class="fa fa-minus-circle"></i></a>') : ("");
 }
 
 //familiar apoderado
+function appFamiApoderaDel(){
+  appFamiApoderaSetData(alumno.apodera=null);
+}
 function appFamiApoderaAdd(){
   Persona.openBuscar('verifica_Apodera',rutaSQL,true,true,false);
   $('#btn_modPersInsert').off('click').on('click',handlerFamiApoderaInsert_Click);
@@ -376,9 +380,10 @@ function handlerFamiApoderaAddToForm_Click(e){
   $('#btn_modPersAddToForm').off('click');
 }
 function appFamiApoderaSetData(data){
-  document.querySelector("#lbl_alumnoFamiApoderaNombre").innerHTML = data.ap_paterno + " " + data.ap_materno + ", " + data.nombres;
-  document.querySelector("#lbl_alumnoFamiApoderaDNI").innerHTML = "DNI: " + data.nroDUI
-  document.querySelector("#lbl_alumnoFamiApoderaDireccion").innerHTML = "Direccion: " + data.direccion
+  document.querySelector("#lbl_alumnoFamiApoderaNombre").innerHTML = (data!=null) ? (data.persona) : ("");
+  document.querySelector("#lbl_alumnoFamiApoderaDNI").innerHTML = (data!=null) ? ("DNI: " + data.nroDUI) : ("");
+  document.querySelector("#lbl_alumnoFamiApoderaDireccion").innerHTML = (data!=null) ? ("Direccion: " + data.direccion) : ("");
+  document.querySelector("#appFamiApodera_botonDel").innerHTML = (data!=null) ? ('<a href="javascript:appFamiApoderaDel();" class="btn" style="margin:0;"><i class="fa fa-minus-circle"></i></a>') : ("");
 }
 
 

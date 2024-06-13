@@ -42,8 +42,8 @@
                   <th style="width:80px;">Codigo</th>
                   <th style="width:90px;text-align:center;" title="Fecha de Ingreso">Ingreso</th>
                   <th style="width:110px;" title="Documento Unico de Identidad = DNI">DNI</th>
-                  <th style="">Alumnos <i class="fa fa-sort"></i></th>
-                  <th style="">Direccion</th>
+                  <th>Alumnos <i class="fa fa-sort"></i></th>
+                  <th>Direccion</th>
                 </tr>
               </thead>
               <tbody id="grdDatos"></tbody>
@@ -115,16 +115,18 @@
                     <table style="width:100%;">
                       <tr><td style="width:90px;" class="no-padding">
                             <div class="pull-left" style="width:100%;">
-                              <a href="javascript:appFamiPadreAdd();" class="btn btn-app" style="margin:0;">
-                                <i class="fa fa-edit"></i> Padre
-                              </a>
-                            </div></td>
+                              <a href="javascript:appFamiPadreAdd();" class="btn btn-app" style="margin:0;"><i class="fa fa-edit"></i> Padre</a>
+                            </div>
+                        </td>
                         <td>
                           <div style="line-height:1;">
                             <a href="javascript:appLinkFamiliar(1);" id="lbl_alumnoFamiPadreNombre" style="font-weight:bold;font-size:15px;"></a><br>
                             <span id="lbl_alumnoFamiPadreDNI" style="font-size:11px;"></span><br/>
                             <span id="lbl_alumnoFamiPadreDireccion" style="font-size:11px;"></span>
                           </div>
+                        </td>
+                        <td style="width:30px;">
+                          <div id="appFamiPadre_botonDel" class="pull-left" style="width:100%;"></div>
                         </td>
                       </tr>
                     </table>
@@ -133,16 +135,18 @@
                     <table style="width:100%;">
                       <tr><td style="width:90px;" class="no-padding">
                             <div class="pull-left" style="width:100%;">
-                              <a href="javascript:appFamiMadreAdd();" class="btn btn-app" style="margin:0;">
-                                <i class="fa fa-edit"></i> Madre
-                              </a>
-                            </div></td>
+                              <a href="javascript:appFamiMadreAdd();" class="btn btn-app" style="margin:0;"><i class="fa fa-edit"></i> Madre</a>
+                            </div>
+                        </td>
                         <td>
                           <div style="line-height:1;">
                             <a href="javascript:appLinkFamiliar(2);" id="lbl_alumnoFamiMadreNombre" style="font-weight:bold;font-size:15px;"></a><br>
                             <span id="lbl_alumnoFamiMadreDNI" style="font-size:11px;"></span><br/>
                             <span id="lbl_alumnoFamiMadreDireccion" style="font-size:11px;"></span>
                           </div>
+                        </td>
+                        <td style="width:30px;">
+                          <div id="appFamiMadre_botonDel" class="pull-left" style="width:100%;"></div>
                         </td>
                       </tr>
                     </table>
@@ -154,13 +158,17 @@
                               <a href="javascript:appFamiApoderaAdd();" class="btn btn-app" style="margin:0;">
                                 <i class="fa fa-edit"></i> Apoderado
                               </a>
-                            </div></td>
+                            </div>
+                        </td>
                         <td>
                           <div style="line-height:1;">
                             <a href="javascript:appLinkFamiliar(3);" id="lbl_alumnoFamiApoderaNombre" style="font-weight:bold;font-size:15px;"></a><br>
                             <span id="lbl_alumnoFamiApoderaDNI" style="font-size:11px;"></span><br/>
                             <span id="lbl_alumnoFamiApoderaDireccion" style="font-size:11px;"></span>
                           </div>
+                        </td>
+                        <td style="width:30px;">
+                          <div id="appFamiApodera_botonDel" class="pull-left" style="width:100%;"></div>
                         </td>
                       </tr>
                     </table>

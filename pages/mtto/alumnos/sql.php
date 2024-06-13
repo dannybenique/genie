@@ -16,33 +16,24 @@
     $web = $GLOBALS["web"]; //web-config
     
     //obtener datos personales
-    $sql = "select a.*,fn_get_persona(pd.tipo_persona::numeric, pd.ap_paterno::text, pd.ap_materno::text, pd.nombres::text) AS pd_nombre,pd.id as pd_id,pd.nro_dui as pd_nrodni,pd.direccion as pd_direccion,fn_get_persona(md.tipo_persona::numeric, md.ap_paterno::text, md.ap_materno::text, md.nombres::text) AS md_nombre,md.id as md_id,md.nro_dui as md_nrodni,md.direccion as md_direccion,fn_get_persona(ap.tipo_persona::numeric, ap.ap_paterno::text, ap.ap_materno::text, ap.nombres::text) AS ap_nombre,ap.id as ap_id,ap.nro_dui as ap_nrodni,ap.direccion as ap_direccion,e.nombrecorto as usermod from app_alumnos a left join app_empleados e on e.id=a.sys_user left join personas pd on a.id_padre=pd.id left join personas md on a.id_madre=md.id left join personas ap on a.id_apoderado=ap.id where a.id=:alumnoID and a.id_colegio=:colegioID";
+    $sql = "select a.*,e.nombrecorto as usermod from app_alumnos a left join app_empleados e on e.id=a.sys_user where a.id=:alumnoID and a.id_colegio=:colegioID";
     $params = [":alumnoID"=>$personaID,"colegioID"=>$web->colegioID];
     $qry = $db->query_all($sql,$params);
     
     if ($qry) {
         $rs = reset($qry);
         $tabla = array(
-          "ID" => ($rs["id"]),
-          "colegioID" => ($rs["id_colegio"]),
+          "ID" => $rs["id"],
+          "colegioID" => $rs["id_colegio"],
           "fecha" => $rs["fecha"],
           "codigo" => $rs["codigo"],
-          "pdID" => $rs["pd_id"],
-          "pd_nombre" => $rs["pd_nombre"],
-          "pd_nrodni" => $rs["pd_nrodni"],
-          "pd_direccion" => $rs["pd_direccion"],
-          "mdID" => $rs["md_id"],
-          "md_nombre" => $rs["md_nombre"],
-          "md_nrodni" => $rs["md_nrodni"],
-          "md_direccion" => $rs["md_direccion"],
-          "apID" => $rs["ap_id"],
-          "ap_nombre" => $rs["ap_nombre"],
-          "ap_nrodni" => $rs["ap_nrodni"],
-          "ap_direccion" => $rs["ap_direccion"],
-          "estado" => ($rs["estado"]),
-          "usermod" => ($rs["usermod"]),
-          "sysuser" => ($rs["sys_user"]),
-          "sysfecha" => ($rs["sys_fecha"])
+          "padre" => ($rs["id_padre"]!=null) ? ($fn->getViewPersona($rs["id_padre"])):(null),
+          "madre" => ($rs["id_madre"]!=null) ? ($fn->getViewPersona($rs["id_madre"])):(null),
+          "apodera" => ($rs["id_apoderado"]!=null) ? ($fn->getViewPersona($rs["id_apoderado"])):(null),
+          "estado" => $rs["estado"],
+          "usermod" => $rs["usermod"],
+          "sysuser" => $rs["sys_user"],
+          "sysfecha" => $rs["sys_fecha"]
         );
     }
     return $tabla; 
@@ -181,26 +172,10 @@
       $db->enviarRespuesta($rpta);
       break;
     case "alumno_view":
-      switch($data->fullQuery){
-        case 0: //datos personales
-          $rpta = array(
-            'tablaAlumno' => getViewAlumno($data->personaID),
-            'tablaPers' => $fc->getViewPersona($data->personaID));
-          break;
-        case 1: //datos personales + laborales
-          $rpta = array(
-            'tablaAlumno' => getViewAlumno($data->personaID),
-            'tablaPers' => $fn->getViewPersona($data->personaID),
-            'tablaLabo' => $fn->getAllLaborales($data->personaID));
-          break;
-        case 2: //datos personales + laborales + conyuge
-          $rpta = array(
-            'tablaAlumno' => getViewAlumno($data->personaID),
-            'tablaPers' => $fn->getViewPersona($data->personaID),
-            'tablaLabo' => $fn->getAllLaborales($data->personaID),
-            'tablaCony' => $fn->getViewConyuge($data->personaID));
-          break;
-      }
+      $rpta = array(
+        'tablaAlumno' => getViewAlumno($data->personaID),
+        'tablaPers' => $fn->getViewPersona($data->personaID)
+      );
       $db->enviarRespuesta($rpta);
       break;
     case "alumno_start":
