@@ -6,24 +6,10 @@ var matriculas = null;
 //=========================funciones para Personas============================
 async function appPagosReset(){
   $(".form-group").removeClass("has-error");
-  document.querySelector("#lbl_matriAtraso").style.color = "#777";
-  document.querySelector('#lbl_matriAtraso').innerHTML = ("");
-  document.querySelector('#lbl_matriAlumno').innerHTML = ("");
-  document.querySelector('#lbl_matriNroDUI').innerHTML = ("");
-  document.querySelector('#lbl_matriFecha').innerHTML = ("");
-  document.querySelector('#lbl_matriCodigo').innerHTML = ("");
-  document.querySelector('#lbl_matriYYYY').innerHTML = ("");
-  document.querySelector('#lbl_matriNivel').innerHTML = ("");
-  document.querySelector('#lbl_matriGrado').innerHTML = ("");
-  document.querySelector('#lbl_matriSeccion').innerHTML = ("");
-  document.querySelector('#lbl_matriSaldo').innerHTML = ("");
-
-  document.querySelector('#txt_DeudaFecha').value = ("");
-  document.querySelector('#txt_DeudaTotalNeto').value = ("");
-  document.querySelector('#txt_DeudaImporte').value = ("");
-  document.querySelector('#cbo_DeudaMedioPago').innerHTML = ("");
-  document.querySelector("#btn_PAGAR").style.display = 'none';
-  document.querySelector("#btn_NEW").style.display = 'none';
+  $("#lbl_matriAtraso").css('color',"#777");
+  $('#lbl_matriAtraso, #lbl_matriAlumno, #lbl_matriNroDUI, #lbl_matriFecha, #lbl_matriCodigo, #lbl_matriYYYY, #lbl_matriNivel, #lbl_matriGrado, #lbl_matriSeccion, #lbl_matriSaldo, #cbo_DeudaMedioPago').text("");
+  $('#txt_DeudaFecha, #txt_DeudaTotalNeto, #txt_DeudaImporte').val("");
+  $("#btn_PAGAR, #btn_NEW").hide();
 
   pago = null;
   matriculas = null;
@@ -33,9 +19,8 @@ async function appPagosReset(){
     
     menu = JSON.parse(resp.menu);
     if(menu.caja.submenu.pagos.cmdInsert){
-      document.querySelector("#btn_NEW").style.display = 'inline';
-      document.querySelector("#btn_PAGAR").style.display = 'inline';  
-      document.querySelector("#btn_PAGAR").disabled = true;
+      $("#btn_NEW, #btn_PAGAR").show();
+      $("#btn_PAGAR").prop("disabled", true);
     } 
   } catch(err){
     console.error('Error al cargar datos:', err);
@@ -43,30 +28,30 @@ async function appPagosReset(){
 }
 
 function appPagosBotonNuevo(){
-  document.querySelector("#modalMatric_Titulo").innerHTML = ("Verificar Matricula por Doc. Identidad");
-  document.querySelector("#modalMatric_Grid").style.display = 'none';
-  document.querySelector("#modalMatric_Wait").innerHTML = ("");
-  document.querySelector("#modalMatric_TxtBuscar").value = ("");
-  $('#modalMatric').modal({keyboard:true});
-  $('#modalMatric').on('shown.bs.modal', ()=> { document.querySelector("#modalMatric_TxtBuscar").focus(); });
+  $("#modalMatric_Titulo").text("Verificar Matricula por Doc. Identidad");
+  $("#modalMatric_Grid").hide();
+  $("#modalMatric_Wait").text("");
+  $("#modalMatric_TxtBuscar").val("");
+  $('#modalMatric').modal({keyboard:true}).on('shown.bs.modal', () => { $("#modalMatric_TxtBuscar").focus(); });
 }
 
 async function appPagosBotonPagar(){
   $(".form-group").removeClass("has-error");
-  const importe = appConvertToNumero(document.querySelector("#txt_DeudaImporte").value);
+  const importe = appConvertToNumero($("#txt_DeudaImporte").val());
   if(!isNaN(importe)){
     if(importe>0){
       if(confirm("¿Esta seguro de continuar con el PAGO?")){
         const datos = {
-          TipoQuery : 'insPago',
+          TipoQuery : 'pago_ins',
           alumnoID : pago.alumnoID,
           matriculaID : pago.matriculaID,
           productoID : pago.productoID,
-          medioPagoID : document.querySelector("#cbo_DeudaMedioPago").value*1,
+          medioPagoID : $("#cbo_DeudaMedioPago").val()*1,
           importe : importe
         }
         // console.log(datos);
         const resp = await appAsynFetch(datos,rutaSQL);
+
         if (!resp.error) { 
           if(confirm("¿Desea Imprimir el pago?")){
             $("#modalPrint").modal("show");
@@ -88,20 +73,20 @@ async function appPagosBotonPagar(){
 
 function modalMatric_keyBuscar(e){
   if(e.keyCode === 13) {
-    if(document.querySelector("#modalMatric_TxtBuscar").value.trim().length>=4){ 
+    if($("#modalMatric_TxtBuscar").val().trim().length>=4){ 
       modalMatricGrid();
     } else { 
-      document.querySelector("#modalMatric_Grid").style.display = 'none';
-      document.querySelector('#modalMatric_Wait').innerHTML = ('<div class="callout callout-warning"><h4>Demasiado Corto</h4><p>El NRO de documento de Identidad debe tener como minimo <b>4 numeros</b></p></div>'); 
+      $("#modalMatric_Grid").hide();
+      $('#modalMatric_Wait').html('<div class="callout callout-warning"><h4>Demasiado Corto</h4><p>El NRO de documento de Identidad debe tener como minimo <b>4 numeros</b></p></div>'); 
     }
   }
 }
 
 async function modalMatricGrid(){
-  document.querySelector('#modalMatric_Wait').innerHTML = "";
-  document.querySelector("#modalMatric_Grid").style.display = 'block';
-  document.querySelector('#modalMatric_GridBody').innerHTML = ('<tr><td colspan="5"><div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></div></td></tr>');
-  const txtBuscar = document.querySelector("#modalMatric_TxtBuscar").value;
+  $('#modalMatric_Wait').html("");
+  $("#modalMatric_Grid").show();
+  $('#modalMatric_GridBody').html('<tr><td colspan="5"><div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></div></td></tr>');
+  const txtBuscar = $("#modalMatric_TxtBuscar").val();
   try{
     const resp = await appAsynFetch({TipoQuery:'matricula_select', buscar:txtBuscar},rutaSQL);
     //respuesta
@@ -117,9 +102,9 @@ async function modalMatricGrid(){
                 '<td style="text-align:right;">'+(appFormatMoney(valor.saldo,2))+'</td>'+
                 '</tr>';
       });
-      document.querySelector('#modalMatric_GridBody').innerHTML = (fila);
+      $('#modalMatric_GridBody').html(fila);
     }else{
-      document.querySelector('#modalMatric_GridBody').innerHTML = ('<tr><td colspan="5" style="text-align:center;color:red;">Sin Resultados para '+txtBuscar+'</td></tr>');
+      $('#modalMatric_GridBody').html('<tr><td colspan="5" style="text-align:center;color:red;">Sin Resultados para '+txtBuscar+'</td></tr>');
     }
   } catch(err){
     console.error('Error al cargar datos:', err);
@@ -135,11 +120,10 @@ async function appCreditoPagoView(matriculaID){
       matriculaID : matriculaID
     },rutaSQL);
 
-    appCredi_SetData(matriculas.find(matricula => matricula.ID===matriculaID));
+    appCredi_SetData(matriculas.find(e => e.ID===matriculaID));
     appLlenarDataEnComboBox(resp.comboTipoPago,"#cbo_DeudaMedioPago",0); //medios de pago
     $('#txt_DeudaFecha').datepicker("setDate",moment(resp.fecha).format("DD/MM/YYYY"));
-    document.querySelector("#btn_PAGAR").style.display = 'inline';
-    document.querySelector("#btn_PAGAR").disabled = false;
+    $("#btn_PAGAR").show().prop("disabled", false);
   } catch(err){
     console.error('Error al cargar datos:', err);
   }
@@ -147,25 +131,25 @@ async function appCreditoPagoView(matriculaID){
 
 function appCredi_SetData(data){
   document.querySelector("#txt_DeudaFecha").disabled = (data.rolUser==data.rolROOT) ? (false):(true);
-  document.querySelector("#lbl_matriAtraso").style.color = (data.atraso>0)?("#D00"):("#777");
-  document.querySelector('#lbl_matriAtraso').innerHTML = (data.atraso)+" dia"+((data.atraso>1)?"s":"");
+  $("#lbl_matriAtraso").css('color',(data.atraso>0)?("#D00"):("#777")).text((data.atraso)+" dia"+((data.atraso>1)?"s":""));
+  
+  $('#lbl_matriAlumno').html(data.alumno);
+  $('#lbl_matriNroDUI').html(data.nro_dui);
+  $('#lbl_matriFecha').html(moment(data.fecha_matricula).format("DD/MM/YYYY"));
+  $('#lbl_matriCodigo').html(data.codigo);
+  $('#lbl_matriYYYY').html(data.yyyy);
+  $('#lbl_matriNivel').html(data.nivel);
+  $('#lbl_matriGrado').html(data.grado);
+  $('#lbl_matriSeccion').html(data.seccion);
+  $('#lbl_matriSaldo').html(appFormatMoney(data.saldo,2));
+  
   pago = {
     alumnoID : data.alumnoID,
     matriculaID : data.ID,
     productoID : data.productoID
   }
-  console.log(pago);
-  document.querySelector('#lbl_matriAlumno').innerHTML = (data.alumno);
-  document.querySelector('#lbl_matriNroDUI').innerHTML = (data.nro_dui);
-  document.querySelector('#lbl_matriFecha').innerHTML = (moment(data.fecha_matricula).format("DD/MM/YYYY"));
-  document.querySelector('#lbl_matriCodigo').innerHTML = (data.codigo);
-  document.querySelector('#lbl_matriYYYY').innerHTML = (data.yyyy);
-  document.querySelector('#lbl_matriNivel').innerHTML = (data.nivel);
-  document.querySelector('#lbl_matriGrado').innerHTML = (data.grado);
-  document.querySelector('#lbl_matriSeccion').innerHTML = (data.seccion);
-  document.querySelector('#lbl_matriSaldo').innerHTML = (appFormatMoney(data.saldo,2));
-
-  let total = (data.atraso>0) ? (data.saldo_det):(0);
-  document.querySelector('#txt_DeudaTotalNeto').value = (appFormatMoney(total,2));
-  document.querySelector('#txt_DeudaImporte').value = (appFormatMoney(total,2));
+  // console.log(pago);
+  const total = (data.atraso>0) ? (data.saldo_det):(0);
+  $('#txt_DeudaTotalNeto').val(appFormatMoney(total,2));
+  $('#txt_DeudaImporte').val(appFormatMoney(total,2));
 }

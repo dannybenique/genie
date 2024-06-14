@@ -57,7 +57,7 @@
         "fecha" => $fn->getFechaActualDB());
       $db->enviarRespuesta($rpta);
       break;
-    case "insPago":
+    case "pago_ins":
       $estado = 1;
       $tipo_operID = 124; //credito
       $colegioID = $web->colegioID;
@@ -76,7 +76,7 @@
             $importe -= ($pg_capital = pago_Item(($rs["saldo"]),$importe));
             $pg_tot_capital += $pg_capital;
             $paramx = [":saldo"=>$pg_capital,":matriculaID"=>$data->matriculaID,":item"=>$rs["item"]];
-            $qrx = $db->query_all("update app_matriculas_det set saldo=(saldo-:saldo) where id_matricula=:matriculaID and item=:item;","paramx");
+            $qrx = $db->query_all("update app_matriculas_det set saldo=(saldo-:saldo) where id_matricula=:matriculaID and item=:item;",$paramx);
             $xx = reset($qrx);
           } else { break; }
         }
@@ -90,8 +90,7 @@
 
       /******agregamos app_movim********/
       /********************************/
-      $qry = $db->query_all("select right('0000000'||cast(coalesce(max(right(codigo,7)::integer)+1,1) as text),7) as code from app_movim where id_cajera=".$userID);
-      $codigo = $userID."-".reset($qry)["code"];
+      $codigo = $userID."-".$fn->getValorCampo("select right('0000000'||cast(coalesce(max(right(codigo,7)::integer)+1,1) as text),7) as code from app_movim where id_cajera=".$userID, "code");
       $sql = "insert into app_movim(id_colegio,id_matricula,id_tipo_oper,id_tipo_pago,id_tipo_mov,id_cajera,fecha,codigo,total,estado,sys_ip,sys_user,sys_fecha,observac) values(:colegioID,:matriculaID,:operID,:pagoID,:movID,:cajeraID,now(),:codigo,:total,:estado,:sysIP,:sysUSER,now(),:observac) returning id;";
       $params = [
         ":colegioID"=>$colegioID,

@@ -3,35 +3,37 @@
   include_once("../../../includes/web_config.php");
   $movimID = $_REQUEST["movimID"];
   //bancos
-  $qry = $db->query_all("select * from bn_bancos where id=".$web->coopacID);
+  $qry = $db->query_all("select * from app_colegios where id=".$web->colegioID);
   $rs = reset($qry);
-  $banco_nombre = strtoupper($rs["nombre"]);
-  $banco_ruc = $rs["ruc"];
+  $colegio_nombre = strtoupper($rs["nombre"]);
+  $colegio_ruc = $rs["ruc"];
 
+  //cabecera
   $params = [":movimID"=>$movimID];
-  //cabecera movim
-  $sql = "select m.*,b.nombre as agencia,pr.nombre as producto,t.nombre as tipo_oper,o.nombre as moneda,to_char(fecha,'DD/MM/YYYY HH24:MI:SS') as fechamov,fn_get_persona(p.tipo_persona, p.ap_paterno, p.ap_materno, p.nombres) AS socio,p.nro_dui from bn_movim m join bn_bancos b on m.id_agencia=b.id join bn_productos pr on m.id_producto=pr.id join sis_tipos t on m.id_tipo_oper=t.id join personas p on m.id_socio=p.id join sis_tipos o on m.id_moneda=o.id where m.id=:movimID;";
+  $sql = "select m.*,mv.nombre as tipomov,pg.nombre as tipopago,to_char(fecha,'DD/MM/YYYY HH24:MI:SS') as fechamov,fn_get_persona(p.tipo_persona, p.ap_paterno, p.ap_materno, p.nombres) AS alumno,p.nro_dui,upper(fn_get_letras(total)) as importe_letras1,upper(' con '||round(total-trunc(total),2)) as importe_letras2 from app_movim m join app_matriculas mt on m.id_matricula=mt.id join sis_mov mv on m.id_tipo_mov=mv.id join sis_tipos pg on m.id_tipo_pago=pg.id join personas p on mt.id_alumno=p.id where m.id=:movimID;";
   $qry = $db->query_all($sql,$params);
   if($qry) {
     $rs = reset($qry); 
-    $mov_agencia = strtoupper($rs["agencia"]);
-    $mov_tipo_oper = strtoupper($rs["tipo_oper"]);
-    $mov_moneda = strtoupper($rs["moneda"]);
-    $mov_producto =$rs["producto"];
-    $mov_codigo = $rs["codigo"];
+    $mov_tipomov = strtoupper($rs["tipomov"]);
+    $mov_tipopago = strtoupper($rs["tipopago"]);
+    $mov_voucher = $rs["codigo"];
     $mov_fecha = $rs["fechamov"];
-    $mov_socio = $rs["socio"];
+    $mov_alumno = $rs["alumno"];
     $mov_DNI = $rs["nro_dui"];
+    $mov_total = $rs["total"];
+    $mov_importeletras = trim($rs["importe_letras1"]).$rs["importe_letras2"];
   }
 
-  //detalle movim
+  //detalle
   $detalle = "";
-  $sql = "select d.*,mv.nombre as tipo_mov from bn_movim_det d join sis_mov mv on d.id_tipo_mov=mv.id where id_movim=:movimID order by item";
+  $importeLetras = "";
+  $sql = "select d.*,p.nombre as producto from app_movim_det d join app_productos p on d.id_producto=p.id where id_movim=:movimID order by item";
   $qry = $db->query_all($sql,$params);
   if($qry) {
     foreach($qry as $rs){
-      $detalle .= '<tr><td style="text-align:left;">'.$rs["tipo_mov"].'</td><td style="text-align:right;">'.number_format($rs["importe"],2,".",",").'</td></tr>';
+      $detalle .= '<tr><td style="text-align:left;">'.$rs["producto"].'</td><td style="text-align:right;">'.number_format($rs["importe"],2,".",",").'</td></tr>';
     }
+    $detalle .= '<tr><td style="text-align:right;vertical-align:bottom;">TOTAL&nbsp;&nbsp;</td><td style="text-align:right;vertical-align:bottom;height:20px;border-bottom:double;">'.number_format($mov_total,2,".",",").'</td></tr>';
   }
   
   //documento html
@@ -52,31 +54,31 @@
       <div class="clearfix">
         <div>
           <div style="font-size:10px;text-align:center;">
-            <b><u>'.$banco_nombre.'</u></b><br>
-            <span style="font-size:9px;">RUC: '.$banco_ruc.'</span>
+            <b><u>'.$colegio_nombre.'</u></b><br>
+            <span style="font-size:9px;">RUC: '.$colegio_ruc.'</span>
           </div>
           <br><br>
           <table border="0" cellspacing="0" cellpadding="0" style="width:100%;font-size:7px;">
             <tbody>
               <tr>
-                <td style="text-align:left;width:40px;">Agencia</td>
-                <td style="text-align:left;">'.$mov_agencia.'</td>
-              </tr>
-              <tr>
-                <td style="text-align:left;">Tipo Oper.</td>
-                <td style="text-align:left;">'.$mov_tipo_oper.'&nbsp;&nbsp;/&nbsp;&nbsp;'.$mov_moneda.'</td>
+                <td style="text-align:left;">Operacion</td>
+                <td style="text-align:left;">'.$mov_tipomov.'</td>
               </tr>
               <tr>
                 <td style="text-align:left;">Codigo</td>
-                <td style="text-align:left;">'.$mov_codigo.'</td>
+                <td style="text-align:left;">'.$mov_voucher.'</td>
               </tr>
               <tr>
                 <td style="text-align:left;">Fecha</td>
                 <td style="text-align:left;">'.$mov_fecha.'</td>
               </tr>
               <tr>
-                <td style="text-align:left;vertical-align:top;">Socio</td>
-                <td style="text-align:left;">'.$mov_socio.' / '.$mov_DNI.'</td>
+                <td style="text-align:left;vertical-align:top;">Alumno</td>
+                <td style="text-align:left;">'.$mov_alumno.'</td>
+              </tr>
+              <tr>
+                <td style="text-align:left;vertical-align:top;">DNI</td>
+                <td style="text-align:left;">'.$mov_DNI.'</td>
               </tr>
             </tbody>
           </table>
@@ -89,7 +91,8 @@
               </tr>
               '.$detalle.'
             </tbody>
-          </table>
+          </table><br>
+          <span style="font-size:7px;">SON:... '.$mov_importeletras.' SOLES</span>
         </div>
       </div>
     </main>
@@ -101,6 +104,7 @@
 
   include_once("../../../libs/pdf.php/vendor/autoload.php");
   $mpdf = new \Mpdf\Mpdf([
+    'tempDir' => sys_get_temp_dir(),
     'format' => [55,100],
     'margin_left' => 1,
     'margin_right' => 1,
