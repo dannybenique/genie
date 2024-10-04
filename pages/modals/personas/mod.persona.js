@@ -58,9 +58,9 @@
     },
     datosToDatabase(){
       const datosPers = {
-        TipoQuery : ((Persona.personaID==0)?("insPersona"):("updPersona")),
-        commandSQL : Persona.commandSQL,
-        ID : Persona.personaID,
+        TipoQuery : ((this.personaID==0)?("insPersona"):("updPersona")),
+        commandSQL : this.commandSQL,
+        ID : this.personaID,
         persPermisoID : $('#hid_modPersPermisoID').val(),
         persTipoPersona : $("#cbo_modPersTipoPers").val(),
         persNombres : $("#txt_modPersNombres").val().trim().toUpperCase(),
@@ -235,7 +235,7 @@
         // Configuración inicial
         $("#txt_modPersNombres").attr('placeholder', 'NOMBRES');
         $("#div_modPersApePaterno, #div_modPersApeMaterno, #div_modPersGinstruc, #div_modPersSexoEcivil").show();
-        $("#cbo_modPersDocumento").removeAttr('disabled');
+        $("#cbo_modPersDocumento").prop("disabled", false);
         
         $("#modPersFormGrid, #btn_modPersUpdate").hide();
         $("#modPersFormEdit, #btn_modPersInsert").show();
@@ -287,9 +287,8 @@
     async apidni(){
       try {
         const nroDoc = $("#txt_modPersDocumento").val();
-        const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImRhbm55YmVuaXF1ZUBnbWFpbC5jb20ifQ.1iMQ1t-FQywEPw1BiFGUYtkvjlpLLY556RpOcqGaUEY';
-        const temp = await fetch('https://dniruc.apisperu.com/api/v1/dni/'+nroDoc+'?token='+token);
-        const rpta = await temp.json();
+        const resp = await fetch("https://dniruc.apisperu.com/api/v1/"+(((nroDoc.length==8)?("dni/"):((nroDoc.length==11)?("ruc/"):("")))+(nroDoc))+"?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImRhbm55YmVuaXF1ZUBtc24uY29tIn0.ts3qFRsLtLxqnoOMvwYEeOu470tyTUGWQbsuH4ZTC7I");
+        const rpta = await resp.json();
         
         console.log(rpta);
         if(rpta.success){
