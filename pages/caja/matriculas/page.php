@@ -1,4 +1,4 @@
-<?php if(isset($menu->caja->submenu->desembolsos)){?>
+<?php if(isset($menu->caja->submenu->matriculas)){?>
 <!-- bootstrap datepicker -->
 <link rel="stylesheet" href="libs/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
 <script src="libs/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
@@ -245,7 +245,7 @@
   </div>
 </section>
 
-<script src="pages/caja/desembolsos/script.js"></script>
+<script src="pages/caja/matriculas/script.js"></script>
 <script>
   $(document).ready(function(){
     appDesembReset();

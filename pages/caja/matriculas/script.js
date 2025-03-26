@@ -1,4 +1,4 @@
-const rutaSQL = "pages/caja/desembolsos/sql.php";
+const rutaSQL = "pages/caja/matriculas/sql.php";
 var menu = "";
 var objPagos = null;
 var objAddPagos = null;
@@ -15,8 +15,8 @@ async function appDesembGrid(){
       buscar: txtBuscar
     };
     const resp = await appAsynFetch(datos,rutaSQL);
-    const disabledDelete = (menu.caja.submenu.desembolsos.cmdDelete===1) ? (""):("disabled");
-    document.querySelector("#chk_All").disabled = (menu.caja.submenu.desembolsos.cmdDelete===1) ? false : true;
+    const disabledDelete = (menu.caja.submenu.matriculas.cmdDelete===1) ? (""):("disabled");
+    document.querySelector("#chk_All").disabled = (menu.caja.submenu.matriculas.cmdDelete===1) ? false : true;
     if(resp.tabla.length>0){
       let fila = "";
       resp.tabla.forEach((valor,key)=>{
@@ -52,7 +52,7 @@ async function appDesembReset(){
     const resp = await appAsynFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php");
   
     menu = JSON.parse(resp.menu);
-    document.querySelector("#btn_DEL").style.display = (menu.caja.submenu.desembolsos.cmdDelete==1)?('inline'):('none');
+    document.querySelector("#btn_DEL").style.display = (menu.caja.submenu.matriculas.cmdDelete==1)?('inline'):('none');
     document.querySelector("#div_PersAuditoria").style.display = ((resp.rolID==101)?('block'):('none'));
     appDesembGrid();
   } catch(err){
@@ -142,7 +142,7 @@ async function fn_EjecutarDesembolso(){
     if (!resp.error) { 
       if(confirm("¿Desea Imprimir el desembolso?")){
         $("#modalPrint").modal("show");
-        let urlServer = appUrlServer()+"pages/caja/desembolsos/rpt.voucher.php?movimID="+resp.movimID;
+        let urlServer = appUrlServer()+"pages/caja/matriculas/rpt.voucher.php?movimID="+resp.movimID;
         $("#contenedorFrame").html('<object id="objPDF" type="text/html" data="'+urlServer+'" width="100%" height="500px"></object>');
       }
       appDesembBotonCancel(); 
@@ -181,7 +181,7 @@ async function appDesembView(matriculaID){
       matriculaID : matriculaID
     },rutaSQL);
       
-    document.querySelector("#btnInsert").style.display = (menu.caja.submenu.desembolsos.cmdUpdate==1)?('inline'):('none');
+    document.querySelector("#btnInsert").style.display = (menu.caja.submenu.matriculas.cmdUpdate==1)?('inline'):('none');
     document.querySelector('#grid').style.display = 'none';
     document.querySelector('#edit').style.display = 'block';
 
