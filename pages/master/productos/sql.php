@@ -11,7 +11,7 @@
   $rpta = 0;
 
   switch ($data->TipoQuery) {
-    case "selProductos":
+    case "producto_sel":
       $tabla = array();
       $buscar = strtoupper($data->buscar);
       $sql = "select * from app_productos where estado=1 and nombre LIKE :buscar order by orden;";
@@ -34,7 +34,7 @@
       $rpta = array("productos"=>$tabla);
       $db->enviarRespuesta($rpta);
       break;
-    case "editProducto":
+    case "producto_edit":
       //cargar datos de la persona
       $qry = $db->query_all("select * from app_productos where id=".$data->productoID);
       if ($qry) {
@@ -43,15 +43,17 @@
           "ID" => $rs["id"],
           "codigo" => $rs["codigo"],
           "abrev" => ($rs["abrevia"]),
-          "nombre" => ($rs["nombre"])
+          "nombre" => ($rs["nombre"]),
+          "orden" => ($rs["orden"]),
+          "totalregs" => ($fn->getValorCampo("select count(*) as cuenta from app_productos","cuenta"))
         );
       }
 
       //respuesta
       $db->enviarRespuesta($rpta);
       break;
-    case "insProducto":
-      //obteniendo nuevo nro orden
+    case "producto_ins":
+      //obteniendo nuevo nro orden siempre al final
       $qry = $db->query_all("select COALESCE(max(orden)+1,1) as maxi from app_productos;");
       $orden = reset($qry)["maxi"];
 
@@ -73,8 +75,7 @@
       $rpta = array("error" => false,"ingresados" => 1);
       $db->enviarRespuesta($rpta);
       break;
-    case "updProducto":
-      $sql = "update app_productos set nombre=:nombre,abrevia=:abrevia,sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id=:id";
+    case "producto_upd":
       $params = [
         ":id"=>$data->ID,
         ":nombre"=>$data->nombre,
@@ -82,14 +83,26 @@
         ":sysIP"=>$fn->getClientIP(),
         ":userID"=>$_SESSION['usr_ID']
       ];
+      $sql = "update app_productos set nombre=:nombre,abrevia=:abrevia,sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id=:id";
       $qry = $db->query_all($sql,$params);
       $rs = ($qry) ? (reset($qry)) : (null);
+      
+      if($data->new_orden!=$data->old_orden){
+        $fn->setExecSQL("update app_productos set orden = tb_sort.ord from ( select id, ROW_NUMBER() OVER (order by orden) AS ord from app_productos) AS tb_sort where app_productos.id = tb_sort.id;");
+        $fn->setExecSQL("update app_productos set orden = -1 where orden=".$data->old_orden);
+        if($data->new_orden < $data->old_orden){
+          $fn->setExecSQL("update app_productos set orden = orden + 1 where orden between ".($data->new_orden)." and ".($data->old_orden-1));
+        }else{
+          $fn->setExecSQL("update app_productos set orden = orden - 1 where orden between ".($data->old_orden+1)." and ".($data->new_orden));
+        }
+        $fn->setExecSQL("update app_productos set orden = ".($data->new_orden)." where orden=-1");
+      }
 
       //respuesta
       $rpta = array("error" => false,"actualizados" => 1, "sql" => $sql);
       $db->enviarRespuesta($rpta);
       break;
-    case "delProductos":
+    case "producto_del":
       for($i=0; $i<count($data->arr); $i++){
         $sql = "update app_productos set estado=0,sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id=:id";
         $params = [
@@ -105,7 +118,7 @@
       $rpta = array("error" => false,"borrados" => count($data->arr));
       $db->enviarRespuesta($rpta);
       break;
-    case "startProducto":
+    case "producto_start":
       //respuesta
       $rpta = array(
         "fecha" => $fn->getFechaActualDB(),

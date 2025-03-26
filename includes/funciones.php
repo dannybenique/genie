@@ -1,5 +1,11 @@
 <?php
   class funciones{
+    public function setExecSQL($cadSQL) { //ejecuta una consulta SQL
+      $db = $GLOBALS["db"];
+      $qry = $db->query_all($cadSQL);
+      $rs = reset($qry);
+    }
+
     public function getClientIP() { //Obtiene la IP del cliente
       $ipaddress = '';
       if (getenv('HTTP_CLIENT_IP')) $ipaddress = getenv('HTTP_CLIENT_IP');

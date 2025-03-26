@@ -83,6 +83,12 @@
                     <input id="txt_Nombre" type="text" maxlength="50" class="form-control" placeholder="nombre..."/>
                   </div>
                 </div>
+                <div id="div_Orden" class="form-group" style="margin-bottom:5px;width:130px;">
+                  <div class="input-group">
+                    <span class="input-group-addon" style="background:#eeeeee;"><b>Orden</b></span>
+                    <select id="cbo_Orden" class="form-control selectpicker" style="height:30px;text-align:left;"></select>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

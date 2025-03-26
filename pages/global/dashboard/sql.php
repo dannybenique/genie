@@ -15,7 +15,7 @@
       
       $matriculas = $fn->getValorCampo("select count(*) as cuenta from app_matriculas where estado=1 and id_colegio=".$colegioID, 'cuenta'); // matriculas
       $alumnos = $fn->getValorCampo("select count(*) as cuenta from app_alumnos where estado=1 and id_colegio=".$colegioID, 'cuenta'); // alumnos
-      $padres = $fn->getValorCampo("select count(*) as cuenta from app_padres where id_colegio=".$colegioID, 'cuenta'); // padres
+      $padres = $fn->getValorCampo("select count(*) as cuenta from app_padres where estado=1 and id_colegio=".$colegioID, 'cuenta'); // padres
       $empleados = $fn->getValorCampo("select count(*) as cuenta from app_empleados where estado=1 and id_colegio=".$colegioID, 'cuenta'); //empleados
       
       // config

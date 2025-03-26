@@ -108,7 +108,7 @@
       }
 
       //respuesta
-      $rpta = array("error" => false,"borrados" => count($data->arr));
+      $rpta = array("error" => false,"borrados" => count($data->pagos));
       $db->enviarRespuesta($rpta);
       break;
     case "pagos_bloquear":

@@ -1,13 +1,14 @@
 const rutaSQL = "pages/master/productos/sql.php";
 
 var menu = "";
+var orden = 0;
 
 //=========================funciones para Personas============================
 async function appProductosGrid(){
   try {
     document.querySelector('#grdDatos').innerHTML = ('<tr><td colspan="7"><div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></td></tr>');
     const txtBuscar = document.querySelector("#txtBuscar").value;
-    const resp = await appAsynFetch({ TipoQuery: 'selProductos', buscar:txtBuscar }, rutaSQL);
+    const resp = await appAsynFetch({ TipoQuery: 'producto_sel', buscar:txtBuscar }, rutaSQL);
     const disabledDelete = (menu.master.submenu.productos.cmdDelete===1) ? "" : "disabled";
     document.querySelector("#chk_All").disabled = (menu.master.submenu.productos.cmdDelete===1) ? false : true;
     
@@ -38,6 +39,7 @@ async function appProductosReset(){
   try {
     const resp = await appAsynFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php");
     
+    orden = 0;
     menu = JSON.parse(resp.menu);
     document.querySelector("#btn_DEL").style.display = (menu.master.submenu.productos.cmdDelete==1)?('inline'):('none');
     document.querySelector("#btn_NEW").style.display = (menu.master.submenu.productos.cmdInsert==1)?('inline'):('none');
@@ -57,13 +59,14 @@ async function appProductoNuevo(){
   document.querySelector("#btnInsert").style.display = (menu.master.submenu.productos.cmdInsert==1)?('inline'):('none');
   document.querySelector("#btnUpdate").style.display = 'none';
   try {
-    const resp = await appAsynFetch({ TipoQuery:'startProducto' }, rutaSQL);
+    const resp = await appAsynFetch({ TipoQuery:'producto_start' }, rutaSQL);
 
     $(".form-group").removeClass("has-error");
     document.querySelector("#hid_productoID").value = ("0");
     document.querySelector("#txt_Codigo").value = ("");
     document.querySelector("#txt_Abrev").value = ("");
     document.querySelector("#txt_Nombre").value = ("");
+    document.querySelector('#div_Orden').style.display = 'none';
     document.querySelector("#grid").style.display = 'none';
     document.querySelector("#edit").style.display = 'block';
   } catch (err){
@@ -78,16 +81,21 @@ async function appProductoView(productoID){
 
   try{
     const resp = await appAsynFetch({
-      TipoQuery : 'editProducto',
+      TipoQuery : 'producto_edit',
       productoID : productoID
     }, rutaSQL);
 
-    document.querySelector("#hid_productoID").value = resp.ID;
+    document.querySelector("#hid_productoID").value = (resp.ID);
     document.querySelector("#txt_Codigo").value = (resp.codigo);
     document.querySelector("#txt_Abrev").value = (resp.abrev);
     document.querySelector("#txt_Nombre").value = (resp.nombre);
     document.querySelector('#grid').style.display = 'none';
     document.querySelector('#edit').style.display = 'block';
+    //llenar el orden de los registros
+    document.querySelector('#div_Orden').style.display = 'block';
+    appLlenarDataEnComboBox(Array.from({ length: resp.totalregs }, (_, i) => ({ID:i+1,nombre:i+1})),'#cbo_Orden',resp.orden);
+    orden = resp.orden;
+
   } catch(err){
     console.error('Error al cargar datos:', err);
   }
@@ -97,7 +105,7 @@ async function appProductoInsert(){
   try{
     const datos = modGetDataToDataBase();
     if(datos!=""){
-      datos.TipoQuery = 'insProducto';
+      datos.TipoQuery = 'producto_ins';
       const resp = await appAsynFetch(datos,rutaSQL);
       if(!resp.error) { appProductoCancel(); }
     } else {
@@ -111,9 +119,8 @@ async function appProductoInsert(){
 async function appProductoUpdate(){
   try{
     const datos = modGetDataToDataBase();
-    console.log(datos);
     if(datos!=""){
-      datos.TipoQuery = 'updProducto';
+      datos.TipoQuery = 'producto_upd';
       const resp = await appAsynFetch(datos,rutaSQL);
       if(!resp.error) { appProductoCancel(); }
     } else {
@@ -130,7 +137,7 @@ async function appProductosBorrar(){
   if(arr.length>0){
     if(confirm("¿Esta seguro de continuar?")) {
       try{
-        const resp = await appAsynFetch({ TipoQuery:'delProductos', arr:arr },rutaSQL);
+        const resp = await appAsynFetch({ TipoQuery:'producto_del', arr:arr },rutaSQL);
         if (!resp.error) { appProductoCancel(); }
       }catch(err){
         console.error('Error al cargar datos:', err);
@@ -155,6 +162,8 @@ function modGetDataToDataBase(){
       codigo : document.querySelector("#txt_Codigo").value,
       abrevia : document.querySelector("#txt_Abrev").value,
       nombre : document.querySelector("#txt_Nombre").value,
+      new_orden : document.querySelector("#cbo_Orden").value,
+      old_orden : orden
     }
   }
   return rpta;
