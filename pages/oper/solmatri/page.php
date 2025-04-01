@@ -205,7 +205,7 @@
   </div>
   <div class="modal fade" id="modalPers" role="dialog"></div>
   <div class="modal fade" id="modalAprueba" role="dialog">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg" style="width:90%;">
       <div class="modal-content">
         <form class="form-horizontal" id="frmSolMatriAprueba" autocomplete="off">
           <div class="modal-header" style="background:#f9f9f9;padding:8px;">
@@ -214,19 +214,13 @@
           </div>
           <div class="modal-body" style="border-right:1px solid white;">
             <div class="box-body row">
-              <div class="col-md-12">
+              <div class="col-md-5">
                 <div class="box-body">
-                  <strong><i class="fa fa-thumbs-up margin-r-5"></i> Aprobacion</strong>
-                  <div class="form-group" style="margin-bottom:15px;">
-                    <div class="input-group">
-                      <span class="input-group-addon" style="background:#eeeeee;"><b>Fecha</b></span>
-                      <input id="txt_modapruebaFechaAprueba" type="text" class="form-control" style="width:105px;" disabled="disabled" />
-                    </div>
-                  </div><br>
                   <strong><i class="fa fa-user margin-r-5"></i> Basicos</strong>
                   <p class="text-muted">
                     <input type="hidden" id="hid_modapruebaID" value=""/>
-                    Alumno: <a id="lbl_modapruebaAlumno"></a><br>
+                    Apellidos: <a id="lbl_modapruebaAlumnoApellidos"></a><br>
+                    Nombres: <a id="lbl_modapruebaAlumnoNombres"></a><br>
                     DNI: <a id="lbl_modapruebaDNI"></a><br>
                   </p>
                   <hr/>
@@ -248,11 +242,113 @@
                   </p><br>
                 </div>
               </div>
+              <div class="col-md-7">
+                <div class="box-body">
+                  <strong><i class="fa fa-thumbs-up margin-r-5"></i> Aprobacion</strong>
+                  <div class="form-group" style="margin-bottom:15px;">
+                    <div class="input-group">
+                      <span class="input-group-addon" style="background:#eeeeee;"><b>Fecha</b></span>
+                      <input id="txt_modapruebaFechaAprueba" type="text" class="form-control" style="width:105px;" disabled="disabled" />
+                    </div>
+                  </div>
+                  <br>
+                  <strong><i class="fa fa-ticket margin-r-5"></i>Pagos</strong>&nbsp;&nbsp; 
+                  <div class="btn-group">
+                    <button type="button" class="btn btn-success btn-xs" onclick="javascript:modaprueba_BotonPagosAdd();" title="Agregar pagos"><i class="fa fa-plus"></i> añadir</button>
+                  </div>
+                  <div class="box-body table-responsive no-padding">
+                    <table class="table table-hover">
+                      <thead>
+                        <tr>
+                          <th style="width:25px;"></th>
+                          <th style="width:45px;" title="Abreviatura">Abrev</th>
+                          <th>Pago <i class="fa fa-sort"></i></th>
+                          <th style="width:85px;text-align:center;" title="Fecha de Vencimiento">Vcmto</th>
+                          <th style="width:100px;text-align:right;" title="Monto del pago que se cobrara y/o se almacenara para un futur pago">Importe</th>
+                        </tr>
+                      </thead>
+                      <tbody id="grdPagos"></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           <div id="div_modapruebaFooter" class="modal-footer" style="background:#f9f9f9;padding:8px;">
           </div>
         </form>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="modalPagosAdd" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header" style="background:#f9f9f9;padding:8px;">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" style="font-family:flexoregular;"><b>Agregar Items de Pago</b></h4>
+          </div>
+          <div class="modal-body" style="border-right:1px solid white;">
+            <table class="table table-hover" id="grdaddpagos">
+              <thead>
+                <tr>
+                <th style="width:25px;"></th>
+                <th style="width:45px;" title="Abreviatura">Abrev</th>
+                <th >Pago <i class="fa fa-sort"></i></th>
+                <th style="width:85px;text-align:center;" title="Fecha de Vencimiento">Vcmto</th>
+                <th style="text-align:right;" title="Monto del pago que se cobrara y/o se almacenara para un futuro pago">Importe</th>
+                </tr>
+              </thead>
+              <tbody id="grdaddpagosDatos">
+              </tbody>
+            </table>
+          </div>
+          <div class="modal-footer" style="background:#f9f9f9;padding:8px;">
+            <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><i class="fa fa-close"></i> Cerrar</button>
+            <button type="button" class="btn btn-primary" onclick="javascript:modpagosadd_BotonAdd();"><i class="fa fa-thumbs-up"></i> Agregar Pago</button>
+          </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="modalPagosEdit" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header" style="background:#f9f9f9;padding:8px;">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" style="font-family:flexoregular;"><b>Modificar Pago</b></h4>
+          </div>
+          <div class="modal-body" style="border-right:1px solid white;">
+            <div class="box-body">
+              <input type="hidden" id="hid_modPagoID" value="">
+              <div id="div_Nombre" class="form-group" style="margin-bottom:5px;">
+                <div class="input-group">
+                  <span class="input-group-addon" style="background:#eeeeee;"><b>Pago</b></span>
+                  <input id="txt_modPagoNombre" type="text" class="form-control" disabled/>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-xs-6">
+                  <div id="div_Codigo" class="form-group" style="margin-bottom:5px;">
+                    <div class="input-group">
+                      <span class="input-group-addon" style="background:#eeeeee;"><b>Vcmto</b></span>
+                      <input id="txt_modPagoVencimiento" type="text" class="form-control"/>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xs-6">
+                  <div id="div_Abrev" class="form-group" style="margin-bottom:5px;">
+                    <div class="input-group">
+                      <span class="input-group-addon" style="background:#eeeeee;"><b>Importe</b></span>
+                      <input id="txt_modPagoImporte" type="number" class="form-control" placeholder="0..."/>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer" style="background:#f9f9f9;padding:8px;">
+            <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><i class="fa fa-close"></i> Cerrar</button>
+            <button type="button" class="btn btn-primary" onclick="javascript:modpagosedit_BotonModif();"><i class="fa fa-flash"></i> Modificar Pago</button>
+          </div>
       </div>
     </div>
   </div>

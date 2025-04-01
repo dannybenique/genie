@@ -104,8 +104,10 @@
                 <div class="col-md-7">
                   <div class="box-body">
                     <strong><i class="fa fa-ticket margin-r-5"></i>Pagos</strong>&nbsp;&nbsp; 
-                    <button type="button" class="btn btn-success btn-xs" onclick="javascript:appDesembBotonAgregarPagos();" title="Agregar otros pagos"><i class="fa fa-plus"></i></button>
-                    <button type="button" class="btn btn-warning btn-xs" onclick="javascript:appDesembBotonModiImportePagos();" title="Modificar el importe en los pagos NO bloqueados"><i class="fa fa-edit"></i></button>
+                    <div class="btn-group">
+                      <button id="btn_AddPagos" type="button" class="btn btn-success btn-xs" onclick="javascript:appDesembBotonAgregarPagos();" title="Agregar pagos"><i class="fa fa-plus"></i> añadir</button>
+                      <button type="button" class="btn btn-warning btn-xs" onclick="javascript:appDesembBotonModiImportePagos();" title="Modificar el importe en los pagos NO bloqueados"><i class="fa fa-edit"></i></button>
+                    </div>
                     <div class="box-body table-responsive no-padding">
                       <table class="table table-hover">
                         <thead>
@@ -113,7 +115,7 @@
                             <th style="width:25px;"></th>
                             <th style="width:25px;"></th>
                             <th style="width:45px;" title="Abreviatura">Abrev</th>
-                            <th style="">Pago <i class="fa fa-sort"></i></th>
+                            <th>Pago <i class="fa fa-sort"></i></th>
                             <th style="width:85px;text-align:center;" title="Fecha de Vencimiento">Vcmto</th>
                             <th style="text-align:right;" title="Monto del pago que se cobrara y/o se almacenara para un futur pago">Importe</th>
                             <th style="width:10px;padding:0;"></th>

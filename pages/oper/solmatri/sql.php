@@ -10,8 +10,32 @@
   $data = json_decode($_REQUEST['appSQL']);
   $rpta = 0;
 
+  function getPagos($todos){
+    $db = $GLOBALS["db"]; //base de datos
+    $web = $GLOBALS["web"]; //web-config
+    
+    $tabla = array();
+    $qry = $db->query_all("select c.*,p.orden,p.nombre as producto,p.abrevia,current_date-c.vencimiento as diferencia from app_colprod c join app_productos p on c.id_producto=p.id where id_colegio=:colegioID ".(($todos) ? (""):("and c.obliga=1"))." order by orden",[":colegioID"=>$web->colegioID]);
+    if ($qry) {
+      foreach($qry as $rs){
+        $tabla[] = array(
+          "productoID" => $rs["id_producto"],
+          "producto" => $rs["producto"],
+          "abrevia" => $rs["abrevia"],
+          "importe" => $rs["importe"]*1,
+          "bloqueo" => $rs["bloqueo"],
+          "orden" => $rs["orden"],
+          "vencimiento" => $rs["vencimiento"],
+          "disabled" => ($rs["diferencia"]>=0) ? (true):(false),
+          "checked" => ($rs["diferencia"]>=0) ? (true):(false)
+        );
+      }
+    }
+    return $tabla; 
+  }
+
   switch ($data->TipoQuery) {
-    case "selSolMatri":
+    case "SolMatri_sel":
       $tabla = array();
       $buscar = strtoupper($data->buscar);
       $whr = " and id_colegio=:colegioID and (alumno LIKE :buscar or nro_dui LIKE :buscar) ";
@@ -41,7 +65,7 @@
       $rpta = array("tabla"=>$tabla,"cuenta"=>$rsCount["cuenta"]);
       $db->enviarRespuesta($rpta);
       break;
-    case "execSolMatri":
+    case "SolMatri_exec":
       //inicialmente el estado debe ser 3 en la matricula
       $sql = "select sp_matriculas (:TipoExec,:id,:colegioID,:alumnoID,:seccionID,:userSolicitaID,:userApruebaID,:fechaSolicita,:fechaAprueba,:fechaMatricula,:yyyy,:estado,:sysIP,:userID,:observac) as nro;";
       $params = [
@@ -73,7 +97,7 @@
       //respuesta
       $db->enviarRespuesta($rpta);
       break;
-    case "delSolMatri":
+    case "SolMatri_del":
       $params = array();
       $sysIP = $fn->getClientIP();
       $userID = $_SESSION['usr_ID'];
@@ -92,7 +116,7 @@
       $rpta = array("error"=>false, "delete"=>$data->arr);
       $db->enviarRespuesta($rpta);
       break;
-    case "newSolMatri":
+    case "SolMatri_new":
       //obtenemos configuracion del colegio
       $config = json_decode($fn->getConfigColegio($web->colegioID));
       
@@ -115,7 +139,7 @@
       );
       $db->enviarRespuesta($rpta);
       break;
-    case "viewSolMatri":
+    case "SolMatri_view":
       $tabla = 0;
       $alumnoID = 0;
       $qry = $db->query_all("select m.*,n.id_grado,n.id_nivel from app_matriculas m join vw_colniv n on m.id_seccion=n.id_seccion where m.id=".$data->matriculaID);
@@ -147,64 +171,7 @@
       $rpta = array('tablaSolMatri'=> $tabla,'tablaPers'=>$fn->getViewPersona($alumnoID));
       $db->enviarRespuesta($rpta);
       break;
-    case "viewApruebaSolMatri":
-      $qry = $db->query_all("select * from vw_matriculas_state3 where id=:id",[":id"=>$data->matriculaID]);
-      if ($qry) {
-        $rs = reset($qry);
-        $tabla = array(
-          "ID" => $rs["id"],
-          "codigo" => $rs["codigo"],
-          "yyyy" => $rs["yyyy"],
-          "alumno" => $rs["alumno"],
-          "nro_dui" => $rs["nro_dui"],
-          "fecha_solicita" => $rs["fecha_solicita"],
-          "nivel" => $rs["nivel"],
-          "grado" => $rs["grado"],
-          "seccion" => $rs["seccion"],
-          "observac" => $rs["observac"],
-          "estado" => $rs["estado"],
-          "rolUser" => $_SESSION['usr_data']['rolID'],
-          "rolROOT" => 101
-        );
-      }
-
-      //respuesta
-      $rpta = $tabla;
-      $db->enviarRespuesta($rpta);
-      break;
-    case "aprobarSolMatri":
-      //inicialmente el estado debe ser 3 en bn_saldos
-      $sql = "select sp_matriculas (:TipoExec,:id,:colegioID,:alumnoID,:seccionID,:userSolicitaID,:userApruebaID,:fechaSolicita,:fechaAprueba,:fechaMatricula,:yyyy,:estado,:sysIP,:userID,:observac) as nro;";
-      $params = [
-        ":TipoExec"=>$data->TipoExec,
-        ":id"=>$data->ID,
-        ":colegioID"=>null,
-        ":alumnoID"=>null,
-        ":seccionID"=>null,
-        ":userSolicitaID"=>null,
-        ":userApruebaID"=>$_SESSION['usr_ID'],
-        ":fechaSolicita"=>null,
-        ":fechaAprueba"=>$data->fecha_aprueba,
-        ":fechaMatricula"=>null,
-        ":yyyy"=>null,
-        ":estado"=>2,
-        ":sysIP"=>$fn->getClientIP(),
-        ":userID"=>$_SESSION['usr_ID'],
-        ":observac"=>null
-      ];
-      
-      $qry = $db->query_all($sql,$params);
-      if($qry){
-        $rs = reset($qry);
-        $rpta = array("error"=>false, "insert"=>$rs["nro"]);
-      } else {
-        $rpta = array("error"=>true, "insert"=>0);
-      }
-      
-      //respuesta
-      $db->enviarRespuesta($rpta);
-      break;
-    case "VerifySolMatri":
+    case "SolMatri_verify":
       $tablaPers = ""; //almacena los datos de la persona
       $persona = false; //indica que existe en personas
       $activo = false; //indica que encontro en tabla de matriculas
@@ -232,6 +199,92 @@
         "persona"=>$persona,
         "activo"=>$activo,
         "mensajeNOadd" => "");
+      $db->enviarRespuesta($rpta);
+      break;
+    case "aprobarMatric_view":
+      $qry = $db->query_all("select * from vw_matriculas_state3 where id=:id",[":id"=>$data->matriculaID]);
+      if ($qry) {
+        $rs = reset($qry);
+        $tablaSolMatri = array(
+          "ID" => $rs["id"],
+          "codigo" => $rs["codigo"],
+          "yyyy" => $rs["yyyy"],
+          "alumno" => $rs["alumno"],
+          "apellidos" => $rs["apellidos"],
+          "nombres" => $rs["nombres"],
+          "nro_dui" => $rs["nro_dui"],
+          "fecha_solicita" => $rs["fecha_solicita"],
+          "nivel" => $rs["nivel"],
+          "grado" => $rs["grado"],
+          "seccion" => $rs["seccion"],
+          "observac" => $rs["observac"],
+          "estado" => $rs["estado"],
+          "rolUser" => $_SESSION['usr_data']['rolID'],
+          "rolROOT" => 101
+        );
+      }
+
+      //respuesta
+      $rpta = array(
+        'tablaSolMatri'=>$tablaSolMatri, 
+        'tablaPagos'=>getPagos($todos = false)
+      );
+      $db->enviarRespuesta($rpta);
+      break;
+    case "aprobarMatric_exec":
+      //pagos
+      foreach($data->pagos as $index=>$pago){
+        $sql = "insert into app_matriculas_det (id_matricula,item,id_producto,importe,saldo,vencimiento,estado,sys_ip,sys_user,sys_fecha) values(:matriculaID,:item,:productoID,:importe,:saldo,:vencimiento,:estado,:sysIP,:userID,now());";
+        $params = [
+          ":matriculaID" => $data->matriculaID,
+          ":productoID"  => $pago->productoID,
+          ":item"  => $index+1,
+          ":importe"  => $pago->importe,
+          ":saldo"  => $pago->importe,
+          ":vencimiento" => $pago->vencimiento,
+          ":estado" => 1,
+          ":sysIP"  => $fn->getClientIP(),
+          ":userID" => $_SESSION['usr_ID']
+        ];
+        $qry = $db->query_all($sql,$params);
+        $rs = reset($qry);
+      }
+
+      //actualizar matricula
+      //inicialmente el estado debe ser 3 en bn_saldos
+      $sql = "select sp_matriculas (:TipoExec,:id,:colegioID,:alumnoID,:seccionID,:userSolicitaID,:userApruebaID,:fechaSolicita,:fechaAprueba,:fechaMatricula,:yyyy,:estado,:sysIP,:userID,:observac) as nro;";
+      $params = [
+        ":TipoExec"=>$data->TipoExec,
+        ":id"=>$data->matriculaID,
+        ":colegioID"=>null,
+        ":alumnoID"=>null,
+        ":seccionID"=>null,
+        ":userSolicitaID"=>null,
+        ":userApruebaID"=>$_SESSION['usr_ID'],
+        ":fechaSolicita"=>null,
+        ":fechaAprueba"=>$data->fecha_aprueba,
+        ":fechaMatricula"=>null,
+        ":yyyy"=>null,
+        ":estado"=>2,
+        ":sysIP"=>$fn->getClientIP(),
+        ":userID"=>$_SESSION['usr_ID'],
+        ":observac"=>null
+      ];
+      
+      $qry = $db->query_all($sql,$params);
+      if($qry){
+        $rs = reset($qry);
+        $rpta = array("error"=>false, "insert"=>$rs["nro"]);
+      } else {
+        $rpta = array("error"=>true, "insert"=>0);
+      }
+      
+      //respuesta
+      $db->enviarRespuesta($rpta);
+      break;
+    case "aprobarMatric_PagoAdd":
+      //respuesta
+      $rpta = array('tablaPagos'=> getPagos($todos = true));
       $db->enviarRespuesta($rpta);
       break;
     case "comboNivel":

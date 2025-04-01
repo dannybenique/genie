@@ -1,14 +1,16 @@
 const rutaSQL = "pages/oper/solmatri/sql.php";
 var menu = "";
+var objModalPagos = null;
+var objAddPagos = null;
 
-//=========================funciones para Personas============================
+
 async function appSolMatriGrid(){
   document.querySelector('#grdDatos').innerHTML = ('<tr><td colspan="10"><div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></td></tr>');
   const disabledDelete = (menu.oper.submenu.solmatri.cmdDelete===1) ? "" : "disabled";
   const txtBuscar = document.querySelector("#txtBuscar").value;
   try{
     const resp = await appAsynFetch({
-      TipoQuery: 'selSolMatri',
+      TipoQuery: 'SolMatri_sel',
       buscar: txtBuscar
     },rutaSQL);
   
@@ -45,6 +47,7 @@ async function appSolMatriReset(){
   try{
     const resp = await appAsynFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php");
     menu = JSON.parse(resp.menu);
+    objModalPagos = null;
     document.querySelector("#btn_DEL").style.display = (menu.oper.submenu.solmatri.cmdDelete==1)?('inline'):('none');
     document.querySelector("#btn_NEW").style.display = (menu.oper.submenu.solmatri.cmdInsert==1)?('inline'):('none');
     appSolMatriGrid();
@@ -97,7 +100,7 @@ function appSolMatriBotonNuevo(){
   const addNewPers = false; //se permite agregar nueva persona si no existe
   const addNewLista = true; //se permite agregar nuevos a la lista 
   const addRepLista = false; //se permite agregar repetidos a la lista
-  Persona.openBuscar('VerifySolMatri',rutaSQL,addNewPers,addNewLista,addRepLista);
+  Persona.openBuscar('SolMatri_verify',rutaSQL,addNewPers,addNewLista,addRepLista);
   $('#btn_modPersAddToForm').off('click');
   $('#btn_modPersAddToForm').on('click',handlerSolMatriAddToForm_Click);
 }
@@ -117,7 +120,7 @@ async function appSolMatriBotonBorrar(){
   if(arr.length>0){
     if(confirm("¿Esta seguro de continuar?")) {
       try{
-        const resp = await appAsynFetch({ TipoQuery:'delSolMatri', arr:arr },rutaSQL);
+        const resp = await appAsynFetch({ TipoQuery:'SolMatri_del', arr:arr },rutaSQL);
         if (!resp.error) { appSolMatriBotonCancel(); }
       } catch(err){
         console.error('Error al cargar datos:', err);
@@ -130,30 +133,35 @@ async function appSolMatriBotonBorrar(){
 
 async function appSolMatriAprueba(matriculaID){
   $("#modalAprueba").modal("show");
-  
+  document.querySelector('#grdPagos').innerHTML = ('<tr><td colspan="5"><div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></td></tr>');
   try{
     const resp = await appAsynFetch({
-      TipoQuery: 'viewApruebaSolMatri',
+      TipoQuery: 'aprobarMatric_view',
       matriculaID: matriculaID
     },rutaSQL);
     
     //respuesta
-    document.querySelector("#txt_modapruebaFechaAprueba").disabled = (resp.rolUser==resp.rolROOT) ? (false):(true);    
-    $("#txt_modapruebaFechaAprueba").datepicker("setDate",moment(resp.fecha_aprueba).format("DD/MM/YYYY"));
-    document.querySelector("#hid_modapruebaID").value = (resp.ID);
-    document.querySelector("#lbl_modapruebaAlumno").innerHTML = (resp.alumno);
-    document.querySelector("#lbl_modapruebaDNI").innerHTML = (resp.nro_dui);
-    document.querySelector("#lbl_modapruebaFechaSolMatri").innerHTML = (moment(resp.fecha_solicita).format("DD/MM/YYYY"));
-    document.querySelector("#lbl_modapruebaCodigo").innerHTML = (resp.codigo);
-    document.querySelector("#lbl_modapruebaYYYY").innerHTML = (resp.yyyy);
-    document.querySelector("#lbl_modapruebaNivel").innerHTML = (resp.nivel);
-    document.querySelector("#lbl_modapruebaGrado").innerHTML = (resp.grado);
-    document.querySelector("#lbl_modapruebaSeccion").innerHTML = (resp.seccion);
-    document.querySelector("#lbl_modapruebaObservac").innerHTML = (resp.observac);
+    let data = resp.tablaSolMatri;
+    document.querySelector("#txt_modapruebaFechaAprueba").disabled = (data.rolUser==data.rolROOT) ? (false):(true);    
+    $("#txt_modapruebaFechaAprueba").datepicker("setDate",moment(data.fecha_aprueba).format("DD/MM/YYYY"));
+    document.querySelector("#hid_modapruebaID").value = (data.ID);
+    document.querySelector("#lbl_modapruebaAlumnoApellidos").innerHTML = (data.apellidos);
+    document.querySelector("#lbl_modapruebaAlumnoNombres").innerHTML = (data.nombres);
+    document.querySelector("#lbl_modapruebaDNI").innerHTML = (data.nro_dui);
+    document.querySelector("#lbl_modapruebaFechaSolMatri").innerHTML = (moment(data.fecha_solicita).format("DD/MM/YYYY"));
+    document.querySelector("#lbl_modapruebaCodigo").innerHTML = (data.codigo);
+    document.querySelector("#lbl_modapruebaYYYY").innerHTML = (data.yyyy);
+    document.querySelector("#lbl_modapruebaNivel").innerHTML = (data.nivel);
+    document.querySelector("#lbl_modapruebaGrado").innerHTML = (data.grado);
+    document.querySelector("#lbl_modapruebaSeccion").innerHTML = (data.seccion);
+    document.querySelector("#lbl_modapruebaObservac").innerHTML = (data.observac);
     
+    objModalPagos = resp.tablaPagos;
+    modaprueba_Pagos_SetData(objModalPagos);
+
     //botones del footer del modal
     document.querySelector("#div_modapruebaFooter").innerHTML = '<button type="button" class="btn btn-default pull-left" data-dismiss="modal"><i class="fa fa-close"></i> Cerrar</button>'+
-      '<button type="button" class="btn btn-primary" onclick="javascript:modaprueba_BotonAprobar();"><i class="fa fa-thumbs-up"></i> Aprobar Solicitud</button>';
+      '<button type="button" class="btn btn-primary" onclick="javascript:modaprueba_BotonAprobarSolic();"><i class="fa fa-thumbs-up"></i> Aprobar Solicitud</button>';
   } catch(err){
     console.error('Error al cargar datos:', err);
   }
@@ -168,7 +176,7 @@ async function appSolMatriView(matriculaID){
   
   try{
     const resp = await appAsynFetch({
-      TipoQuery : 'viewSolMatri',
+      TipoQuery : 'SolMatri_view',
       matriculaID : matriculaID
     },rutaSQL);
     document.querySelector("#btnUpdate").style.display = (menu.oper.submenu.solmatri.cmdUpdate==1)?('inline'):('none');
@@ -224,7 +232,7 @@ async function appSolMatriClear(txtSocio){
   document.querySelector("#txt_SolMatriObservac").value = ("");
 
   try{
-    const resp = await appAsynFetch({ TipoQuery : 'newSolMatri' }, rutaSQL);
+    const resp = await appAsynFetch({ TipoQuery : 'SolMatri_new' }, rutaSQL);
 
     appLlenarDataEnComboBox(resp.comboNiveles,"#cbo_SolMatriNiveles",0); //seteado a primaria
     appLlenarDataEnComboBox(resp.comboGrados,"#cbo_SolMatriGrados",0); //prmer grado
@@ -246,7 +254,7 @@ function appSolMatriValidarCampos(){
 
 function appSolMatriGetDatosToDatabase(){
   let rpta = {
-    TipoQuery : "execSolMatri",
+    TipoQuery : "SolMatri_exec",
     TipoExec : null,
     ID : document.querySelector('#hid_SolMatriID').value,
     alumnoID : document.querySelector("#hid_PersID").value,
@@ -294,6 +302,7 @@ function appPersonaSetData(data){
   document.querySelector("#lbl_PersSysUser").innerHTML = (data.sysuserPers);
 }
 
+
 //niveles
 async function comboGrados(){
   document.querySelector("#cbo_SolMatriGrados").disabled = true;
@@ -333,16 +342,19 @@ async function comboSecciones(){
   }
 }
 
-//modal
-async function modaprueba_BotonAprobar(){
+
+//modal aprobacion de solicitud
+async function modaprueba_BotonAprobarSolic(){
   if(confirm("¿Esta seguro de continuar?")) {
     try{
-      const resp = await appAsynFetch({
-        TipoQuery : "aprobarSolMatri",
-        ID : document.querySelector("#hid_modapruebaID").value,
+      const datos ={
+        TipoQuery : "aprobarMatric_exec",
+        matriculaID : document.querySelector("#hid_modapruebaID").value,
         fecha_aprueba : appConvertToFecha(document.querySelector("#txt_modapruebaFechaAprueba").value),
+        pagos : objModalPagos,
         TipoExec : "APRU" //aprueba solicitud de credito
-      }, rutaSQL);
+      }
+      const resp = await appAsynFetch(datos, rutaSQL);
       
       //respuesta
       if (!resp.error) { 
@@ -352,5 +364,101 @@ async function modaprueba_BotonAprobar(){
     } catch(err){
       console.error('Error al cargar datos:', err);
     }
+  }
+}
+
+async function modaprueba_BotonPagosAdd(){
+  try{
+    const resp = await appAsynFetch({ TipoQuery : "aprobarMatric_PagoAdd" },rutaSQL);
+    
+    //respuesta
+    let fila = "";
+    let filterID = objModalPagos.map(obj => obj.productoID);
+    objAddPagos = resp.tablaPagos.filter(obj => !filterID.includes(obj.productoID));
+    objAddPagos.forEach((valor,key)=>{
+      fila += '<tr>'+
+              '<td><input type="checkbox" name="chk_modalpagosadd" value="'+(valor.productoID)+'"/></td>'+
+              '<td>'+(valor.abrevia)+'</td>'+
+              '<td>'+(valor.producto)+'</td>'+
+              '<td>'+moment(valor.vencimiento).format("DD/MM/YYYY")+'</td>'+
+              '<td style="text-align:right;">'+appFormatMoney(valor.importe,2)+'</td>'+
+              '</tr>';
+    });
+    document.querySelector('#grdaddpagosDatos').innerHTML = fila;
+    $("#modalPagosAdd").modal("show");
+  } catch(err){
+    console.error('Error al cargar datos:', err);
+  }
+}
+
+function modaprueba_Pagos_SetData(data){
+  if(data.length>0){
+    let fila = "";
+    data.forEach((valor,key)=>{
+      fila += '<tr style="color:#555;">'+
+              '<td><a href="javascript:modaprueba_Pagos_DeleteItem('+(valor.productoID)+')"><i style="color:red;" class="fa fa-trash"></i></a></td>'+
+              '<td>'+(valor.abrevia)+'</td>'+
+              '<td>'+(valor.producto)+'</td>'+
+              '<td>'+moment(valor.vencimiento).format("DD/MM/YYYY")+'</td>'+
+              '<td style="text-align:right;"><a href="javascript:modaprueba_Pagos_EditItem('+(valor.productoID)+')">'+appFormatMoney(valor.importe,2)+'</a></td>'+
+              '</tr>';
+    });
+    document.querySelector('#grdPagos').innerHTML = fila;
+  } else {
+    document.querySelector('#grdPagos').innerHTML = '<tr><td colspan="6" style="text-align:center;color:red;">Sin Resultados</td></tr>';
+  }
+}
+
+function modaprueba_Pagos_DeleteItem(productoID){
+  let idx = objModalPagos.findIndex(elemento => elemento.productoID === productoID); 
+  if(confirm("¿Desea eliminar "+objModalPagos[idx]["producto"]+" de la lista de pagos?")){
+    objModalPagos.splice(idx,1);
+    modaprueba_Pagos_SetData(objModalPagos);
+  }
+}
+
+function modaprueba_Pagos_EditItem(productoID){
+  try{
+    const reg = objModalPagos.find(elem => elem.productoID === productoID);
+
+    document.querySelector("#hid_modPagoID").value = productoID;
+    document.querySelector("#txt_modPagoNombre").value = reg.producto;
+    document.querySelector("#txt_modPagoImporte").value = reg.importe;
+    $("#txt_modPagoVencimiento").datepicker("setDate",moment(reg.vencimiento).format("DD/MM/YYYY"));
+    $("#modalPagosEdit").modal("show");
+  }catch(err){
+    console.error('Error al cargar datos:', err);
+  }
+}
+
+
+//modal agregar pagos
+function modpagosadd_BotonAdd(){
+  let arrSelect = Array.from(document.querySelectorAll('[name="chk_modalpagosadd"]:checked')).map(obj => parseInt(obj.value,10));
+  let arrFilter = objAddPagos.filter(elem => arrSelect.includes(elem.productoID));
+  let arrTemp = [...objModalPagos,...arrFilter];
+
+  arrTemp.sort((a,b )=> new Date(a.orden)- new Date(b.orden));
+  objModalPagos = arrTemp;
+  modaprueba_Pagos_SetData(objModalPagos);
+  objAddPagos = null;
+  $("#modalPagosAdd").modal("hide");
+}
+
+
+//modal editar pagos
+function modpagosedit_BotonModif(){
+  let importe = document.querySelector("#txt_modPagoImporte").value;
+  let vencimiento = appConvertToFecha(document.querySelector("#txt_modPagoVencimiento").value,"-");
+  let productoID = parseInt(document.querySelector("#hid_modPagoID").value);
+  let idx = objModalPagos.findIndex(elem => elem.productoID === productoID);
+
+  if(idx>=0){
+    objModalPagos[idx].importe = importe;
+    objModalPagos[idx].vencimiento = vencimiento;
+    modaprueba_Pagos_SetData(objModalPagos);
+    $("#modalPagosEdit").modal("hide");
+  } else {
+    alert("Error al editar el pago!");
   }
 }
