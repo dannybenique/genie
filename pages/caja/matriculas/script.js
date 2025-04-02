@@ -106,25 +106,6 @@ async function appDesembBotonAgregarPagos(){
   }
 }
 
-function appDesembBotonModiImportePagos(){
-  const cantidad = prompt("Ingrese la nueva cantidad para los pagos desbloqueados...");
-  if(cantidad!=null){
-    let importe = appConvertToNumero(cantidad);
-    if(importe>0){
-      //agregamos observacion
-      objMatricula.observac += "\n"+prompt("ingrese un texto a la observacion");
-      document.querySelector("#lbl_DesembObservac").innerHTML = objMatricula.observac;
-
-      //modificamos el monto de los pagos
-      let nuevo = objPagos.map(pago => pago.bloqueo===0 ? {...pago,importe:importe}:pago);
-      objPagos = nuevo;
-      appPagosSetData(objPagos);
-    } else {
-      alert("el dato ingresado NO es un importe VALIDO");
-    }
-  }
-}
-
 async function fn_EjecutarDesembolso(){
   try{
     const resp = await appAsynFetch({

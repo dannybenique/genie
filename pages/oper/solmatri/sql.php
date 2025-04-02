@@ -252,29 +252,22 @@
 
       //actualizar matricula
       //inicialmente el estado debe ser 3 en bn_saldos
-      $sql = "select sp_matriculas (:TipoExec,:id,:colegioID,:alumnoID,:seccionID,:userSolicitaID,:userApruebaID,:fechaSolicita,:fechaAprueba,:fechaMatricula,:yyyy,:estado,:sysIP,:userID,:observac) as nro;";
+      $sql = "update app_matriculas set id_useraprueba=:userApruebaID,fecha_aprueba=:fechaAprueba,importe=:importeTotal,saldo=:importeTotal,nro_cuotas=:nroCuotas,estado=:estado,sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id=:id;";
       $params = [
-        ":TipoExec"=>$data->TipoExec,
         ":id"=>$data->matriculaID,
-        ":colegioID"=>null,
-        ":alumnoID"=>null,
-        ":seccionID"=>null,
-        ":userSolicitaID"=>null,
         ":userApruebaID"=>$_SESSION['usr_ID'],
-        ":fechaSolicita"=>null,
         ":fechaAprueba"=>$data->fecha_aprueba,
-        ":fechaMatricula"=>null,
-        ":yyyy"=>null,
+        ":importeTotal"=>$data->importeTotal,
+        ":nroCuotas"=>count($data->pagos),
         ":estado"=>2,
         ":sysIP"=>$fn->getClientIP(),
-        ":userID"=>$_SESSION['usr_ID'],
-        ":observac"=>null
+        ":userID"=>$_SESSION['usr_ID']
       ];
       
       $qry = $db->query_all($sql,$params);
       if($qry){
         $rs = reset($qry);
-        $rpta = array("error"=>false, "insert"=>$rs["nro"]);
+        $rpta = array("error"=>false, "insert"=>1);
       } else {
         $rpta = array("error"=>true, "insert"=>0);
       }

@@ -35,7 +35,7 @@ async function appSolMatriGrid(){
       let res = (txtBuscar==="") ? ("") : ("para "+txtBuscar);
       $('#grdDatos').html('<tr><td colspan="10" style="text-align:center;color:red;">Sin Resultados '+(res)+'</td></tr>');
     }
-    $('#grdCount').html(resp.tabla.length+"/"+resp.cuenta);
+    $('#grdCount').html(resp.tabla.length + "/" + resp.cuenta);
   } catch(err) {
     console.error('Error al cargar datos:', err);
   }
@@ -345,13 +345,17 @@ async function comboSecciones(){
 
 //modal aprobacion de solicitud
 async function modaprueba_BotonAprobarSolic(){
+  const importeTotal = objModalPagos.reduce((acc, obj) => acc + parseFloat(obj.importe), 0);
+  
+  if(importeTotal<=0) { alert("No se han agregado pagos!"); return; }
   if(confirm("¿Esta seguro de continuar?")) {
     try{
-      const datos ={
+      const datos = {
         TipoQuery : "aprobarMatric_exec",
         matriculaID : document.querySelector("#hid_modapruebaID").value,
         fecha_aprueba : appConvertToFecha(document.querySelector("#txt_modapruebaFechaAprueba").value),
         pagos : objModalPagos,
+        importeTotal : importeTotal,
         TipoExec : "APRU" //aprueba solicitud de credito
       }
       const resp = await appAsynFetch(datos, rutaSQL);

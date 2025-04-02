@@ -42,9 +42,9 @@
                   <th style="width:120px;text-align:center;" title="Codigo de Matricula">Codigo</th>
                   <th style="width:85px;text-align:center;" title="Fecha de Solicitud">Solicitud</th>
                   <th style="width:95px;" title="Documento Unico de Identidad = DNI, RUC">DNI</th>
-                  <th style="">Alumno <i class="fa fa-sort"></i></th>
+                  <th>Alumno <i class="fa fa-sort"></i></th>
                   <th style="width:70px;text-align:center;" title="Año de matricula">Matr.</th>
-                  <th style="" title="Grado y Seccion">Grado</th>
+                  <th title="Grado y Seccion">Grado</th>
                 </tr>
               </thead>
               <tbody id="grdDatos"></tbody>

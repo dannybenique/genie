@@ -38,9 +38,9 @@
                   <th style="width:85px;text-align:center;" title="Fecha de Solicitud">Solicitud</th>
                   <th style="width:85px;text-align:center;" title="Fecha de Aprobacion">Aprobacion</th>
                   <th style="width:95px;" title="Documento Unico de Identidad = DNI, RUC">DNI</th>
-                  <th style="">Alumno <i class="fa fa-sort"></i></th>
+                  <th>Alumno <i class="fa fa-sort"></i></th>
                   <th style="width:70px;text-align:center;" title="Año de Matricula">Matr.</th>
-                  <th style="" title="Grado y Seccion">Grado</th>
+                  <th title="Grado y Seccion">Grado</th>
                 </tr>
               </thead>
               <tbody id="grdDatos"></tbody>
@@ -106,7 +106,6 @@
                     <strong><i class="fa fa-ticket margin-r-5"></i>Pagos</strong>&nbsp;&nbsp; 
                     <div class="btn-group">
                       <button id="btn_AddPagos" type="button" class="btn btn-success btn-xs" onclick="javascript:appDesembBotonAgregarPagos();" title="Agregar pagos"><i class="fa fa-plus"></i> añadir</button>
-                      <button type="button" class="btn btn-warning btn-xs" onclick="javascript:appDesembBotonModiImportePagos();" title="Modificar el importe en los pagos NO bloqueados"><i class="fa fa-edit"></i></button>
                     </div>
                     <div class="box-body table-responsive no-padding">
                       <table class="table table-hover">
@@ -212,7 +211,7 @@
                 <tr>
                 <th style="width:25px;"></th>
                 <th style="width:45px;" title="Abreviatura">Abrev</th>
-                <th style="">Pago <i class="fa fa-sort"></i></th>
+                <th>Pago <i class="fa fa-sort"></i></th>
                 <th style="width:85px;text-align:center;" title="Fecha de Vencimiento">Vcmto</th>
                 <th style="text-align:right;" title="Monto del pago que se cobrara y/o se almacenara para un futuro pago">Importe</th>
                 </tr>

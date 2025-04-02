@@ -69,6 +69,7 @@
     case "desemb_View":
       $matricula = 0;
       $alumnoID = 0;
+      //datos matricula
       $qry = $db->query_all("select * from vw_matriculas_state2 where id=:id",[":id"=>$data->matriculaID]);
       if ($qry) {
         $rs = reset($qry);
@@ -94,10 +95,28 @@
         );
       }
 
+      //datos pagos
+      $tablapagos = array();
+      $qry = $db->query_all("select d.*, c.bloqueo,p.orden,p.nombre as producto,p.abrevia,current_date-d.vencimiento as diferencia from app_matriculas_det d join app_productos p on d.id_producto=p.id join app_colprod c on c.id_producto=p.id where d.estado=1 and d.id_matricula=:matriculaID and c.id_colegio=:colegioID order by item;",[":matriculaID"=>$data->matriculaID,":colegioID"=>$web->colegioID]);
+      if ($qry) {
+        foreach($qry as $rs){
+          $tablapagos[] = array(
+            "productoID" => $rs["id_producto"],
+            "producto" => $rs["producto"],
+            "abrevia" => $rs["abrevia"],
+            "importe" => $rs["importe"]*1,
+            "bloqueo" => $rs["bloqueo"],
+            "orden" => $rs["orden"],
+            "vencimiento" => $rs["vencimiento"],
+            "disabled" => ($rs["diferencia"]>=0) ? (true):(false),
+            "checked" => ($rs["diferencia"]>=0) ? (true):(false)
+          );
+        }
+      }
       //respuesta
       $rpta = array(
         'tablaDesembolso'=> $matricula,
-        'tablaPagos'=> getPagos($todos = false),
+        'tablaPagos'=> $tablapagos,
         'tablaPers'=>$fn->getViewPersona($alumnoID)
       );
       $db->enviarRespuesta($rpta);
