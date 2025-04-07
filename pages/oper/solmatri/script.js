@@ -11,7 +11,7 @@ async function appSolMatriGrid(){
   try{
     const resp = await appAsynFetch({
       TipoQuery: 'SolMatri_sel',
-      buscar: txtBuscar
+      buscar: txtBuscar 
     },rutaSQL);
   
     //respuesta  
