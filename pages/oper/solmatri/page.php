@@ -260,6 +260,7 @@
                     <table class="table table-hover">
                       <thead>
                         <tr>
+                          <th style="width:30px;"></th>
                           <th style="width:25px;"></th>
                           <th style="width:45px;" title="Abreviatura">Abrev</th>
                           <th>Pago <i class="fa fa-sort"></i></th>

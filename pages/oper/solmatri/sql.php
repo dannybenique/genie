@@ -35,7 +35,7 @@
   }
 
   switch ($data->TipoQuery) {
-    case "SolMatri_sel":
+    case "SolicMatric_sel":
       $tabla = array();
       $buscar = strtoupper($data->buscar);
       $whr = " and id_colegio=:colegioID and (alumno LIKE :buscar or nro_dui LIKE :buscar) ";
@@ -65,7 +65,7 @@
       $rpta = array("tabla"=>$tabla,"cuenta"=>$rsCount["cuenta"]);
       $db->enviarRespuesta($rpta);
       break;
-    case "SolMatri_exec":
+    case "SolicMatric_exec":
       //inicialmente el estado debe ser 3 en la matricula
       $sql = "select sp_matriculas (:TipoExec,:id,:colegioID,:alumnoID,:seccionID,:userSolicitaID,:userApruebaID,:fechaSolicita,:fechaAprueba,:fechaMatricula,:yyyy,:estado,:sysIP,:userID,:observac) as nro;";
       $params = [
@@ -97,7 +97,7 @@
       //respuesta
       $db->enviarRespuesta($rpta);
       break;
-    case "SolMatri_del":
+    case "SolicMatric_del":
       $params = array();
       $sysIP = $fn->getClientIP();
       $userID = $_SESSION['usr_ID'];
@@ -116,7 +116,7 @@
       $rpta = array("error"=>false, "delete"=>$data->arr);
       $db->enviarRespuesta($rpta);
       break;
-    case "SolMatri_new":
+    case "SolicMatric_new":
       //obtenemos configuracion del colegio
       $config = json_decode($fn->getConfigColegio($web->colegioID));
       
@@ -139,7 +139,7 @@
       );
       $db->enviarRespuesta($rpta);
       break;
-    case "SolMatri_view":
+    case "SolicMatric_view":
       $tabla = 0;
       $alumnoID = 0;
       $qry = $db->query_all("select m.*,n.id_grado,n.id_nivel from app_matriculas m join vw_colniv n on m.id_seccion=n.id_seccion where m.id=".$data->matriculaID);
@@ -171,7 +171,7 @@
       $rpta = array('tablaSolMatri'=> $tabla,'tablaPers'=>$fn->getViewPersona($alumnoID));
       $db->enviarRespuesta($rpta);
       break;
-    case "SolMatri_verify":
+    case "SolicMatric_verify":
       $tablaPers = ""; //almacena los datos de la persona
       $persona = false; //indica que existe en personas
       $activo = false; //indica que encontro en tabla de matriculas

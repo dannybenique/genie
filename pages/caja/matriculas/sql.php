@@ -23,7 +23,7 @@
           "producto" => $rs["producto"],
           "abrevia" => $rs["abrevia"],
           "importe" => $rs["importe"]*1,
-          "bloqueo" => $rs["bloqueo"],
+          "bloqueo" => 1, //bloqueo=1 significa que es una cuota nueva
           "orden" => $rs["orden"],
           "vencimiento" => $rs["vencimiento"],
           "disabled" => ($rs["diferencia"]>=0) ? (true):(false),
@@ -130,6 +130,8 @@
         $params = [":id"=>$id,":sysIP"=>$clientIP,":userID"=>$userID];
         $qry = $db->query_all("update app_matriculas set estado=3,id_useraprueba=null,fecha_aprueba=null,sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id=:id",$params);
         $rs = reset($qry);
+        $qry = $db->query_all("delete from app_matriculas_det where id_matricula=".$id);
+        $rs = reset($qry);
       }
       //respuesta
       $rpta = array("error"=>false, "delete"=>$data->arr);
@@ -140,24 +142,6 @@
       $clientIP = $fn->getClientIP();
       $colegioID = $web->colegioID;
       $matriculaID = $data->matriculaID;
-      
-      //pagos
-      foreach($data->pagos as $index=>$pago){
-        $sql = "insert into app_matriculas_det (id_matricula,item,id_producto,importe,saldo,vencimiento,estado,sys_ip,sys_user,sys_fecha) values(:matriculaID,:item,:productoID,:importe,:saldo,:vencimiento,:estado,:sysIP,:userID,now());";
-        $params = [
-          ":matriculaID" => $matriculaID,
-          ":productoID"  => $pago->productoID,
-          ":item"  => $index+1,
-          ":importe"  => $pago->importe,
-          ":saldo"  => ($pago->checked==1) ? (0):($pago->importe),
-          ":vencimiento" => $pago->vencimiento,
-          ":estado" => 1,
-          ":sysIP"  => $clientIP,
-          ":userID" => $userID
-        ];
-        $qry = $db->query_all($sql,$params);
-        $rs = reset($qry);
-      }
       
       //movim
       $qry = $db->query_all("select concat(".$userID.",'-',right('0000000'||cast(coalesce(max(right(codigo,7)::integer)+1,1) as text),7)) as code from app_movim where id_cajera=".$userID.";");
@@ -192,6 +176,37 @@
         if($pago->checked) { $qry = $db->query_all($sql,$params); $rs = reset($qry); }
       }
 
+      //matriculas_det
+      foreach($data->pagos as $index=>$pago){
+        if($pago->checked) { //cuota ya existe y solo necesita actualizar el saldo
+          $sql = "update app_matriculas_det set saldo=0,sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id_matricula=:matriculaID and id_producto=:productoID;";
+          $params_upd = [
+            ":matriculaID" => $matriculaID,
+            ":productoID"  => $pago->productoID,
+            ":sysIP"  => $clientIP,
+            ":userID" => $userID
+          ];
+          $qry = $db->query_all($sql,$params_upd);
+          $rs = reset($qry);
+        }
+        if($pago->bloqueo==1){ //cuopta es nueva y se agregara a la lista de cuotas, ademas se paga si ya se esta chekeada
+          $sql = "insert into app_matriculas_det (id_matricula,item,id_producto,importe,saldo,vencimiento,estado,sys_ip,sys_user,sys_fecha) values(:matriculaID,:item,:productoID,:importe,:saldo,:vencimiento,:estado,:sysIP,:userID,now());";
+          $params_ins = [
+            ":matriculaID" => $matriculaID,
+            ":productoID"  => $pago->productoID,
+            ":item"  => $index+1,
+            ":importe"  => $pago->importe,
+            ":saldo"  => ($pago->checked==1) ? (0):($pago->importe),
+            ":vencimiento" => $pago->vencimiento,
+            ":estado" => 1,
+            ":sysIP"  => $clientIP,
+            ":userID" => $userID
+          ];
+          $qry = $db->query_all($sql,$params_ins);
+          $rs = reset($qry);
+        }
+      }
+      
       //matriculas
       $sql = "update app_matriculas set fecha_matricula=:fecha,importe=:importe,saldo=:saldo,nro_cuotas=:nrocuotas,observac=:observac,estado=:estado,sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id=:id";
       $params = [
@@ -217,8 +232,27 @@
       $db->enviarRespuesta($rpta);
       break;
     case "desemb_AddPago":
+      $tablaPagos = array();
+      $qry = $db->query_all("select c.*,p.orden,p.nombre as producto,p.abrevia,current_date-c.vencimiento as diferencia from app_colprod c join app_productos p on c.id_producto=p.id where id_colegio=:colegioID order by orden",[":colegioID"=>$web->colegioID]);
+      if ($qry) {
+        foreach($qry as $rs){
+          $tablaPagos[] = array(
+            "productoID" => $rs["id_producto"],
+            "producto" => $rs["producto"],
+            "abrevia" => $rs["abrevia"],
+            "importe" => $rs["importe"]*1,
+            "bloqueo" => 1, //bloqueo=1 significa que es una cuota nueva
+            "orden" => $rs["orden"],
+            "vencimiento" => $rs["vencimiento"],
+            "disabled" => ($rs["diferencia"]>=0) ? (true):(false),
+            "checked" => ($rs["diferencia"]>=0) ? (true):(false)
+          );
+        }
+      }
+
       //respuesta
-      $rpta = array('tablaPagos'=> getPagos($todos = true));
+      // $rpta = array('tablaPagos'=> getPagos($todos = true));
+      $rpta = array('tablaPagos'=> $tablaPagos);
       $db->enviarRespuesta($rpta);
       break;
   }

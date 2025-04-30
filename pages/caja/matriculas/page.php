@@ -111,12 +111,13 @@
                       <table class="table table-hover">
                         <thead>
                           <tr>
-                            <th style="width:25px;"></th>
+                            <th style="width:25px;">#</th>
+                            <th style="width:25px;"><i class="fa fa-trash"></i></th>
                             <th style="width:25px;"></th>
                             <th style="width:45px;" title="Abreviatura">Abrev</th>
                             <th>Pago <i class="fa fa-sort"></i></th>
                             <th style="width:85px;text-align:center;" title="Fecha de Vencimiento">Vcmto</th>
-                            <th style="text-align:right;" title="Monto del pago que se cobrara y/o se almacenara para un futur pago">Importe</th>
+                            <th style="width:85px;text-align:right;" title="Monto del pago que se cobrara y/o se almacenara para un futur pago">Importe</th>
                             <th style="width:10px;padding:0;"></th>
                           </tr>
                         </thead>

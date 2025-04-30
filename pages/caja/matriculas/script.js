@@ -108,7 +108,7 @@ async function appDesembBotonAgregarPagos(){
 
 async function fn_EjecutarDesembolso(){
   try{
-    const resp = await appAsynFetch({
+    const datos = {
       TipoQuery : 'desemb_Execute',
       matriculaID : objMatricula.matriculaID,
       observac : objMatricula.observac,
@@ -117,11 +117,12 @@ async function fn_EjecutarDesembolso(){
       saldo : objTotales.ImporteMatricula - objTotales.PagosActual,
       importe : objTotales.ImporteMatricula,
       fecha : appConvertToFecha(document.querySelector("#txt_DesembFecha").value)
-    },rutaSQL);
+    }
+    const resp = await appAsynFetch(datos,rutaSQL);
 
     //respuesta
     if (!resp.error) { 
-      if(confirm("¿Desea Imprimir el desembolso?")){
+      if(confirm("¿Desea Imprimir la Matricula?")){
         $("#modalPrint").modal("show");
         let urlServer = appUrlServer()+"pages/caja/matriculas/rpt.voucher.php?movimID="+resp.movimID;
         $("#contenedorFrame").html('<object id="objPDF" type="text/html" data="'+urlServer+'" width="100%" height="500px"></object>');
@@ -211,6 +212,7 @@ function appPagosSetData(data){
       objTotales.ImporteMatricula += valor.importe;
       objTotales.PagosActual += (valor.checked==1) ? (valor.importe):(0);
       fila += '<tr style="'+((valor.checked) ? ("color;black;"):("color:#aaa;"))+'">'+
+              '<td style="color:#999;text-align:center;font-size:11px;">'+(key+1)+'</td>'+
               '<td><a href="javascript:fnPagosDeleteItem('+(valor.productoID)+')"><i style="color:red;" class="fa fa-trash"></i></a></td>'+
               '<td><input type="checkbox" name="chk_BorrarPagos" value="'+(valor.productoID)+'" '+((valor.checked) ? ("checked "):(""))+((valor.disabled) ? ("disabled "):(""))+' onclick="javascript:fnPagosCheck(this);"/></td>'+
               '<td>'+(valor.abrevia)+'</td>'+
@@ -221,7 +223,7 @@ function appPagosSetData(data){
               '</tr>';
     });
     fila += '<tfoot><tr>'+
-            '<td colspan="4" style="text-align:center;"><b>TOTAL A PAGAR EN MATRICULA</b></td>'+
+            '<td colspan="5" style="text-align:center;"><b>TOTAL A PAGAR EN MATRICULA</b></td>'+
             '<td colspan="2" style="text-align:right;border-bottom-style:double;"><span id="lbl_DesembTotal">'+appFormatMoney(objTotales.PagosActual,2)+'</span></td>'+
             '<td></td>'+
             '</tr></tfoot>';

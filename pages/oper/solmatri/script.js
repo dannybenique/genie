@@ -10,7 +10,7 @@ async function appSolMatriGrid(){
   const txtBuscar = document.querySelector("#txtBuscar").value;
   try{
     const resp = await appAsynFetch({
-      TipoQuery: 'SolMatri_sel',
+      TipoQuery: 'SolicMatric_sel',
       buscar: txtBuscar 
     },rutaSQL);
   
@@ -100,7 +100,7 @@ function appSolMatriBotonNuevo(){
   const addNewPers = false; //se permite agregar nueva persona si no existe
   const addNewLista = true; //se permite agregar nuevos a la lista 
   const addRepLista = false; //se permite agregar repetidos a la lista
-  Persona.openBuscar('SolMatri_verify',rutaSQL,addNewPers,addNewLista,addRepLista);
+  Persona.openBuscar('SolicMatric_verify',rutaSQL,addNewPers,addNewLista,addRepLista);
   $('#btn_modPersAddToForm').off('click');
   $('#btn_modPersAddToForm').on('click',handlerSolMatriAddToForm_Click);
 }
@@ -120,7 +120,7 @@ async function appSolMatriBotonBorrar(){
   if(arr.length>0){
     if(confirm("¿Esta seguro de continuar?")) {
       try{
-        const resp = await appAsynFetch({ TipoQuery:'SolMatri_del', arr:arr },rutaSQL);
+        const resp = await appAsynFetch({ TipoQuery:'SolicMatric_del', arr:arr },rutaSQL);
         if (!resp.error) { appSolMatriBotonCancel(); }
       } catch(err){
         console.error('Error al cargar datos:', err);
@@ -133,7 +133,7 @@ async function appSolMatriBotonBorrar(){
 
 async function appSolMatriAprueba(matriculaID){
   $("#modalAprueba").modal("show");
-  document.querySelector('#grdPagos').innerHTML = ('<tr><td colspan="5"><div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></td></tr>');
+  document.querySelector('#grdPagos').innerHTML = ('<tr><td colspan="6"><div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></td></tr>');
   try{
     const resp = await appAsynFetch({
       TipoQuery: 'aprobarMatric_view',
@@ -176,7 +176,7 @@ async function appSolMatriView(matriculaID){
   
   try{
     const resp = await appAsynFetch({
-      TipoQuery : 'SolMatri_view',
+      TipoQuery : 'SolicMatric_view',
       matriculaID : matriculaID
     },rutaSQL);
     document.querySelector("#btnUpdate").style.display = (menu.oper.submenu.solmatri.cmdUpdate==1)?('inline'):('none');
@@ -232,7 +232,7 @@ async function appSolMatriClear(txtSocio){
   document.querySelector("#txt_SolMatriObservac").value = ("");
 
   try{
-    const resp = await appAsynFetch({ TipoQuery : 'SolMatri_new' }, rutaSQL);
+    const resp = await appAsynFetch({ TipoQuery : 'SolicMatric_new' }, rutaSQL);
 
     appLlenarDataEnComboBox(resp.comboNiveles,"#cbo_SolMatriNiveles",0); //seteado a primaria
     appLlenarDataEnComboBox(resp.comboGrados,"#cbo_SolMatriGrados",0); //prmer grado
@@ -254,7 +254,7 @@ function appSolMatriValidarCampos(){
 
 function appSolMatriGetDatosToDatabase(){
   let rpta = {
-    TipoQuery : "SolMatri_exec",
+    TipoQuery : "SolicMatric_exec",
     TipoExec : null,
     ID : document.querySelector('#hid_SolMatriID').value,
     alumnoID : document.querySelector("#hid_PersID").value,
@@ -400,16 +400,17 @@ function modaprueba_Pagos_SetData(data){
     let fila = "";
     data.forEach((valor,key)=>{
       fila += '<tr style="color:#555;">'+
+              '<td style="color:#999;text-align:center;font-size:11px;">'+(key+1)+'</td>'+
               '<td><a href="javascript:modaprueba_Pagos_DeleteItem('+(valor.productoID)+')"><i style="color:red;" class="fa fa-trash"></i></a></td>'+
               '<td>'+(valor.abrevia)+'</td>'+
-              '<td>'+(valor.producto)+'</td>'+
+              '<td><a href="javascript:modaprueba_Pagos_EditItem('+(valor.productoID)+')">'+(valor.producto)+'</a></td>'+
               '<td>'+moment(valor.vencimiento).format("DD/MM/YYYY")+'</td>'+
-              '<td style="text-align:right;"><a href="javascript:modaprueba_Pagos_EditItem('+(valor.productoID)+')">'+appFormatMoney(valor.importe,2)+'</a></td>'+
+              '<td style="text-align:right;">'+appFormatMoney(valor.importe,2)+'</td>'+
               '</tr>';
     });
     document.querySelector('#grdPagos').innerHTML = fila;
   } else {
-    document.querySelector('#grdPagos').innerHTML = '<tr><td colspan="6" style="text-align:center;color:red;">Sin Resultados</td></tr>';
+    document.querySelector('#grdPagos').innerHTML = '<tr><td colspan="7" style="text-align:center;color:red;">Sin Resultados</td></tr>';
   }
 }
 
@@ -429,7 +430,8 @@ function modaprueba_Pagos_EditItem(productoID){
     document.querySelector("#txt_modPagoNombre").value = reg.producto;
     document.querySelector("#txt_modPagoImporte").value = reg.importe;
     $("#txt_modPagoVencimiento").datepicker("setDate",moment(reg.vencimiento).format("DD/MM/YYYY"));
-    $("#modalPagosEdit").modal("show");
+    $("#modalPagosEdit").modal({ keyboard: true }).on('shown.bs.modal', () => $("#txt_modPagoImporte").focus());
+    //$("#modalPagosEdit").modal("show");
   }catch(err){
     console.error('Error al cargar datos:', err);
   }
