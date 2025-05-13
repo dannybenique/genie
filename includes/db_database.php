@@ -15,7 +15,10 @@
         $this->conn = new PDO($dsn, $user, $pass);
         $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
       } catch (PDOException $e) {
-        die("Error de conexión: " . $e->getMessage());
+        $this->enviarRespuesta([
+            'success' => false,
+            'error' => 'Error de conexión: ' . $e->getMessage()
+        ]);
       }
     }
 
@@ -37,7 +40,12 @@
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
       } catch (PDOException $e) {
-        die("Error en la consulta: " . $e->getMessage());
+        $this->enviarRespuesta([
+            'error' => 'Error en la consulta: ' . $e->getMessage(),
+            'error_code' => $e->getCode(),
+            'query' => $sql,
+            'params' => $params
+          ]);
       }
     }
 
