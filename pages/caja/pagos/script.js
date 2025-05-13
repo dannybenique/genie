@@ -49,7 +49,6 @@ async function appPagosBotonPagar(){
           medioPagoID : $("#cbo_DeudaMedioPago").val()*1,
           importe : importe
         }
-        // console.log(datos);
         const resp = await appAsynFetch(datos,rutaSQL);
 
         if (!resp.error) { 
@@ -59,6 +58,9 @@ async function appPagosBotonPagar(){
             $("#contenedorFrame").html('<object id="objPDF" type="text/html" data="'+urlServer+'" width="100%" height="500px"></object>');
           }
           appPagosReset();
+        }else{
+          alert("Error al guardar el pago: "+resp.error);
+          document.querySelector("#div_DeudaImporte").className = "form-group has-error";
         }
       }
     } else {

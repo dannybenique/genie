@@ -19,7 +19,7 @@
       <div class="box box-primary">
         <div class="box-header no-padding">
           <div class="mailbox-controls">
-            <button type="button" class="btn btn-default btn-sm" onclick="javascript:appMatriculasRefresh();"><i class="fa fa-refresh"></i></button>
+            <button type="button" class="btn btn-default btn-sm" onclick="javascript:appMatriculasRefreshTabla();"><i class="fa fa-refresh"></i></button>
             <div class="btn-group">
               <input type="text" id="txtBuscar" name="txtBuscar" class="form-control input-sm pull-right" placeholder="DNI, persona..." onkeypress="javascript:appMatriculasBuscar(event);" style="text-transform:uppercase;" autocomplete="off">
               <span class="fa fa-search form-control-feedback"></span>
@@ -30,14 +30,14 @@
             <table class="table table-hover" id="grd">
               <thead>
                 <tr>
-                  <th style="width:90px;" title="Fecha de Matricula">Fecha</th>
-                  <th style="width:110px;" title="Documento Unico de Identidad = DNI">DNI</th>
-                  <th style="">Alumno <i class="fa fa-sort"></i></th>
+                  <th style="width:90px;" title="Fecha de Matricula">Fecha <i class="fa fa-info-circle" style="color:#666;font-size:11px;"></i></th>
+                  <th style="width:110px;" title="Documento Unico de Identidad = DNI">DNI <i class="fa fa-info-circle" style="color:#666;font-size:11px;"></i></th>
+                  <th>Alumno <i class="fa fa-sort"></i></th>
                   <th style="width:70px;text-align:center;">Matr.</th>
-                  <th style="" title="Codigo Matricula &raquo; Nivel &raquo; Grado &raquo; Seccion">Matricula</th>
+                  <th title="Codigo Matricula &raquo; Nivel &raquo; Grado &raquo; Seccion">Matricula <i class="fa fa-info-circle" style="color:#666;font-size:11px;"></i></th>
                   <th style="width:90px;text-align:right;">Importe</th>
                   <th style="width:90px;text-align:right;">Saldo</th>
-                  <th style="width:50px;text-align:center;" title="Nro Total de Cuotas">Cuo</th>
+                  <th style="width:60px;text-align:center;" title="Nro Total de Cuotas">Cuo <i class="fa fa-info-circle" style="color:#666;font-size:11px;"></i></th>
                 </tr>
               </thead>
               <tbody id="grdDatos"></tbody>
@@ -74,7 +74,7 @@
               <button id="btnCancel" type="button" class="btn btn-default" onclick="javascript:appMatriculasBotonCancel();"><i class="fa fa-angle-double-left"></i> Regresar</button>
             </div>
             <div class="btn-group pull-right">
-              <button type="button" class="btn btn-info btn-xm" onclick="javascript:appMatriculasRefresh();"><i class="fa fa-refresh"></i></button>
+              <button type="button" class="btn btn-info btn-xm" onclick="javascript:appMatriculasRefreshCuotas();"><i class="fa fa-refresh"></i></button>
             </div>
           </div>
         </div>
@@ -87,11 +87,11 @@
                   <thead>
                     <tr>
                       <th style="width:30px;">Item</th>
-                      <th style="">Concepto</th>
+                      <th>Concepto</th>
                       <th style="width:80px;text-align:center;">Vencimiento</th>
                       <th style="width:95px;text-align:right;">Total</th>
                       <th style="width:100px;text-align:right;">Saldo</th>
-                      <th style="width:60px;text-align:center;" title="Retraso en dias">Atr.</th>
+                      <th style="width:60px;text-align:center;" title="Retraso en dias">Atr. <i class="fa fa-info-circle" style="color:#666;font-size:11px;"></i></th>
                       <th></th>
                     </tr>
                   </thead>

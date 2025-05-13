@@ -1,6 +1,7 @@
 const rutaSQL = "pages/oper/matriculas/sql.php";
 var viewTotalPagado = false;
 var viewTotalPorVencer = false;
+var matriculaID = 0;
 var menu = "";
 
 //=========================funciones para Personas============================
@@ -44,6 +45,7 @@ async function appMatriculasReset(){
     const resp = await appAsynFetch({ TipoQuery:'selDataUser' },"includes/sess_interfaz.php");
     
     document.querySelector("#txtBuscar").value = ("");
+    matriculaID = 0;
     menu = JSON.parse(resp.menu);
     appMatriculasGrid();
   } catch(err){
@@ -55,7 +57,7 @@ function appMatriculasBuscar(e){
   if(e.keyCode === 13) { load_flag = 0; $('#grdDatosBody').html(""); appMatriculasGrid(); }
 }
 
-function appMatriculasRefresh(){
+function appMatriculasRefreshTabla(){
   document.querySelector("#txtBuscar").value = ("");
   appMatriculasGrid();
 }
@@ -66,7 +68,12 @@ function appMatriculasBotonCancel(){
   $('#edit').hide();
 }
 
+function appMatriculasRefreshCuotas(){
+  appMatriculasView(matriculaID);
+}
+
 async function appMatriculasView(matriculaID){
+  $('#grdDetalleDatos').html('<tr><td colspan="7"><div class="progress progress-xs active"><div class="progress-bar progress-bar-success progress-bar-striped" style="width:100%"></div></td></tr>');
   try{
     const resp = await appAsynFetch({
       TipoQuery : 'matricula_View',
@@ -84,10 +91,10 @@ async function appMatriculasView(matriculaID){
 }
 
 function appCabeceraSetData(data){
-  document.querySelector('#hid_matriID').value = (data.ID);
+  matriculaID = (data.ID);
   document.querySelector('#lbl_matriAlumno').innerHTML = (data.alumno);
   document.querySelector('#lbl_matriNroDUI').innerHTML = (data.nro_dui);
-  document.querySelector('#lbl_matriCodigo').innerHTML = (data.codigo);
+  document.querySelector('#lbl_matriCodigo').innerHTML = ('<i class="fa fa-info-circle" style="font-size:11px;"></i> ') + (data.codigo);
   document.querySelector('#lbl_matriCodigo').title = ("ID: "+data.ID);
   document.querySelector('#lbl_matriFechaMatricula').innerHTML = (moment(data.fechaMatricula).format("DD/MM/YYYY"));
   document.querySelector('#lbl_matriFechaAprueba').innerHTML = (moment(data.fechaAprueba).format("DD/MM/YYYY"));

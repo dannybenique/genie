@@ -111,8 +111,8 @@
                   <table class="table table-hover">
                     <tr>
                       <th style="width:90px;">DNI</th>
-                      <th style="">Alumno</th>
-                      <th style="">Matricula</th>
+                      <th>Alumno</th>
+                      <th>Matricula</th>
                       <th style="width:90px;text-align:right;">Importe</th>
                       <th style="width:90px;text-align:right;">Saldo</th>
                     </tr>

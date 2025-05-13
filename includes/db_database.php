@@ -5,11 +5,11 @@
 
     private function __construct(){ //constructor
       try {
-        $host   = "129.213.27.61";
+        $host   = "127.0.0.1"; //"129.213.27.61";
         $port   = "5432";
         $dbname = "genie";
         $user   = "postgres";
-        $pass   = "1pharr0w.";
+        $pass   = "1234"; //"1pharr0w.";
         $dsn = "pgsql:host=$host;port=$port;dbname=$dbname";
         
         $this->conn = new PDO($dsn, $user, $pass);

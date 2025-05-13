@@ -58,73 +58,98 @@
       $db->enviarRespuesta($rpta);
       break;
     case "pago_ins":
-      $estado = 1;
-      $tipo_operID = 124; //credito
-      $colegioID = $web->colegioID;
-      $clientIP = $fn->getClientIP();
-      $userID = $_SESSION['usr_ID'];
-      $importe = $data->importe;
+      try{
+        $userID = $_SESSION['usr_ID']; 
+      
+        $sql = "select fn_actualizar_saldos_generar_movimiento(:colegioID, :matriculaID, :cajeraID, :operID, :pagoID, :movID, :sysUSR, :sysIP, :importe, :observac) as id_movim";
+        $params = [
+          ":colegioID" => $web->colegioID,
+          ":matriculaID" => $data->matriculaID,
+          ":cajeraID" => $userID,
+          ":operID" => 124, //credito
+          ":pagoID" => $data->medioPagoID,
+          ":movID" => 10, //tipo de movimiento
+          ":importe" => $data->importe,
+          ":sysIP" => $fn->getClientIP(),
+          ":sysUSR" => $userID,
+          ":observac" => ''
+        ];
+        $qry = $db->query_all($sql,$params);
+        $rs = reset($qry);
+        $movimID = $rs["id_movim"];
 
-      //actualizamos saldos en app_matriculas_det
-      $pg_capital = 0;
-      $pg_tot_capital = 0;
-      $params = [":id"=>$data->matriculaID];
-      $qry = $db->query_all("select id_matricula,item,vencimiento,saldo from app_matriculas_det where id_matricula=:id and saldo>0 order by item;",$params);
-      if($qry) {
-        foreach($qry as $rs){
-          if($importe>0){
-            $importe -= ($pg_capital = pago_Item(($rs["saldo"]),$importe));
-            $pg_tot_capital += $pg_capital;
-            $paramx = [":saldo"=>$pg_capital,":matriculaID"=>$data->matriculaID,":item"=>$rs["item"]];
-            $qrx = $db->query_all("update app_matriculas_det set saldo=(saldo-:saldo) where id_matricula=:matriculaID and item=:item;",$paramx);
-            $xx = reset($qrx);
-          } else { break; }
-        }
+        //respuesta
+        $rpta = array("error" => false, "movimID" => $movimID, "ingresados" => 1);
+        $db->enviarRespuesta($rpta);
+        break;
+      } catch (PDOException $e) {
+        $rpta = array("error" => true, "mensaje" => "Error al procesar el pago: ".$e->getMessage());
+        $db->enviarRespuesta($rpta);
       }
       
-      //actualizamos saldo de app_matriculas
-      $params = [":id"=>$data->matriculaID,":saldo"=>$data->importe,":sysIP"=>$clientIP,":userID"=>$userID];
-      $qry = $db->query_all("update app_matriculas set saldo=(saldo-:saldo),sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id=:id;",$params);
-      $rs = reset($qry);
+
+      // //actualizamos saldos en app_matriculas_det
+      // $pg_capital = 0;
+      // $pg_tot_capital = 0;
+      // $params = [":id"=>$data->matriculaID];
+      // $qry = $db->query_all("select id_matricula,item,id_producto,vencimiento,saldo from app_matriculas_det where id_matricula=:id and saldo>0 order by item;",$params);
+      // if($qry) {
+      //   foreach($qry as $rs){
+      //     if($importe>0){
+      //       $importe -= ($pg_capital = pago_Item(($rs["saldo"]),$importe));
+      //       $pg_tot_capital += $pg_capital;
+      //       $paramx = [":saldo"=>$pg_capital,":matriculaID"=>$data->matriculaID,":item"=>$rs["item"],":productoID"=>$rs["id_producto"]];
+      //       $qrx = $db->query_all("update app_matriculas_det set saldo=(saldo-:saldo) where id_matricula=:matriculaID and item=:item and id_producto=:productoID;",$paramx);
+      //       $xx = reset($qrx);
+      //     } else { break; }
+      //   }
+      // }
+
+      // //me falta un arreglo de productos para actualizarlo en el detalle de app_movim_det
+      
+      // //actualizamos saldo de app_matriculas
+      // $params = [":id"=>$data->matriculaID,":saldo"=>$data->importe,":sysIP"=>$clientIP,":userID"=>$userID];
+      // $qry = $db->query_all("update app_matriculas set saldo=(saldo-:saldo),sys_ip=:sysIP,sys_user=:userID,sys_fecha=now() where id=:id;",$params);
+      // $rs = reset($qry);
 
 
-      /******agregamos app_movim********/
-      /********************************/
-      $codigo = $userID."-".$fn->getValorCampo("select right('0000000'||cast(coalesce(max(right(codigo,7)::integer)+1,1) as text),7) as code from app_movim where id_cajera=".$userID, "code");
-      $sql = "insert into app_movim(id_colegio,id_matricula,id_tipo_oper,id_tipo_pago,id_tipo_mov,id_cajera,fecha,codigo,total,estado,sys_ip,sys_user,sys_fecha,observac) values(:colegioID,:matriculaID,:operID,:pagoID,:movID,:cajeraID,now(),:codigo,:total,:estado,:sysIP,:sysUSER,now(),:observac) returning id;";
-      $params = [
-        ":colegioID"=>$colegioID,
-        ":matriculaID"=>$data->matriculaID,
-        ":operID"=>$tipo_operID,
-        ":pagoID"=>$data->medioPagoID,
-        ":movID"=>10, //tipo de movimiento
-        ":cajeraID"=>$userID,
-        ":codigo"=>$codigo,
-        ":total"=>$data->importe,
-        ":estado"=>$estado,
-        ":sysIP"=>$clientIP,
-        ":sysUSER"=>$userID,
-        ":observac"=>''
-      ];
-      $qry = $db->query_all($sql,$params);
-      $rs = reset($qry);
-      $movimID = $rs["id"];
+      // /******agregamos app_movim********/
+      // /********************************/
+      // $codigo = $userID."-".$fn->getValorCampo("select right('0000000'||cast(coalesce(max(right(codigo,7)::integer)+1,1) as text),7) as code from app_movim where id_cajera=".$userID, "code");
+      // $sql = "insert into app_movim(id_colegio,id_matricula,id_tipo_oper,id_tipo_pago,id_tipo_mov,id_cajera,fecha,codigo,total,estado,sys_ip,sys_user,sys_fecha,observac) values(:colegioID,:matriculaID,:operID,:pagoID,:movID,:cajeraID,now(),:codigo,:total,:estado,:sysIP,:sysUSER,now(),:observac) returning id;";
+      // $params = [
+      //   ":colegioID"=>$colegioID,
+      //   ":matriculaID"=>$data->matriculaID,
+      //   ":operID"=>$tipo_operID,
+      //   ":pagoID"=>$data->medioPagoID,
+      //   ":movID"=>10, //tipo de movimiento
+      //   ":cajeraID"=>$userID,
+      //   ":codigo"=>$codigo,
+      //   ":total"=>$data->importe,
+      //   ":estado"=>$estado,
+      //   ":sysIP"=>$clientIP,
+      //   ":sysUSER"=>$userID,
+      //   ":observac"=>''
+      // ];
+      // $qry = $db->query_all($sql,$params);
+      // $rs = reset($qry);
+      // $movimID = $rs["id"];
 
-      //agregamos app_movim_det
-      $sql = "insert into app_movim_det(id_movim,item,id_producto,importe) values(:movimID,:item,:productoID,:importe) returning id;";
-      $params = [
-        ":movimID"=>$movimID,
-        ":item"=>1,
-        ":productoID"=>$data->productoID,
-        ":importe"=>$data->importe
-      ];
-      $qry = $db->query_all($sql,$params);
-      $rs = reset($qry);
+      // //agregamos app_movim_det
+      // $sql = "insert into app_movim_det(id_movim,item,id_producto,importe) values(:movimID,:item,:productoID,:importe) returning id;";
+      // $params = [
+      //   ":movimID"=>$movimID,
+      //   ":item"=>1,
+      //   ":productoID"=>$data->productoID,
+      //   ":importe"=>$data->importe
+      // ];
+      // $qry = $db->query_all($sql,$params);
+      // $rs = reset($qry);
 
-      //respuesta
-      $rpta = array("error" => false,"movimID"=>$movimID,"ingresados" => 1);
-      $db->enviarRespuesta($rpta);
-      break;
+      // //respuesta
+      // $rpta = array("error" => false,"movimID"=>$movimID,"ingresados" => 1);
+      // $db->enviarRespuesta($rpta);
+      // break;
   }
   $db->close();
 ?>
